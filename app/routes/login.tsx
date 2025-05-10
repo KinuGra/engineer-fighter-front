@@ -16,7 +16,10 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 export const action = async ({ request, context }: ActionFunctionArgs) => {
 	const { data, headers } = await siginInWithGitHub(request, context);
 
-	return redirect(data.url!, { headers: headers });
+	if (!data.url) {
+		throw new Error("Redirect URL is missing");
+	}
+	return redirect(data.url, { headers: headers });
 };
 
 export default function SignIn() {

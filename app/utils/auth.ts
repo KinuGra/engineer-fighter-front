@@ -4,13 +4,13 @@ import { createSupabaseServerClient } from "./createServerClient";
 export const siginInWithGitHub = async (
 	request: Request,
 	c: AppLoadContext,
-	successRedirectPath = "/home",
 ) => {
+	const redirectUrl = `${c.cloudflare.env.FRONTEND_URL}/home`;
 	const supabase = createSupabaseServerClient(request, c);
 	const { data, error } = await supabase.client.auth.signInWithOAuth({
 		provider: "github",
 		options: {
-			redirectTo: successRedirectPath,
+			redirectTo: redirectUrl,
 		},
 	});
 
@@ -25,14 +25,14 @@ export const siginInWithGitHub = async (
 export const signOut = async (
 	request: Request,
 	c: AppLoadContext,
-	successRedirectPath = "/login",
 ) => {
+	const redirectUrl = `${c.cloudflare.env.FRONTEND_URL}/login`;
 	const supabase = createSupabaseServerClient(request, c);
 	const { error } = await supabase.client.auth.signOut();
 
 	return {
 		ok: !error,
-		data: { url: successRedirectPath },
+		data: { url: redirectUrl },
 		error: error ? error.message : "",
 		headers: supabase.headers,
 	};

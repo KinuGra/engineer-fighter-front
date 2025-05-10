@@ -22,11 +22,15 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 export const action = async ({ request, context }: ActionFunctionArgs) => {
 	const { data, headers } = await signOut(request, context);
 
-	return redirect(data.url!, { headers: headers });
+	if (!data.url) {
+		throw new Error("Redirect URL is missing");
+	}
+	return redirect(data.url, { headers: headers });
 };
 
 export default function AuthCode() {
 	const data = useLoaderData<typeof loader>();
+	console.log(data);
 
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center">
