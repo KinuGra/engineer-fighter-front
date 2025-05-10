@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from "./createServerClient";
 export const siginInWithGitHub = async (
 	request: Request,
 	c: AppLoadContext,
-	successRedirectPath = "http://localhost:8787/home",
+	successRedirectPath = "/home",
 ) => {
 	const supabase = createSupabaseServerClient(request, c);
 	const { data, error } = await supabase.client.auth.signInWithOAuth({
@@ -25,7 +25,7 @@ export const siginInWithGitHub = async (
 export const signOut = async (
 	request: Request,
 	c: AppLoadContext,
-	successRedirectPath = "http://localhost:8787/login",
+	successRedirectPath = "/login",
 ) => {
 	const supabase = createSupabaseServerClient(request, c);
 	const { error } = await supabase.client.auth.signOut();
