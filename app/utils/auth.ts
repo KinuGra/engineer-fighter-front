@@ -15,7 +15,7 @@ export const siginInWithGitHub = async (
 	});
 
 	return {
-		ok: !error && data ? true : false,
+		ok: !!data && !error,
 		data: data,
 		error: error && !data ? error.message : "",
 		headers: supabase.headers,
@@ -31,7 +31,7 @@ export const signOut = async (
 	const { error } = await supabase.client.auth.signOut();
 
 	return {
-		ok: !error ? true : false,
+		ok: !error,
 		data: { url: successRedirectPath },
 		error: error ? error.message : "",
 		headers: supabase.headers,
@@ -58,10 +58,15 @@ export const isUserLoggedIn = async (request: Request, c: AppLoadContext) => {
 	return !!user;
 };
 
-export const getSessionFromCode = async (request: Request, c: AppLoadContext, code: string) => {
+export const getSessionFromCode = async (
+	request: Request,
+	c: AppLoadContext,
+	code: string,
+) => {
 	const supabase = createSupabaseServerClient(request, c);
 
-	const { data, error } = await supabase.client.auth.exchangeCodeForSession(code);
+	const { data, error } =
+		await supabase.client.auth.exchangeCodeForSession(code);
 
 	if (error) {
 		console.error("Error exchanging code for session:", error);

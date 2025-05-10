@@ -1,4 +1,8 @@
-import { type LoaderFunctionArgs, type MetaFunction, redirect } from "@remix-run/cloudflare";
+import {
+	type LoaderFunctionArgs,
+	type MetaFunction,
+	redirect,
+} from "@remix-run/cloudflare";
 import { isUserLoggedIn } from "~/utils/auth";
 
 export const meta: MetaFunction = () => {
