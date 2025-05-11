@@ -13,10 +13,10 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
-	if (!isUserLoggedIn(request, context)) {
-		return redirect("/login");
+	if (await isUserLoggedIn(request, context)) {
+		return redirect("/home");
 	}
-	return redirect("/home");
+	return redirect("/login");
 }
 
 export default function Index() {

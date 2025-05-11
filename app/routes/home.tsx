@@ -1,6 +1,7 @@
 import {
 	type ActionFunctionArgs,
 	type LoaderFunctionArgs,
+	json,
 	redirect,
 } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
@@ -12,25 +13,28 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	const code = requestUrl.searchParams.get("code");
 
 	if (code) {
-		const { data } = await getSessionFromCode(request, context, code);
-		return { meta: data.user.user_metadata, token: data.session.access_token };
+		const { data, headers } = await getSessionFromCode(request, context, code)
+
+		return new Response(null, {
+			status: 302,
+			headers: {
+				Location: "/home",
+				...Object.fromEntries(headers),
+			},
+		});
 	}
 
-	return null;
+	return json(null);
 }
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
 	const { data, headers } = await signOut(request, context);
 
-	if (!data.url) {
-		throw new Error("Redirect URL is missing");
-	}
-	return redirect(data.url, { headers: headers });
+	return redirect(data.url, { headers });
 };
 
 export default function AuthCode() {
 	const data = useLoaderData<typeof loader>();
-	console.log(data);
 
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center">
@@ -39,16 +43,14 @@ export default function AuthCode() {
 					認証完了
 				</h2>
 
-				{data && (
+				{data && data.meta && (
 					<div className="mb-6 rounded-md bg-gray-100 p-4">
 						<div className="flex items-center">
-							{data.meta && (
-								<img
-									src={data.meta.avatar_url}
-									alt="User Avatar"
-									className="mr-4 h-12 w-12 rounded-full"
-								/>
-							)}
+							<img
+								src={data.meta.avatar_url}
+								alt="User Avatar"
+								className="mr-4 h-12 w-12 rounded-full"
+							/>
 							<div>
 								<h3 className="font-bold text-gray-800">{data.meta.name}</h3>
 							</div>

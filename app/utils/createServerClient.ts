@@ -25,16 +25,19 @@ export function createSupabaseServerClient(
 				setAll(cookiesToSet) {
 					for (const cookie of cookiesToSet) {
 						const { name, value, options } = cookie;
+
 						headers.append(
 							"Set-Cookie",
-							serializeCookieHeader(name, value, options),
+							serializeCookieHeader(name, value, {
+								...options,
+								httpOnly: true,
+								secure: true,
+								path: "/",
+								sameSite: "lax",
+							}),
 						);
 					}
 				},
-			},
-			cookieOptions: {
-				httpOnly: true,
-				secure: true,
 			},
 		},
 	);
@@ -44,3 +47,4 @@ export function createSupabaseServerClient(
 		headers,
 	};
 }
+

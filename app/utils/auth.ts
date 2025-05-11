@@ -55,6 +55,8 @@ export const isUserLoggedIn = async (request: Request, c: AppLoadContext) => {
 		data: { user },
 	} = await supabase.client.auth.getUser();
 
+	console.log("isUserLoggedIn", user);
+
 	return !!user;
 };
 
@@ -68,10 +70,10 @@ export const getSessionFromCode = async (
 	const { data, error } =
 		await supabase.client.auth.exchangeCodeForSession(code);
 
-	if (error) {
-		console.error("Error exchanging code for session:", error);
-		throw error;
-	}
-
-	return { data };
+	return {
+		ok: !!data && !error,
+		data: data,
+		error: error && !data ? error.message : "",
+		headers: supabase.headers,
+	};
 };
