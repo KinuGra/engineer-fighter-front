@@ -11,6 +11,7 @@ export const siginInWithGitHub = async (
 		provider: "github",
 		options: {
 			redirectTo: redirectUrl,
+			scopes: "read:user,user:email",
 		},
 	});
 

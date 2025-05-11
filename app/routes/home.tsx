@@ -6,10 +6,38 @@ import {
 import { useLoaderData } from "@remix-run/react";
 import { Form } from "@remix-run/react";
 import { serializeCookieHeader } from "@supabase/ssr";
-import { signOut } from "~/utils/auth.server";
+import { Octokit } from "octokit";
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
-	return null;
+import { signOut } from "~/utils/auth.server";
+import { getGitHubToken } from "~/utils/cookies.server";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+	const token = await getGitHubToken(request);
+
+	if (!token) {
+		return {
+			error: "No GitHub token found",
+			status: 401,
+		};
+	}
+
+	const response = await fetch("https://api.github.com/user", {
+		headers: {
+			Authorization: `token ${token}`,
+			Accept: "application/json",
+			"User-Agent": "58-supabase",
+		},
+	});
+
+	if (response.status !== 200) {
+		return {
+			error: "Failed to fetch GitHub user info",
+			status: response.status,
+		};
+	}
+
+	const userData = await response.json();
+	return { user: userData };
 }
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
@@ -31,6 +59,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
 export default function AuthCode() {
 	const data = useLoaderData<typeof loader>();
+	console.log("data", data);
 
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center">
@@ -39,16 +68,16 @@ export default function AuthCode() {
 					認証完了
 				</h2>
 
-				{data && data.meta && (
+				{data && data.user && (
 					<div className="mb-6 rounded-md bg-gray-100 p-4">
 						<div className="flex items-center">
 							<img
-								src={data.meta.avatar_url}
+								src={data.user.avatar_url}
 								alt="User Avatar"
 								className="mr-4 h-12 w-12 rounded-full"
 							/>
 							<div>
-								<h3 className="font-bold text-gray-800">{data.meta.name}</h3>
+								<h3 className="font-bold text-gray-800">{data.user.login}</h3>
 							</div>
 						</div>
 					</div>

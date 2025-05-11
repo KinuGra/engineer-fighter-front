@@ -14,19 +14,20 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			context,
 			code,
 		);
+        console.log("data", data);
 		if (!error) {
-			if (data.session?.access_token) {
-				console.log("access_token", data.session.access_token);
+			if (data.session?.provider_token) {
 				headers.append(
 					"Set-Cookie",
 					serializeCookieHeader(
 						"58hack-github-token",
-						data.session.access_token,
+						data.session.provider_token,
 						{
 							httpOnly: true,
 							secure: true,
 							path: "/",
 							sameSite: "lax",
+							expires: new Date(Date.now() + 60 * 60 * 24 * 1000 * 7),
 						},
 					),
 				);
