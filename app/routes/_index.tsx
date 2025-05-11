@@ -3,7 +3,7 @@ import {
 	type MetaFunction,
 	redirect,
 } from "@remix-run/cloudflare";
-import { isUserLoggedIn } from "~/utils/auth";
+import { isUserLoggedIn } from "~/utils/auth.server";
 
 export const meta: MetaFunction = () => {
 	return [

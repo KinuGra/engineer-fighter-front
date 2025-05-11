@@ -1,11 +1,11 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
-import { createSupabaseServerClient } from "./createServerClient";
+import { createSupabaseServerClient } from "./createServerClient.server";
 
 export const siginInWithGitHub = async (
 	request: Request,
 	c: AppLoadContext,
 ) => {
-	const redirectUrl = `${c.cloudflare.env.FRONTEND_URL}/home`;
+	const redirectUrl = `${c.cloudflare.env.FRONTEND_URL}/auth/callback`;
 	const supabase = createSupabaseServerClient(request, c);
 	const { data, error } = await supabase.client.auth.signInWithOAuth({
 		provider: "github",

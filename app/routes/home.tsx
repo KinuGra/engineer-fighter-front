@@ -1,30 +1,14 @@
 import {
 	type ActionFunctionArgs,
 	type LoaderFunctionArgs,
-	json,
 	redirect,
 } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { Form } from "@remix-run/react";
-import { getSessionFromCode, signOut } from "~/utils/auth";
+import { getSessionFromCode, signOut } from "~/utils/auth.server";
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
-	const requestUrl = new URL(request.url);
-	const code = requestUrl.searchParams.get("code");
-
-	if (code) {
-		const { data, headers } = await getSessionFromCode(request, context, code)
-
-		return new Response(null, {
-			status: 302,
-			headers: {
-				Location: "/home",
-				...Object.fromEntries(headers),
-			},
-		});
-	}
-
-	return json(null);
+	return null;
 }
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {

@@ -4,7 +4,7 @@ import type {
 } from "@remix-run/cloudflare";
 import { redirect } from "@remix-run/cloudflare";
 import { Form } from "@remix-run/react";
-import { isUserLoggedIn, siginInWithGitHub } from "~/utils/auth";
+import { isUserLoggedIn, siginInWithGitHub } from "~/utils/auth.server";
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 	if (await isUserLoggedIn(request, context)) {
