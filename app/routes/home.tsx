@@ -40,7 +40,6 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
 export default function AuthCode() {
 	const data = useLoaderData<typeof loader>();
-	console.log("data", data);
 
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center">
