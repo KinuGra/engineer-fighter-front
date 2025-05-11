@@ -5,38 +5,37 @@ import {
 } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 
-import { fetchGitHubApi } from "~/utils/github.server";
-import SignOutButton from "~/components/SignOutButton";
 import { serializeCookieHeader } from "@supabase/ssr";
+import SignOutButton from "~/components/SignOutButton";
+import { fetchGitHubApi } from "~/utils/github.server";
 
 import { signOut } from "~/utils/auth.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-
 	const result = await fetchGitHubApi(request);
 
 	if (result.error) {
 		return null;
 	}
 
-	return result.data
+	return result.data;
 }
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
-    const { data, headers } = await signOut(request, context);
+	const { data, headers } = await signOut(request, context);
 
-    headers.append(
-        "Set-Cookie",
-        serializeCookieHeader("58hack-github-token", "", {
-            httpOnly: true,
-            secure: true,
-            path: "/",
-            sameSite: "lax",
-            expires: new Date(0),
-        }),
-    );
+	headers.append(
+		"Set-Cookie",
+		serializeCookieHeader("58hack-github-token", "", {
+			httpOnly: true,
+			secure: true,
+			path: "/",
+			sameSite: "lax",
+			expires: new Date(0),
+		}),
+	);
 
-    return redirect(data.url, { headers });
+	return redirect(data.url, { headers });
 };
 
 export default function AuthCode() {
@@ -49,7 +48,7 @@ export default function AuthCode() {
 					ようこそ、{data?.login}さん
 				</h2>
 
-				{data  && (
+				{data && (
 					<div className="mb-6 rounded-md bg-gray-100 p-4">
 						<div className="flex items-center">
 							<img
