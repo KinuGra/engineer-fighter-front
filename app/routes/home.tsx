@@ -11,7 +11,7 @@ import { fetchGitHubApi } from "~/utils/github.server";
 
 import { signOut } from "~/utils/auth.server";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
 	const result = await fetchGitHubApi(request);
 
 	if (result.error) {
@@ -45,7 +45,7 @@ export default function AuthCode() {
 		<div className="flex min-h-screen flex-col items-center justify-center">
 			<div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
 				<h2 className="mb-6 text-center text-2xl font-bold text-gray-900">
-					ようこそ、{data?.login}さん
+					ようこそ、{data.name}さん
 				</h2>
 
 				{data && (
