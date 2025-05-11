@@ -22,10 +22,7 @@ export const siginInWithGitHub = async (
 	};
 };
 
-export const signOut = async (
-	request: Request,
-	c: AppLoadContext,
-) => {
+export const signOut = async (request: Request, c: AppLoadContext) => {
 	const redirectUrl = `${c.cloudflare.env.FRONTEND_URL}/login`;
 	const supabase = createSupabaseServerClient(request, c);
 	const { error } = await supabase.client.auth.signOut();
@@ -54,8 +51,6 @@ export const isUserLoggedIn = async (request: Request, c: AppLoadContext) => {
 	const {
 		data: { user },
 	} = await supabase.client.auth.getUser();
-
-	console.log("isUserLoggedIn", user);
 
 	return !!user;
 };
