@@ -6,38 +6,19 @@ import {
 import { useLoaderData } from "@remix-run/react";
 import { Form } from "@remix-run/react";
 import { serializeCookieHeader } from "@supabase/ssr";
-import { Octokit } from "octokit";
 
 import { signOut } from "~/utils/auth.server";
-import { getGitHubToken } from "~/utils/cookies.server";
+import { fetchGitHubApi } from "~/utils/github.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-	const token = await getGitHubToken(request);
 
-	if (!token) {
-		return {
-			error: "No GitHub token found",
-			status: 401,
-		};
+	const result = await fetchGitHubApi(request);
+
+	if (result.error) {
+		return null;
 	}
 
-	const response = await fetch("https://api.github.com/user", {
-		headers: {
-			Authorization: `token ${token}`,
-			Accept: "application/json",
-			"User-Agent": "58-supabase",
-		},
-	});
-
-	if (response.status !== 200) {
-		return {
-			error: "Failed to fetch GitHub user info",
-			status: response.status,
-		};
-	}
-
-	const userData = await response.json();
-	return { user: userData };
+	return result.data
 }
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
@@ -59,24 +40,25 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
 export default function AuthCode() {
 	const data = useLoaderData<typeof loader>();
+	console.log("data", data);
 
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center">
 			<div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
 				<h2 className="mb-6 text-center text-2xl font-bold text-gray-900">
-					認証完了
+					ようこそ、{data?.login}さん
 				</h2>
 
-				{data && data.user && (
+				{data  && (
 					<div className="mb-6 rounded-md bg-gray-100 p-4">
 						<div className="flex items-center">
 							<img
-								src={data.user.avatar_url}
+								src={data.avatar_url}
 								alt="User Avatar"
 								className="mr-4 h-12 w-12 rounded-full"
 							/>
 							<div>
-								<h3 className="font-bold text-gray-800">{data.user.login}</h3>
+								<h3 className="font-bold text-gray-800">{data.login}</h3>
 							</div>
 						</div>
 					</div>
