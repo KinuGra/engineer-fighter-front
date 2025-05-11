@@ -14,7 +14,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			context,
 			code,
 		);
-        console.log("data", data);
 		if (!error) {
 			if (data.session?.provider_token) {
 				headers.append(
