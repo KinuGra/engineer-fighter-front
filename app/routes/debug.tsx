@@ -1,5 +1,33 @@
-import { type MetaFunction } from "@remix-run/cloudflare";
+import { type MetaFunction, data } from "@remix-run/cloudflare";
 import { useEffect, useRef } from "react";
+import { useLoaderData } from "@remix-run/react";
+
+export async function loader() {
+  const gameSettings = {
+    physics: {
+      gravity: { x: 0, y: 200 },
+      debug: true
+    },
+    display: {
+      width: 800,
+      height: 600
+    },
+    userPreferences: {
+      controls: "keyboard"
+    },
+    // アセット情報
+    assets: {
+      baseUrl: "https://labs.phaser.io",
+      images: [
+        { key: "sky", path: "assets/skies/space3.png" },
+        { key: "logo", path: "assets/sprites/phaser3-logo.png" },
+        { key: "red", path: "assets/particles/red.png" }
+      ]
+    }
+  };
+
+  return data({ gameSettings });
+}
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,8 +39,10 @@ export const meta: MetaFunction = () => {
 /**
  * Phaserのデバッグページコンポーネント
  * クライアントサイドでのみPhaserを読み込み、初期化します
+ * loaderから取得した設定を使用します
  */
 export default function Debug() {
+  const { gameSettings } = useLoaderData<typeof loader>();
   const containerRef = useRef<HTMLDivElement>(null);
   const gameInitializedRef = useRef<boolean>(false);
 
@@ -26,35 +56,33 @@ export default function Debug() {
 
       try {
         // Phaserはクライアント側でのみインポート
+        // @ts-expect-error 動的インポート(tsconfig.jsonでのmodules設定に依存)
         const Phaser = (await import("phaser")).default;
         if (!containerRef.current || containerRef.current.querySelector('canvas')) {
           return;
         }
 
-        // ゲーム設定
+        // loaderから取得したゲーム設定を使用
         const config: Phaser.Types.Core.GameConfig = {
           type: Phaser.AUTO,
-          width: 800,
-          height: 600,
+          width: gameSettings.display.width,
+          height: gameSettings.display.height,
           parent: containerRef.current || undefined,
           physics: {
             default: 'arcade',
             arcade: {
-              gravity: { y: 200, x: 0 },
-              debug: true // デバッグモード有効
+              gravity: gameSettings.physics.gravity,
+              debug: gameSettings.physics.debug
             }
           },
           scene: {
             preload: function(this: Phaser.Scene) {
-              // アセットのベースURLを設定
-              this.load.setBaseURL('https://labs.phaser.io');
-              // アセットの読み込み
-              this.load.image('sky', 'assets/skies/space3.png');
-              this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-              this.load.image('red', 'assets/particles/red.png');
+              this.load.setBaseURL(gameSettings.assets.baseUrl);
+              gameSettings.assets.images.forEach(img => {
+                this.load.image(img.key, img.path);
+              });
             },
             create: function(this: Phaser.Scene) {
-              // 背景画像を追加
               this.add.image(400, 300, 'sky');
               
               // パーティクルエミッターを作成
@@ -93,7 +121,7 @@ export default function Debug() {
         gameInitializedRef.current = false;
       }
     };
-  }, []);
+  }, [gameSettings]); // gameSettingsが変更された場合に再初期化
 
   return (
     <div className="flex flex-col items-center p-4">
