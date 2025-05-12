@@ -18,6 +18,7 @@ export const meta: MetaFunction = () => {
  */
 export default function Debug() {
   const { gameSettings } = useLoaderData<typeof loader>();
+  gameSettings.physics.debug = true;
 
   return (
     <div className="flex flex-col items-center p-4">

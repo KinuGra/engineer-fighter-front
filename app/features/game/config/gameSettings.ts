@@ -4,7 +4,7 @@
 export const defaultGameSettings = {
   physics: {
     gravity: { x: 0, y: 200 },
-    debug: true
+    debug: false
   },
   display: {
     width: 800,
