@@ -18,14 +18,15 @@ export const meta: MetaFunction = () => {
  */
 export default function Debug() {
   const { gameSettings } = useLoaderData<typeof loader>();
-  gameSettings.physics.debug = true;
+  const gameSettingsCopy = { ...gameSettings };
+  gameSettingsCopy.physics.debug = true;
 
   return (
     <div className="flex flex-col items-center p-4">
       <h1 className="text-2xl font-bold mb-4">Phaser デバッグページ</h1>
       <div className="bg-slate-100 border border-slate-300 rounded shadow-md p-2">
         {/* PhaserGameコンポーネントを使用 */}
-        <PhaserGame gameSettings={gameSettings} />
+        <PhaserGame gameSettings={gameSettingsCopy} />
       </div>
       <div className="mt-4 text-sm text-gray-600">
         <p>このページはPhaserのデバッグ用に設計されています</p>
