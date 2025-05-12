@@ -2,7 +2,6 @@ import { useState } from "react";
 
 export function JoinToPopup() {
   const [open, setOpen] = useState(false);
-  const [roomCode, setRoomCode] = useState("");
   const [keyword, setKeyword] = useState("");
 
   return (
@@ -107,27 +106,6 @@ export function JoinToPopup() {
                 setOpen(false);
               }}
             >
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ fontWeight: 600, display: "block", marginBottom: 6 }}>
-                  部屋コード
-                </label>
-                <input
-                  type="text"
-                  placeholder="例: ABC123"
-                  value={roomCode}
-                  onChange={(e) => setRoomCode(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    border: "1px solid #ddd",
-                    borderRadius: "6px",
-                    fontSize: "16px",
-                  }}
-                />
-                <div style={{ color: "#888", fontSize: "13px", marginTop: 4 }}>
-                  部屋の作成者から共有された部屋コードを入力してください
-                </div>
-              </div>
               <div style={{ marginBottom: 28 }}>
                 <label style={{ fontWeight: 600, display: "block", marginBottom: 6 }}>
                   あいことば
