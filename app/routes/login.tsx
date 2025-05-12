@@ -43,9 +43,6 @@ export default function SignIn() {
 						<span className="text-base font-medium">GitHubでログイン</span>
 					</button>
 				</Form>
-				<p className="mt-6 text-center text-xs text-gray-500">
-					{/* ログインすることで、利用規約とプライバシーポリシーに同意したことになります。 */}
-				</p>
 			</div>
 		</div>
 	);
