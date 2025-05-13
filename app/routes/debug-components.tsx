@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { JoinToPopup } from "~/routes/joinTo";
+import { CreateRoomPage } from "./createTo";
 
 export default function DebugComponents() {
   const [activeComponent, setActiveComponent] = useState<string>("joinTo");
@@ -11,6 +12,10 @@ export default function DebugComponents() {
       component: <JoinToPopup />
     },
     // 将来的に他のコンポーネントを追加する場合はここに追加
+    createTo: {
+      name: "部屋作成ポップアップ",
+      component: <CreateRoomPage />
+    }
   };
 
   return (

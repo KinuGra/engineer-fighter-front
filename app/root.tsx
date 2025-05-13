@@ -33,7 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
-				{true && <CreateRoomPage />}
+				{false && <CreateRoomPage />}
 				{children}
 				<ScrollRestoration />
 				<Scripts />
