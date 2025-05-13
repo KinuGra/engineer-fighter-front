@@ -1,23 +1,7 @@
-import {
-	type ActionFunctionArgs,
-	type LoaderFunctionArgs,
-	redirect,
-} from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import { type ActionFunctionArgs, redirect } from "@remix-run/cloudflare";
 import { serializeCookieHeader } from "@supabase/ssr";
 import RoomCard from "~/components/RoomCard";
-import type { GitHubUser } from "~/types/github";
 import { signOut } from "~/utils/auth.server";
-import { fetchGitHubApi } from "~/utils/github.server";
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-	const result = await fetchGitHubApi(request);
-	if (result.error) {
-		return null;
-	}
-	return result.data;
-};
-
 export const action = async ({ request, context }: ActionFunctionArgs) => {
 	const { data, headers } = await signOut(request, context);
 	headers.append(
@@ -34,8 +18,6 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 };
 
 export default function Home() {
-	const data = useLoaderData<GitHubUser | null>();
-
 	return (
 		<div className="w-full flex flex-col items-center px-4 md:px-5">
 			{/* メインカード部分 */}
