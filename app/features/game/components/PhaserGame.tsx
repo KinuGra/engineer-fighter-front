@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { GameSettings } from "../config/gameSettings";
+import type { GameSettings } from "../core/config/gameSettings";
 
 interface PhaserGameProps {
   gameSettings: GameSettings;
@@ -14,6 +14,7 @@ export default function PhaserGame({ gameSettings }: PhaserGameProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameInitializedRef = useRef<boolean>(false);
 
+  // クライアントサイドの処理のため、loader ではなく useEffect で処理している
   useEffect(() => {
     let game: Phaser.Game | undefined;
 

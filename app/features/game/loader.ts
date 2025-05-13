@@ -1,5 +1,5 @@
 import { data } from "@remix-run/cloudflare";
-import { defaultGameSettings } from "./config/gameSettings";
+import { defaultGameSettings } from "./core/config/gameSettings";
 
 /**
  * ゲーム設定を取得するローダー関数
