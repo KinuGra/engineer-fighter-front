@@ -19,7 +19,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 	}
 
 	return result.data;
-}
+};
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
 	const { data, headers } = await signOut(request, context);
