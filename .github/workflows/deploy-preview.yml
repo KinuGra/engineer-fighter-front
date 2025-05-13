@@ -1,0 +1,52 @@
+name: Deploy Preview to Cloudflare Workers
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Deploy workers preview
+        id: deploy-workers-preview
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: versions upload --message "Deployed workers by GitHub Actions branch ${{ github.head_ref }}"
+
+      - name: Create comment file
+        id: create-comment-file
+        env:
+          DEPLOYMENT_URL: '${{ steps.deploy-workers-preview.outputs.deployment-url }}'
+        run: |
+          echo "## 🚀 Deploying ${{ github.event.repository.name }} with Cloudflare Workers" > comment.md
+          echo "**Branch:** \`${{ github.head_ref }}\`" >> comment.md
+          echo "" >> comment.md
+          echo "**Preview URL:** $DEPLOYMENT_URL" >> comment.md
+
+      - name: Create PR comment
+        if: ${{ success() }}
+        run: gh pr comment ${{ github.event.number }} --body-file comment.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
