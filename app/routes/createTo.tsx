@@ -23,7 +23,6 @@ export function CreateRoomPage() {
   const [roomName, setRoomName] = useState("");
   const [password, setPassword] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("4人");
-  const [description, setDescription] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,15 +76,6 @@ export function CreateRoomPage() {
                     <option key={opt} value={opt}>{opt}</option>
                   ))}
                 </select>
-              </div>
-              <div style={styles.formGroup}>
-                <label>説明（任意）</label>
-                <textarea
-                  placeholder="部屋の説明を入力してください"
-                  value={description}
-                  onChange={e => setDescription(e.target.value)}
-                  style={{ ...styles.input, height: 60, resize: "vertical" }}
-                />
               </div>
               <button type="submit" style={styles.submitButton}>
                 部屋を作成
