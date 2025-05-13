@@ -1,14 +1,25 @@
-import type { LinksFunction } from "@remix-run/cloudflare";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/cloudflare";
 import {
 	Links,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useLoaderData,
 } from "@remix-run/react";
-import { CreateRoomPage } from "./components/createTo";
+import Header from "./components/Header";
+import { fetchGitHubApi } from "./utils/github.server";
+import type { GitHubUser } from "./types/github";
 
 import "./tailwind.css";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+	const result = await fetchGitHubApi(request);
+	if (result.error) {
+		return null;
+	}
+	return result.data;
+};
 
 export const links: LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -42,5 +53,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-	return <Outlet />;
+	const user = useLoaderData<GitHubUser | null>();
+	return (
+		<div>
+			<Header user={user} />
+			<Outlet />
+		</div>
+	);
 }
