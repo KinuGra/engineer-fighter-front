@@ -13,7 +13,7 @@ export default function RoomCard({
 }: RoomCardProps) {
 	return (
 		<div className="flex-1 bg-white rounded-xl shadow-md p-8 flex flex-col items-center">
-			<div className="text-2xl font-bold mb-2">{title}</div>
+			<div className="text-2xl font-bold mb-2 text-gray-700">{title}</div>
 			<div className="text-gray-500 mb-6">{description}</div>
 			<div className="flex items-center justify-center mb-6 h-20">
 				{icon === "create" ? (
@@ -48,6 +48,7 @@ export default function RoomCard({
 				)}
 			</div>
 			<button
+				type="button"
 				onClick={onClick}
 				className="w-full bg-black text-white py-3 rounded-md font-bold hover:bg-gray-800 transition"
 			>
