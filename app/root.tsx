@@ -8,8 +8,8 @@ import {
 	useLoaderData,
 } from "@remix-run/react";
 import Header from "./components/Header";
-import { fetchGitHubApi } from "./utils/github.server";
 import type { GitHubUser } from "./types/github";
+import { fetchGitHubApi } from "./utils/github.server";
 
 import "./tailwind.css";
 

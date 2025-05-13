@@ -6,9 +6,9 @@ import {
 import { useLoaderData } from "@remix-run/react";
 import { serializeCookieHeader } from "@supabase/ssr";
 import RoomCard from "~/components/RoomCard";
+import type { GitHubUser } from "~/types/github";
 import { signOut } from "~/utils/auth.server";
 import { fetchGitHubApi } from "~/utils/github.server";
-import type { GitHubUser } from "~/types/github";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
 	const result = await fetchGitHubApi(request);
