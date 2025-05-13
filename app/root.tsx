@@ -8,8 +8,11 @@ import {
 	useLoaderData,
 } from "@remix-run/react";
 import Header from "./components/Header";
-import type { GitHubUser } from "./types/github";
+import type { GitHubUser } from "~/types/github";
 import { fetchGitHubApi } from "./utils/github.server";
+import { type ActionFunctionArgs, redirect } from "@remix-run/cloudflare";
+import { signOut } from "./utils/auth.server";
+import { serializeCookieHeader } from "@supabase/ssr";
 
 import "./tailwind.css";
 
@@ -19,6 +22,21 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 		return null;
 	}
 	return result.data;
+};
+
+export const action = async ({ request, context }: ActionFunctionArgs) => {
+	const { data, headers } = await signOut(request, context);
+	headers.append(
+		"Set-Cookie",
+		serializeCookieHeader("58hack-github-token", "", {
+			httpOnly: true,
+			secure: true,
+			path: "/",
+			sameSite: "lax",
+			expires: new Date(0),
+		}),
+	);
+	return redirect(data.url, { headers });
 };
 
 export const links: LinksFunction = () => [

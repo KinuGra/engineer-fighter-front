@@ -1,21 +1,4 @@
-import { type ActionFunctionArgs, redirect } from "@remix-run/cloudflare";
-import { serializeCookieHeader } from "@supabase/ssr";
 import RoomCard from "~/components/RoomCard";
-import { signOut } from "~/utils/auth.server";
-export const action = async ({ request, context }: ActionFunctionArgs) => {
-	const { data, headers } = await signOut(request, context);
-	headers.append(
-		"Set-Cookie",
-		serializeCookieHeader("58hack-github-token", "", {
-			httpOnly: true,
-			secure: true,
-			path: "/",
-			sameSite: "lax",
-			expires: new Date(0),
-		}),
-	);
-	return redirect(data.url, { headers });
-};
 
 export default function Home() {
 	return (
