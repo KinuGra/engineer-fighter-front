@@ -24,7 +24,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
 export default function SignIn() {
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-gray-100">
+		<div className="flex min-h-screen items-center justify-center">
 			<div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
 				<h2 className="mb-2 text-center text-3xl font-bold text-gray-900">
 					Engineer Fighters

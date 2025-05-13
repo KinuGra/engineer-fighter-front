@@ -7,9 +7,9 @@ interface HeaderProps {
 
 export default function Header({ user }: HeaderProps) {
 	return (
-		<div className="w-full flex items-center justify-between px-8 py-6">
+		<div className="w-full flex items-center justify-between px-8 py-6 dark:bg-gray-900 bg-white shadow-md">
 			<div className="flex items-center space-x-4">
-				{user && (
+				{user ? (
 					<>
 						<img
 							src={user.avatar_url}
@@ -23,11 +23,11 @@ export default function Header({ user }: HeaderProps) {
 							<div className="text-gray-500 text-sm">@{user.login}</div>
 						</div>
 					</>
+				): (
+					<div className="text-xl font-bold">ようこそ、ゲストさん</div>
 				)}
 			</div>
-			<div>
-				<SignOutButton />
-			</div>
+			{user && <SignOutButton />}
 		</div>
 	);
 }
