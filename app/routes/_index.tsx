@@ -16,7 +16,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 	if (await isUserLoggedIn(request, context)) {
 		return redirect("/home");
 	}
-	return redirect("/login");
+	return redirect("/auth/login");
 }
 
 export default function Index() {
