@@ -6,6 +6,7 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from "@remix-run/react";
+import { CreateRoomPage } from "./routes/createTo";
 
 import "./tailwind.css";
 
@@ -32,6 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body>
+				{true && <CreateRoomPage />}
 				{children}
 				<ScrollRestoration />
 				<Scripts />
