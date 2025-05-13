@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { GameSettings } from "../core/config/gameSettings";
+import { createGameConfig } from "../core/config/configLoader";
 
 interface PhaserGameProps {
   gameSettings: GameSettings;
@@ -31,47 +32,8 @@ export default function PhaserGame({ gameSettings }: PhaserGameProps) {
           return;
         }
 
-        // ゲーム設定を使用してPhaser.Gameを初期化
-        const config: Phaser.Types.Core.GameConfig = {
-          type: Phaser.AUTO,
-          width: gameSettings.display.width,
-          height: gameSettings.display.height,
-          parent: containerRef.current || undefined,
-          physics: {
-            default: 'arcade',
-            arcade: {
-              gravity: gameSettings.physics.gravity,
-              debug: gameSettings.physics.debug
-            }
-          },
-          scene: {
-            preload: function(this: Phaser.Scene) {
-              this.load.setBaseURL(gameSettings.assets.baseUrl);
-              gameSettings.assets.images.forEach(img => {
-                this.load.image(img.key, img.path);
-              });
-            },
-            create: function(this: Phaser.Scene) {
-              this.add.image(400, 300, 'sky');
-              
-              // パーティクルエミッターを作成
-              const particles = this.add.particles(0, 0, 'red', {
-                speed: 100,
-                scale: { start: 1, end: 0 },
-                blendMode: 'ADD'
-              });
-              
-              // ロゴに物理演算を適用
-              const logo = this.physics.add.image(400, 100, 'logo');
-              logo.setVelocity(100, 200);
-              logo.setBounce(1, 1);
-              logo.setCollideWorldBounds(true);
-              
-              // パーティクルをロゴに追従させる
-              particles.startFollow(logo);
-            }
-          }
-        };
+        // configLoaderを使用してゲーム設定を取得
+        const config = await createGameConfig(gameSettings, containerRef.current);
 
         // ゲームインスタンスを作成
         game = new Phaser.Game(config);
