@@ -15,6 +15,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			code,
 		);
 		if (!error) {
+			console.log("data", data);
 			if (data.session?.provider_token) {
 				headers.append(
 					"Set-Cookie",
@@ -26,7 +27,21 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 							secure: true,
 							path: "/",
 							sameSite: "lax",
-							expires: new Date(Date.now() + 60 * 60 * 24 * 1000 * 7),
+							expires: new Date(Date.now() + 60 * 60 * 24 * 1000 * 30),
+						},
+					),
+				);
+				headers.append(
+					"Set-Cookie",
+					serializeCookieHeader(
+						"58hack-user-id",
+						data.session.user.id,
+						{
+							httpOnly: true,
+							secure: true,
+							path: "/",
+							sameSite: "lax",
+							expires: new Date(Date.now() + 60 * 60 * 24 * 1000 * 30),
 						},
 					),
 				);
