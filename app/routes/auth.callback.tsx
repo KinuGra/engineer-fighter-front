@@ -33,17 +33,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 				);
 				headers.append(
 					"Set-Cookie",
-					serializeCookieHeader(
-						"58hack-user-id",
-						data.session.user.id,
-						{
-							httpOnly: true,
-							secure: true,
-							path: "/",
-							sameSite: "lax",
-							expires: new Date(Date.now() + 60 * 60 * 24 * 1000 * 30),
-						},
-					),
+					serializeCookieHeader("58hack-user-id", data.session.user.id, {
+						httpOnly: true,
+						secure: true,
+						path: "/",
+						sameSite: "lax",
+						expires: new Date(Date.now() + 60 * 60 * 24 * 1000 * 30),
+					}),
 				);
 			}
 			return redirect(next, { headers });

@@ -1,4 +1,5 @@
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { type ActionFunctionArgs, redirect } from "@remix-run/cloudflare";
 import {
 	Links,
 	Meta,
@@ -7,13 +8,12 @@ import {
 	ScrollRestoration,
 	useLoaderData,
 } from "@remix-run/react";
-import Header from "./components/Header";
-import type { GitHubUser } from "~/types/github";
-import { fetchGitHubApi } from "./utils/github.server";
-import { type ActionFunctionArgs, redirect } from "@remix-run/cloudflare";
-import { signOut } from "./utils/auth.server";
 import { serializeCookieHeader } from "@supabase/ssr";
+import type { GitHubUser } from "~/types/github";
+import Header from "./components/Header";
 import { authCookies } from "./const";
+import { signOut } from "./utils/auth.server";
+import { fetchGitHubApi } from "./utils/github.server";
 
 import "./tailwind.css";
 
@@ -38,7 +38,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 				expires: new Date(0),
 			}),
 		);
-	})
+	});
 	return redirect(data.url, { headers });
 };
 
