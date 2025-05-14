@@ -1,10 +1,10 @@
-import { Physics } from 'phaser';
+import { GameObjects } from 'phaser';
 
 /**
  * Phaserゲーム内のプレイヤーオブジェクトクラス
  * ゲーム内でのプレイヤーの振る舞いや状態を管理する
  */
-export class Player extends Physics.Arcade.Sprite {
+export class Player extends GameObjects.Arc {
   /** ユーザーID */
   public id: string;
   /** ユーザーアイコンURL (= GitHub のアイコンurl) */
@@ -37,11 +37,25 @@ export class Player extends Physics.Arcade.Sprite {
    * @param volume 体積 (1-100)
    * @param cd クールダウン時間 (1-1000ms)
    */
+  /**
+   * プレイヤーオブジェクトのコンストラクタ
+   * 
+   * @param scene プレイヤーが配置されるシーン
+   * @param x プレイヤーの初期X座標
+   * @param y プレイヤーの初期Y座標
+   * @param radius プレイヤーの円の半径
+   * @param id ユーザーID
+   * @param icon ユーザーアイコンURL
+   * @param power パワー値 (1-100)
+   * @param weight 重さ (1-100)
+   * @param volume 体積 (1-100)
+   * @param cd クールダウン時間 (1-1000ms)
+   */
   constructor(
     scene: Phaser.Scene, 
     x: number, 
     y: number, 
-    texture: string,
+    radius: number,
     id: string,
     icon: string,
     power: number,
@@ -49,7 +63,22 @@ export class Player extends Physics.Arcade.Sprite {
     volume: number,
     cd: number
   ) {
-    super(scene, x, y, texture);
+    // 赤い円としてプレイヤーを作成
+    super(scene, x, y, radius, 0, 360, false, 0xFF0000);
+    
+    // シーンに追加
+    scene.add.existing(this);
+    
+    // 物理演算を有効化
+    if (scene.physics && scene.physics.add) {
+      scene.physics.add.existing(this);
+      
+      // 物理ボディがあれば円形に設定
+      const body = this.body as Phaser.Physics.Arcade.Body;
+      if (body) {
+        body.setCircle(radius);
+      }
+    }
     
     // ユーザー情報を保存
     this.id = id;

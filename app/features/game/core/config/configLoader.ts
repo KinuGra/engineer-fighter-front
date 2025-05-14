@@ -1,3 +1,4 @@
+import { Player } from "../objects/player";
 import type { GameSettings } from "./gameSettings";
 
 /**
@@ -21,39 +22,51 @@ export const createGameConfig = async (
     width: gameSettings.display.width,
     height: gameSettings.display.height,
     parent: parent || undefined,
-    physics: {
-      default: 'arcade',
-      arcade: {
-        gravity: gameSettings.physics.gravity,
-        debug: gameSettings.physics.debug
-      }
-    },
+    // physics: {
+    //   default: 'arcade',
+    //   arcade: {
+    //     gravity: gameSettings.physics.gravity,
+    //     debug: gameSettings.physics.debug
+    //   }
+    // },
     scene: {
-      preload: function(this: Phaser.Scene) {
+      preload: function (this: Phaser.Scene) {
         this.load.setBaseURL(gameSettings.assets.baseUrl);
         gameSettings.assets.images.forEach(img => {
           this.load.image(img.key, img.path);
         });
       },
-      create: function(this: Phaser.Scene) {
-        this.add.image(400, 300, 'sky');
-        
-        // パーティクルエミッターを作成
-        const particles = this.add.particles(0, 0, 'red', {
-          speed: 100,
-          scale: { start: 1, end: 0 },
-          blendMode: 'ADD'
-        });
-        
-        // ロゴに物理演算を適用
-        const logo = this.physics.add.image(400, 100, 'logo');
-        logo.setVelocity(100, 200);
-        logo.setBounce(1, 1);
-        logo.setCollideWorldBounds(true);
-        
-        // パーティクルをロゴに追従させる
-        particles.startFollow(logo);
+      create: function (this: Phaser.Scene) {
+        this.cameras.main.setBackgroundColor("#BBFBFF");
+        const field = this.add.rectangle(
+          this.cameras.main.centerX,
+          this.cameras.main.centerY,
+          600,
+          400,
+          0x00ff00
+        );
+        field.setOrigin(0.5, 0.5);
+
+        // プレイヤーを赤い円として描画
+        import("../objects/player").then(({ Player }) => {
+          const player = new Player(
+            this,
+            this.cameras.main.centerX,
+            this.cameras.main.centerY,
+            30, // 半径
+            'player1',
+            '',
+            50, // power
+            50, // weight
+            50, // volume
+            500 // cooldown
+          );
+        })
+      },
+      update: function (this: Phaser.Scene) {
+
       }
     }
   };
 };
+
