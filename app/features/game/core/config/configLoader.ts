@@ -1,5 +1,5 @@
-import { Player } from "../objects/player";
 import type { GameSettings } from "./gameSettings";
+// Playerは動的インポートで対応するため、ここではインポートしない
 
 /**
  * Phaserゲーム設定を生成する関数。
@@ -36,7 +36,7 @@ export const createGameConfig = async (
           this.load.image(img.key, img.path);
         });
       },
-      create: function (this: Phaser.Scene) {
+      create: async function (this: Phaser.Scene) {
         this.cameras.main.setBackgroundColor("#BBFBFF");
         const field = this.add.rectangle(
           this.cameras.main.centerX,
@@ -47,8 +47,12 @@ export const createGameConfig = async (
         );
         field.setOrigin(0.5, 0.5);
 
-        // プレイヤーを赤い円として描画
-        import("../objects/player").then(({ Player }) => {
+        try {
+          // Playerクラスを動的にインポート
+          const { Player } = await import("../objects/player");
+          
+          // プレイヤーを赤い円として描画
+          // TODO: プレイヤーステータスを反映
           const player = new Player(
             this,
             this.cameras.main.centerX,
@@ -61,7 +65,9 @@ export const createGameConfig = async (
             50, // volume
             500 // cooldown
           );
-        })
+        } catch (error) {
+          console.error("Failed to load Player:", error);
+        }
       },
       update: function (this: Phaser.Scene) {
 
