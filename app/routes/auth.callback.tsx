@@ -15,7 +15,6 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 			code,
 		);
 		if (!error) {
-			console.log("data", data);
 			if (data.session?.provider_token) {
 				headers.append(
 					"Set-Cookie",
