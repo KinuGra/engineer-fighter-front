@@ -23,7 +23,7 @@ export default function Header({ user }: HeaderProps) {
 							<div className="text-gray-500 text-sm">@{user.login}</div>
 						</div>
 					</>
-				): (
+				) : (
 					<div className="text-xl font-bold">ようこそ、ゲストさん</div>
 				)}
 			</div>
