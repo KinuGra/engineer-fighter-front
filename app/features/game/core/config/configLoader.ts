@@ -1,5 +1,9 @@
 import type { GameSettings } from "./gameSettings";
-// Playerは動的インポートで対応するため、ここではインポートしない
+import ClientGameStateManager from "../state/ClientGameStateManager";
+// Player と Phaser は動的インポートで対応するため、ここではインポートしない
+
+// Playerの型定義だけをインポート
+import type { Player } from "../objects/player";
 
 /**
  * Phaserゲーム設定を生成する関数。
@@ -16,6 +20,10 @@ export const createGameConfig = async (
   // Phaserはクライアント側でのみインポート
   // @ts-expect-error 動的インポート(tsconfig.jsonでのmodules設定に依存)
   const Phaser = (await import("phaser")).default;
+  
+  // ゲーム開始時に状態を初期化
+  ClientGameStateManager.getInstance().resetState();
+  ClientGameStateManager.getInstance().setGameStatus('playing');
 
   return {
     type: Phaser.AUTO,
@@ -46,13 +54,12 @@ export const createGameConfig = async (
           0x00ff00
         );
         field.setOrigin(0.5, 0.5);
-
         try {
           // Playerクラスを動的にインポート
           const { Player } = await import("../objects/player");
           
           // プレイヤーを赤い円として描画
-          // TODO: プレイヤーステータスを反映
+          // TODO: プレイヤーステータスを反映（とりあえず player1 で）
           const player = new Player(
             this,
             this.cameras.main.centerX,
@@ -70,7 +77,7 @@ export const createGameConfig = async (
         }
       },
       update: function (this: Phaser.Scene) {
-
+        
       }
     }
   };

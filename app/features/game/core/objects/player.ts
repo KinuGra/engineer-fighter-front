@@ -1,42 +1,21 @@
 import { GameObjects } from 'phaser';
+import ClientGameStateManager from '../state/ClientGameStateManager';
 
 /**
  * Phaserゲーム内のプレイヤーオブジェクトクラス
  * ゲーム内でのプレイヤーの振る舞いや状態を管理する
  */
 export class Player extends GameObjects.Arc {
-  /** ユーザーID */
   public id: string;
-  /** ユーザーアイコンURL (= GitHub のアイコンurl) */
   public icon: string;
-  /** パワー値 (1-100) */
   public power: number;
-  /** 重さ (1-100) */
   public weight: number;
-  /** 体積 (1-100) */
   public volume: number;
-  /** クールダウン時間 (1-1000ms) */
   public cd: number;
-  
-  /** プレイヤーが現在クールダウン中かどうか */
+    
   private isCooldown: boolean = false;
-  /** プレイヤーの現在の速度 */
   private moveSpeed: number = 0;
 
-  /**
-   * プレイヤーオブジェクトのコンストラクタ
-   * 
-   * @param scene プレイヤーが配置されるシーン
-   * @param x プレイヤーの初期X座標
-   * @param y プレイヤーの初期Y座標
-   * @param texture プレイヤーのテクスチャキー
-   * @param id ユーザーID
-   * @param icon ユーザーアイコンURL
-   * @param power パワー値 (1-100)
-   * @param weight 重さ (1-100)
-   * @param volume 体積 (1-100)
-   * @param cd クールダウン時間 (1-1000ms)
-   */
   /**
    * プレイヤーオブジェクトのコンストラクタ
    * 
@@ -87,6 +66,69 @@ export class Player extends GameObjects.Arc {
     this.weight = weight;
     this.volume = volume;
     this.cd = cd;
+    
+    // グローバルなゲーム状態に登録
+    ClientGameStateManager.getInstance().addPlayer({
+      id: this.id,
+      name: this.id, // 名前がない場合はidを使用
+      avatar: this.icon,
+      power: this.power,
+      weight: this.weight,
+      volume: this.volume,
+      cooldown: this.cd,
+      position: { x: this.x, y: this.y },
+      isActive: true
+    });
+    
+    // プレイヤーが更新されたときにゲーム状態も更新
+    this.on('destroy', () => {
+      ClientGameStateManager.getInstance().removePlayer(this.id);
+    });
+  }
+  
+  /**
+   * プレイヤーの位置を更新し、状態マネージャーと同期する
+   * @param x X座標
+   * @param y Y座標
+   */
+  public setPosition(x: number, y: number): this {
+    super.setPosition(x, y);
+    
+    // グローバル状態を更新
+    ClientGameStateManager.getInstance().updatePlayer(this.id, {
+      position: { x, y }
+    });
+    
+    return this;
+  }
+  
+  /**
+   * プレイヤーの状態を更新する
+   * @param updates 更新するプロパティ
+   */
+  public updatePlayerState(updates: {
+    power?: number;
+    weight?: number;
+    volume?: number;
+    cd?: number;
+    isActive?: boolean;
+  }): this {
+    // プロパティを更新
+    if (updates.power !== undefined) this.power = updates.power;
+    if (updates.weight !== undefined) this.weight = updates.weight;
+    if (updates.volume !== undefined) this.volume = updates.volume;
+    if (updates.cd !== undefined) this.cd = updates.cd;
+    
+    // グローバル状態を更新
+    ClientGameStateManager.getInstance().updatePlayer(this.id, {
+      power: this.power,
+      weight: this.weight,
+      volume: this.volume,
+      cooldown: this.cd,
+      isActive: updates.isActive !== undefined ? updates.isActive : true
+    });
+    
+    return this;
   }
 
 }
