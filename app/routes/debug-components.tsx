@@ -3,7 +3,8 @@ import { CreateRoomPage } from "../components/createTo";
 import { JoinToPopup } from "../components/joinTo";
 
 export default function DebugComponents() {
-  const [activeComponent, setActiveComponent] = useState<keyof typeof components>("joinTo");
+  const [activeComponent, setActiveComponent] =
+    useState<keyof typeof components>("joinTo");
 
   // デバッグしたいコンポーネントをここに追加
   const components: {
@@ -14,7 +15,7 @@ export default function DebugComponents() {
   } = {
     joinTo: {
       name: "部屋参加ポップアップ",
-      component: <JoinToPopup />
+      component: <JoinToPopup />,
     },
     createTo: {
       name: "部屋作成ポップアップ",
@@ -41,7 +42,7 @@ export default function DebugComponents() {
                   color: activeComponent === key ? "#fff" : "#111",
                   border: "none",
                   borderRadius: "4px",
-                  cursor: "pointer"
+                  cursor: "pointer",
                 }}
               >
                 {name}
