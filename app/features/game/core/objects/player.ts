@@ -57,8 +57,11 @@ export class Player extends GameObjects.Arc {
       if (body) {
         body.setCircle(radius);
 
-        // 境界との衝突を有効化
-        body.setCollideWorldBounds(true);
+        // 境界との衝突を無効化（フィールド外に出られるようにする）
+        body.setCollideWorldBounds(false);
+        
+        // フィールド境界をコンソールに出力
+        console.log(`Player ${id} created, world bounds:`, this.scene.physics.world.bounds);
 
         // 初期設定（質量と摩擦係数）
         const weightFactor = this.weight / 100;
@@ -92,6 +95,25 @@ export class Player extends GameObjects.Arc {
       ClientGameStateManager.getInstance().removePlayer(this.id);
     });
   }
+
+  /**
+   * 状態更新のための関数（extends GameObject）
+   */
+  public update(): void {
+    // フィールド内にいるか確認（死亡判定用）
+    if (this.isAlive && !this.isWithinField()) {
+      this.die();
+      console.log('Player died (out of bounds):', this.id);
+    }
+
+    // プレイヤーの位置情報をグローバル状態に同期
+    ClientGameStateManager.getInstance().updatePlayer(this.id, {
+      position: { x: this.x, y: this.y },
+      isAlive: this.isAlive,
+      isActive: this.isAlive && !this.isCooldown
+    });
+  }
+
 
   /**
    * プレイヤーの位置を更新し、状態マネージャーと同期する
@@ -366,23 +388,23 @@ export class Player extends GameObjects.Arc {
     if (!this.isAlive) return;
 
     this.isAlive = false;
-    
+
 
     this.setAlpha(0.5);
-    this.cancelDrag();    
+    this.cancelDrag();
     this.isCooldown = false;
-  
+
     const body = this.body as Phaser.Physics.Arcade.Body;
     if (body) {
       body.setVelocity(0, 0);
     }
-    
+
     // グローバル状態を更新
     ClientGameStateManager.getInstance().updatePlayer(this.id, {
       isAlive: false,
       isActive: false
     });
-    
+
     // 死亡エフェクトを表示
     this.showDeathEffect();
   }
@@ -394,7 +416,7 @@ export class Player extends GameObjects.Arc {
     // 物理ボディから半径を取得
     const body = this.body as Phaser.Physics.Arcade.Body;
     const radius = body ? body.width / 2 : 20;
-    
+
     // 死亡位置にエフェクトを表示
     const deathEffect = this.scene.add.circle(
       this.x,
@@ -417,29 +439,6 @@ export class Player extends GameObjects.Arc {
     });
   }
 
-  /**
-   * フレームごとの更新処理
-   * プレイヤーの状態を更新し、フィールド内にいるかどうかをチェックする
-   */
-  public update(): void {
-    // フィールド内にいるか確認（死亡判定用）
-    if (this.isAlive) {
-      const withinField = this.isWithinField();
-      
-      // フィールド外に出た場合、死亡判定
-      if (!withinField) {
-        this.die();
-        console.log('Player died (out of bounds):', this.id);
-      }
-    }
-    
-    // プレイヤーの位置情報をグローバル状態に同期
-    ClientGameStateManager.getInstance().updatePlayer(this.id, {
-      position: { x: this.x, y: this.y },
-      isAlive: this.isAlive,
-      isActive: this.isAlive && !this.isCooldown
-    });
-  }
 
   /**
    * プレイヤーがフィールド内にいるかどうかを判定する
@@ -452,18 +451,27 @@ export class Player extends GameObjects.Arc {
 
     const radius = body.radius || body.width / 2;
     const bounds = this.scene.physics.world.bounds;
-    
+
     // プレイヤーの中心座標
     const centerX = this.x;
     const centerY = this.y;
-    
+
+    // デバッグ用：座標とバウンド情報をログ出力
+    console.log(`Player: ${this.id}, X: ${centerX}, Y: ${centerY}, Radius: ${radius}`);
+    console.log(`Bounds: X: ${bounds.x}, Y: ${bounds.y}, Width: ${bounds.width}, Height: ${bounds.height}`);
+
     // プレイヤーの円形が完全にフィールド外に出ているかチェック
     // 円がフィールドと少しでも重なっていれば、フィールド内と判定
     const isCompletelyOutsideX = (centerX + radius < bounds.x) || (centerX - radius > bounds.x + bounds.width);
     const isCompletelyOutsideY = (centerY + radius < bounds.y) || (centerY - radius > bounds.y + bounds.height);
     
-    // 完全にフィールド外に出ていない（＝少しでもフィールドに接触している）場合はtrue
-    return !(isCompletelyOutsideX || isCompletelyOutsideY);
+    const isWithinField = !(isCompletelyOutsideX || isCompletelyOutsideY);
+    
+    // デバッグ用：判定結果をログ出力
+    console.log(`Player: ${this.id}, isCompletelyOutsideX: ${isCompletelyOutsideX}, isCompletelyOutsideY: ${isCompletelyOutsideY}`);
+    console.log(`Player: ${this.id}, isWithinField: ${isWithinField}`);
+    
+    return isWithinField;
   }
 
 }
