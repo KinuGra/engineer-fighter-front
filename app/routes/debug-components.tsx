@@ -1,16 +1,23 @@
 import { useState } from "react";
 import { JoinToPopup } from "~/routes/joinTo";
+import { WaitingRoom } from "./waitingRoom";
 
 export default function DebugComponents() {
   const [activeComponent, setActiveComponent] = useState<string>("joinTo");
 
   // デバッグしたいコンポーネントをここに追加
   const components = {
+
     joinTo: {
       name: "部屋参加ポップアップ",
       component: <JoinToPopup />
     },
+    Wait: {
+      name: "待合室",
+      component: <WaitingRoom />
+    },
     // 将来的に他のコンポーネントを追加する場合はここに追加
+    
   };
 
   return (
@@ -19,6 +26,7 @@ export default function DebugComponents() {
       
       <div style={{ marginBottom: "20px" }}>
         <h2>コンポーネント選択</h2>
+        <WaitingRoom />
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
           {Object.entries(components).map(([key, { name }]) => (
             <button 
