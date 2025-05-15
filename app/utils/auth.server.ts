@@ -26,7 +26,7 @@ export const siginInWithGitHub = async (
 };
 
 export const signOut = async (request: Request, c: AppLoadContext) => {
-	const redirectUrl = `${getOrigin(request)}/login`;
+	const redirectUrl = `${getOrigin(request)}/auth/login`;
 	const supabase = createSupabaseServerClient(request, c);
 	const { error } = await supabase.client.auth.signOut();
 

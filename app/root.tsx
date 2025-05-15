@@ -1,13 +1,46 @@
-import type { LinksFunction } from "@remix-run/cloudflare";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { type ActionFunctionArgs, redirect } from "@remix-run/cloudflare";
 import {
 	Links,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useLoaderData,
 } from "@remix-run/react";
+import { serializeCookieHeader } from "@supabase/ssr";
+import type { GitHubUser } from "~/types/github";
+import Header from "./components/Header";
+import { authCookies } from "./const";
+import { signOut } from "./utils/auth.server";
+import { fetchGitHubApi } from "./utils/github.server";
 
 import "./tailwind.css";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+	const result = await fetchGitHubApi(request);
+	if (result.error) {
+		return null;
+	}
+	return result.data;
+};
+
+export const action = async ({ request, context }: ActionFunctionArgs) => {
+	const { data, headers } = await signOut(request, context);
+	authCookies.map((cookie: string) => {
+		headers.append(
+			"Set-Cookie",
+			serializeCookieHeader(cookie, "", {
+				httpOnly: true,
+				secure: true,
+				path: "/",
+				sameSite: "lax",
+				expires: new Date(0),
+			}),
+		);
+	});
+	return redirect(data.url, { headers });
+};
 
 export const links: LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -24,7 +57,7 @@ export const links: LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
+		<html lang="ja">
 			<head>
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -41,5 +74,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-	return <Outlet />;
+	const user = useLoaderData<GitHubUser | null>();
+	return (
+		<div>
+			<Header user={user} />
+			<Outlet />
+		</div>
+	);
 }

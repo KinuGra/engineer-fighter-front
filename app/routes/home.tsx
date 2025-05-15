@@ -1,69 +1,26 @@
-import {
-	type ActionFunctionArgs,
-	type LoaderFunctionArgs,
-	redirect,
-} from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import RoomCard from "~/components/RoomCard";
 
-import { serializeCookieHeader } from "@supabase/ssr";
-import SignOutButton from "~/components/SignOutButton";
-import { fetchGitHubApi } from "~/utils/github.server";
-
-import { signOut } from "~/utils/auth.server";
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-	const result = await fetchGitHubApi(request);
-
-	if (result.error) {
-		return null;
-	}
-
-	return result.data;
-}
-
-export const action = async ({ request, context }: ActionFunctionArgs) => {
-	const { data, headers } = await signOut(request, context);
-
-	headers.append(
-		"Set-Cookie",
-		serializeCookieHeader("58hack-github-token", "", {
-			httpOnly: true,
-			secure: true,
-			path: "/",
-			sameSite: "lax",
-			expires: new Date(0),
-		}),
-	);
-
-	return redirect(data.url, { headers });
-};
-
-export default function AuthCode() {
-	const data = useLoaderData<typeof loader>();
-
+export default function Home() {
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center">
-			<div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-				<h2 className="mb-6 text-center text-2xl font-bold text-gray-900">
-					ようこそ、{data.name}さん
-				</h2>
-
-				{data && (
-					<div className="mb-6 rounded-md bg-gray-100 p-4">
-						<div className="flex items-center">
-							<img
-								src={data.avatar_url}
-								alt="User Avatar"
-								className="mr-4 h-12 w-12 rounded-full"
-							/>
-							<div>
-								<h3 className="font-bold text-gray-800">{data.login}</h3>
-							</div>
-						</div>
-					</div>
-				)}
-
-				<SignOutButton />
+		<div className="w-full flex flex-col items-center px-4 md:px-5">
+			{/* メインカード部分 */}
+			<div className="flex flex-col md:flex-row gap-8 w-full max-w-5xl justify-center mt-8">
+				<RoomCard
+					title="部屋を作成する"
+					description="新しいゲーム部屋を作成して友達を招待しましょう"
+					icon="create"
+					onClick={() => {
+						// TODO: 部屋作成処理
+					}}
+				/>
+				<RoomCard
+					title="部屋に参加する"
+					description="友達が作成した部屋に参加しましょう"
+					icon="join"
+					onClick={() => {
+						// TODO: 部屋参加処理
+					}}
+				/>
 			</div>
 		</div>
 	);

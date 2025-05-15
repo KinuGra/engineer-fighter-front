@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { JoinToPopup } from "~/routes/joinTo";
 import { WaitingRoom } from "./waitingRoom";
+import { CreateRoomPage } from "../components/createTo";
 
 export default function DebugComponents() {
-  const [activeComponent, setActiveComponent] = useState<string>("joinTo");
+	const [activeComponent, setActiveComponent] = useState<string>("joinTo");
+
 
   // デバッグしたいコンポーネントをここに追加
   const components = {
@@ -16,6 +18,10 @@ export default function DebugComponents() {
       name: "待合室",
       component: <WaitingRoom />
     },
+    createTo: {
+			name: "部屋作成ポップアップ",
+			component: <CreateRoomPage />,
+		},
     // 将来的に他のコンポーネントを追加する場合はここに追加
     
   };
@@ -46,30 +52,35 @@ export default function DebugComponents() {
           ))}
         </div>
       </div>
+		</div>
 
-      <div style={{ 
-        padding: "20px",
-        border: "1px dashed #ccc",
-        borderRadius: "8px",
-        backgroundColor: "#f9f9f9"
-      }}>
-        <h2>プレビュー: {components[activeComponent]?.name}</h2>
-        <div style={{ margin: "20px 0" }}>
-          {components[activeComponent]?.component}
-        </div>
-      </div>
-      
-      <div style={{ marginTop: "40px" }}>
-        <h3>デバッグ情報</h3>
-        <pre style={{ 
-          backgroundColor: "#f0f0f0", 
-          padding: "10px", 
-          borderRadius: "4px",
-          overflow: "auto" 
-        }}>
-          {`現在表示中: ${components[activeComponent]?.name}`}
-        </pre>
-      </div>
-    </div>
-  );
+			<div
+				style={{
+					padding: "20px",
+					border: "1px dashed #ccc",
+					borderRadius: "8px",
+					backgroundColor: "#f9f9f9",
+				}}
+			>
+				<h2>プレビュー: {components[activeComponent]?.name}</h2>
+				<div style={{ margin: "20px 0" }}>
+					{components[activeComponent]?.component}
+				</div>
+			</div>
+
+			<div style={{ marginTop: "40px" }}>
+				<h3>デバッグ情報</h3>
+				<pre
+					style={{
+						backgroundColor: "#f0f0f0",
+						padding: "10px",
+						borderRadius: "4px",
+						overflow: "auto",
+					}}
+				>
+					{`現在表示中: ${components[activeComponent]?.name}`}
+				</pre>
+			</div>
+		</div>
+	);
 }
