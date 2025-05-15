@@ -1,4 +1,4 @@
-import pkg from 'react-loader-spinner';
+import * as pkg from 'react-loader-spinner';
 const { Grid } = pkg;
 
 export function WaitingRoom() {
