@@ -32,6 +32,7 @@ export default function DebugComponents() {
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             {Object.entries(components).map(([key, { name }]) => (
               <button
+                type="button"
                 key={key}
                 onClick={() => setActiveComponent(key)}
                 style={{
