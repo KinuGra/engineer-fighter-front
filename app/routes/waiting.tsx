@@ -1,4 +1,5 @@
-import { Grid } from 'react-loader-spinner';
+import pkg from 'react-loader-spinner';
+const {Grid} = pkg;
 
 export function WaitingRoom() {
   return (
@@ -25,3 +26,12 @@ export function WaitingRoom() {
     </div>
   );
 }
+
+
+const Waiting = () =>{
+  return (
+    <WaitingRoom />
+  );
+};
+
+export default Waiting;
