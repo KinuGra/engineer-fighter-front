@@ -12,6 +12,7 @@ export class Player extends GameObjects.Arc {
   public weight: number;
   public volume: number;
   public cd: number;
+  public isAlive: boolean = true;
 
   private isCooldown: boolean = false;
   private moveSpeed: number = 0;
@@ -82,6 +83,7 @@ export class Player extends GameObjects.Arc {
       volume: this.volume,
       cooldown: this.cd,
       position: { x: this.x, y: this.y },
+      isAlive: this.isAlive,
       isActive: true
     });
 
@@ -152,8 +154,6 @@ export class Player extends GameObjects.Arc {
     // 速度ベクトルと速度の大きさを取得
     const myVelocity = new Phaser.Math.Vector2(myBody.velocity.x, myBody.velocity.y);
     const mySpeed = myVelocity.length();
-    const targetVelocity = new Phaser.Math.Vector2(targetBody.velocity.x, targetBody.velocity.y);
-    const targetSpeed = targetVelocity.length();
 
     // 衝突方向ベクトル（自分から相手への方向）
     const collisionVector = new Phaser.Math.Vector2(
