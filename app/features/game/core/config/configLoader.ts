@@ -1,3 +1,4 @@
+import { Player } from "../objects/player";
 import ClientGameStateManager from "../state/ClientGameStateManager";
 import type { GameSettings } from "./gameSettings";
 
@@ -73,8 +74,9 @@ export const createGameConfig = async (
           // Playerクラスを動的にインポート
           // @ts-expect-error 動的インポート(tsconfig.jsonでのmodules設定に依存)
           const { Player } = await import("../objects/player");
-
-          // プレイヤーを赤い円として描画
+          const players = [];
+          
+          // メインプレイヤーを赤い円として描画
           // TODO: プレイヤーステータスを反映（とりあえず player1 で）
           // TODO: 自分のプレイヤーアイコンのみをハイライトするようにする
           const player = new Player(
@@ -89,23 +91,53 @@ export const createGameConfig = async (
             50, // volume
             500 // cooldown
           );
+          
+          // メインプレイヤーを配列に追加
+          players.push(player);
 
           // 適当な敵プレイヤーを作成
           // TODO: プレイヤーを追加する処理を実装
           for (let i = 0; i < 5; i++) {
-            new Player(
+            const enemyPlayer = new Player(
               this,
-              Math.random() * fieldWidth + 100,
-              Math.random() * fieldHeight + 100,
+              Phaser.Math.Between(0, fieldWidth),
+              Phaser.Math.Between(0, fieldWidth),
               20, // 半径
               `enemy${i}`,
               '',
-              50, // power
-              50, // weight
-              50, // volume
+              Phaser.Math.Between(10, 100), // power
+              Phaser.Math.Between(10, 100), // weight
+              Phaser.Math.Between(10, 100), // volume
               500 // cooldown
             );
+            
+            enemyPlayer.setFillStyle(
+              0xffffff,
+              1
+            );
+            
+            // 敵プレイヤーを配列に追加
+            players.push(enemyPlayer);
           }
+          
+          // プレイヤー同士の衝突を設定
+          this.physics.add.collider(players, players, (obj1, obj2) => {
+            const p1 = obj1 as unknown as Player;
+            const p2 = obj2 as unknown as Player;
+            
+            if (p1.id && p2.id) {
+              // プレイヤー同士の衝突をコンソールに出力（デバッグ用）
+              console.log(`${p1.id} collided with ${p2.id}`);
+              
+              // 衝突時のエネルギー転移処理
+              const impact1to2 = p1.applyCollisionImpactTo(p2);
+              
+              if (impact1to2 > 0) {
+                // 衝突が有効だった場合のログ（デバッグ用）
+                console.log(`Impact force: ${p1.id}->${p2.id}: ${impact1to2}`);
+              }
+            }
+          });
 
           // 画面クリック時の処理を設定
           let isFirstClick = true;
