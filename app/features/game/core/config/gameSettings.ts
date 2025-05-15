@@ -3,7 +3,7 @@
  */
 export const defaultGameSettings = {
 	physics: {
-		gravity: { x: 0, y: 200 },
+		gravity: { x: 0, y: 0 },
 		debug: false,
 	},
 	display: {

@@ -12,8 +12,7 @@ export interface GameState {
 // プレイヤー状態を定義
 export interface PlayerState {
   id: string;
-  name: string;
-  avatar?: string;
+  icon?: string;
   power: number;
   weight: number;
   volume: number;
@@ -60,7 +59,6 @@ class ClientGameStateManager {
       return ClientGameStateManager.instance;
     }
     
-    // サーバーサイドでは空のオブジェクトを返す（モック）
     return {
       getState: () => ({ players: {}, gameStatus: 'waiting' }),
       addPlayer: () => {},
@@ -70,7 +68,7 @@ class ClientGameStateManager {
       resetState: () => {},
       addEventListener: () => {},
       removeEventListener: () => {}
-    } as any;
+    } as unknown as ClientGameStateManager;
   }
 
   /**
