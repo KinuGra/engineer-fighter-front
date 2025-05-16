@@ -109,7 +109,7 @@ export const createGameConfig = async (
 						const enemyPlayer = new Player(
 							this,
 							Phaser.Math.Between(0, FIELD_WIDTH),
-							Phaser.Math.Between(0, FIELD_WIDTH),
+							Phaser.Math.Between(0, FIELD_HEIGHT),
 							20, // 半径
 							`enemy${i}`,
 							"",
