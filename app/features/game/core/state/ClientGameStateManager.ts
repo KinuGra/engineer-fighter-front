@@ -18,6 +18,8 @@ export interface PlayerState {
   volume: number;
   cooldown: number;
   position: { x: number; y: number };
+  isAlive: boolean;
+  // CD 中かどうか
   isActive: boolean;
 }
 

@@ -49,6 +49,17 @@ export const createGameConfig = async (
         // フィールドの寸法
         const fieldWidth = 600;
         const fieldHeight = 400;
+        
+        // 物理世界の境界をフィールドサイズに一致させる（重要）
+        this.physics.world.setBounds(
+          this.cameras.main.centerX - fieldWidth / 2,
+          this.cameras.main.centerY - fieldHeight / 2,
+          fieldWidth,
+          fieldHeight
+        );
+        
+        // 物理境界のデバッグ出力
+        console.log('Physics World Bounds:', this.physics.world.bounds);
 
         // 緑のフィールドを作成
         const field = this.add.rectangle(
@@ -120,6 +131,9 @@ export const createGameConfig = async (
             players.push(enemyPlayer);
           }
           
+          // プレイヤー配列をシーンのデータとして保存（update内で使用するため）
+          this.data.set('playerObjects', players);
+          
           // プレイヤー同士の衝突を設定
           this.physics.add.collider(players, players, (obj1, obj2) => {
             const p1 = obj1 as unknown as Player;
@@ -178,6 +192,20 @@ export const createGameConfig = async (
           }).setOrigin(0, 0).setName(statusTextKey).setDepth(1000);
         } else {
           statusText.setText(`status: ${status}`);
+        }
+
+        // 保存されたプレイヤーオブジェクトを取得
+        const players = this.data.get('playerObjects');
+        
+        // プレイヤーごとの更新処理
+        if (players && Array.isArray(players)) {
+          for (const player of players) {
+            if (player && typeof player.update === 'function') {
+              // プレイヤーのアップデート関数を呼び出し
+              player.update();
+              console.log(`Updating player ${player.id} at (${player.x}, ${player.y})`);
+            }
+          }
         }
       }
     }

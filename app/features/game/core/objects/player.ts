@@ -12,6 +12,7 @@ export class Player extends GameObjects.Arc {
   public weight: number;
   public volume: number;
   public cd: number;
+  public isAlive: boolean = true;
 
   private isCooldown: boolean = false;
   private moveSpeed: number = 0;
@@ -56,8 +57,11 @@ export class Player extends GameObjects.Arc {
       if (body) {
         body.setCircle(radius);
 
-        // 境界との衝突を有効化
-        body.setCollideWorldBounds(true);
+        // 境界との衝突を無効化（フィールド外に出られるようにする）
+        body.setCollideWorldBounds(false);
+        
+        // フィールド境界をコンソールに出力
+        console.log(`Player ${id} created, world bounds:`, this.scene.physics.world.bounds);
 
         // 初期設定（質量と摩擦係数）
         const weightFactor = this.weight / 100;
@@ -82,6 +86,7 @@ export class Player extends GameObjects.Arc {
       volume: this.volume,
       cooldown: this.cd,
       position: { x: this.x, y: this.y },
+      isAlive: this.isAlive,
       isActive: true
     });
 
@@ -90,6 +95,25 @@ export class Player extends GameObjects.Arc {
       ClientGameStateManager.getInstance().removePlayer(this.id);
     });
   }
+
+  /**
+   * 状態更新のための関数（extends GameObject）
+   */
+  public update(): void {
+    // フィールド内にいるか確認（死亡判定用）
+    if (this.isAlive && !this.isWithinField()) {
+      this.die();
+      console.log('Player died (out of bounds):', this.id);
+    }
+
+    // プレイヤーの位置情報をグローバル状態に同期
+    ClientGameStateManager.getInstance().updatePlayer(this.id, {
+      position: { x: this.x, y: this.y },
+      isAlive: this.isAlive,
+      isActive: this.isAlive && !this.isCooldown
+    });
+  }
+
 
   /**
    * プレイヤーの位置を更新し、状態マネージャーと同期する
@@ -152,8 +176,6 @@ export class Player extends GameObjects.Arc {
     // 速度ベクトルと速度の大きさを取得
     const myVelocity = new Phaser.Math.Vector2(myBody.velocity.x, myBody.velocity.y);
     const mySpeed = myVelocity.length();
-    const targetVelocity = new Phaser.Math.Vector2(targetBody.velocity.x, targetBody.velocity.y);
-    const targetSpeed = targetVelocity.length();
 
     // 衝突方向ベクトル（自分から相手への方向）
     const collisionVector = new Phaser.Math.Vector2(
@@ -239,7 +261,8 @@ export class Player extends GameObjects.Arc {
    * @param y ひっぱり開始地点のY座標
    */
   public startDrag(x: number, y: number): void {
-    if (this.isInCooldown()) return;
+    // クールダウン中または死亡している場合は操作を受け付けない
+    if (this.isInCooldown() || !this.isAlive) return;
 
     console.log('Drag started at:', x, y);
     this.dragStartPoint = new Phaser.Math.Vector2(x, y);
@@ -252,7 +275,8 @@ export class Player extends GameObjects.Arc {
    * @returns 移動が実行されたかどうか
    */
   public completeDrag(x: number, y: number): boolean {
-    if (this.isInCooldown() || !this.dragStartPoint) return false;
+    // クールダウン中、ドラッグ中でない、または死亡している場合は操作を受け付けない
+    if (this.isInCooldown() || !this.dragStartPoint || !this.isAlive) return false;
 
     // ドラッグの終点を作成
     const dragEndPoint = new Phaser.Math.Vector2(x, y);
@@ -354,6 +378,100 @@ export class Player extends GameObjects.Arc {
    */
   public cancelDrag(): void {
     this.dragStartPoint = null;
+  }
+
+  /**
+   * プレイヤーを死亡状態にする
+   * フィールドから落下した場合などに呼び出される
+   */
+  public die(): void {
+    if (!this.isAlive) return;
+
+    this.isAlive = false;
+
+
+    this.setAlpha(0.5);
+    this.cancelDrag();
+    this.isCooldown = false;
+
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    if (body) {
+      body.setVelocity(0, 0);
+    }
+
+    // グローバル状態を更新
+    ClientGameStateManager.getInstance().updatePlayer(this.id, {
+      isAlive: false,
+      isActive: false
+    });
+
+    // 死亡エフェクトを表示
+    this.showDeathEffect();
+  }
+
+  /**
+   * 死亡エフェクトを表示する
+   */
+  private showDeathEffect(): void {
+    // 物理ボディから半径を取得
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    const radius = body ? body.width / 2 : 20;
+
+    // 死亡位置にエフェクトを表示
+    const deathEffect = this.scene.add.circle(
+      this.x,
+      this.y,
+      radius,
+      0xFF0000,
+      0.5
+    );
+
+    // エフェクトをアニメーション（徐々に拡大してフェードアウト）
+    this.scene.tweens.add({
+      targets: deathEffect,
+      alpha: 0,
+      scale: 2.0,
+      duration: 500,
+      ease: 'Power2',
+      onComplete: () => {
+        deathEffect.destroy();
+      }
+    });
+  }
+
+
+  /**
+   * プレイヤーがフィールド内にいるかどうかを判定する
+   * @returns フィールド内に少しでもいればtrue、完全にフィールド外ならfalse
+   */
+  public isWithinField(): boolean {
+    // 物理ボディを取得
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    if (!body) return false;
+
+    const radius = body.radius || body.width / 2;
+    const bounds = this.scene.physics.world.bounds;
+
+    // プレイヤーの中心座標
+    const centerX = this.x;
+    const centerY = this.y;
+
+    // デバッグ用：座標とバウンド情報をログ出力
+    console.log(`Player: ${this.id}, X: ${centerX}, Y: ${centerY}, Radius: ${radius}`);
+    console.log(`Bounds: X: ${bounds.x}, Y: ${bounds.y}, Width: ${bounds.width}, Height: ${bounds.height}`);
+
+    // プレイヤーの円形が完全にフィールド外に出ているかチェック
+    // 円がフィールドと少しでも重なっていれば、フィールド内と判定
+    const isCompletelyOutsideX = (centerX + radius < bounds.x) || (centerX - radius > bounds.x + bounds.width);
+    const isCompletelyOutsideY = (centerY + radius < bounds.y) || (centerY - radius > bounds.y + bounds.height);
+    
+    const isWithinField = !(isCompletelyOutsideX || isCompletelyOutsideY);
+    
+    // デバッグ用：判定結果をログ出力
+    console.log(`Player: ${this.id}, isCompletelyOutsideX: ${isCompletelyOutsideX}, isCompletelyOutsideY: ${isCompletelyOutsideY}`);
+    console.log(`Player: ${this.id}, isWithinField: ${isWithinField}`);
+    
+    return isWithinField;
   }
 
 }
