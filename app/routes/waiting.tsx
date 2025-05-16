@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 import * as pkg from 'react-loader-spinner';
 const { Grid } = pkg;
+=======
+import { Grid } from 'react-loader-spinner';
+>>>>>>> aa3dc26dd6204a2d5511456933ce0b7473688be8
 
 type player = {
   players: {
