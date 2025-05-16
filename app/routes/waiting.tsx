@@ -12,11 +12,23 @@ interface PlayerCardProps {
 }
 
 const players: Player[] = [
-  { id: "ogatakatsuya", iconUrl: "https://avatars.githubusercontent.com/u/130939004?v=4" },
-  { id: "pan", iconUrl: "https://avatars.githubusercontent.com/u/130939004?v=4" },
-  { id: "yotu", iconUrl: "https://avatars.githubusercontent.com/u/130939004?v=4" },
-  { id: "zakokun", iconUrl: "https://avatars.githubusercontent.com/u/130939004?v=4" },
-]
+	{
+		id: "ogatakatsuya",
+		iconUrl: "https://avatars.githubusercontent.com/u/130939004?v=4",
+	},
+	{
+		id: "pan",
+		iconUrl: "https://avatars.githubusercontent.com/u/130939004?v=4",
+	},
+	{
+		id: "yotu",
+		iconUrl: "https://avatars.githubusercontent.com/u/130939004?v=4",
+	},
+	{
+		id: "zakokun",
+		iconUrl: "https://avatars.githubusercontent.com/u/130939004?v=4",
+	},
+];
 
 const PlayerCard = (props: PlayerCardProps) => {
 	return (
@@ -47,13 +59,13 @@ const styles = {
 		margin: "5px",
 		width: "300px",
 	},
-  idContainer: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "80%",
-    height: "100%",
-  },
+	idContainer: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		width: "80%",
+		height: "100%",
+	},
 	id: {
 		fontSize: "1em",
 		fontWeight: "bold" as const,
@@ -79,7 +91,7 @@ const WaitingRoom = () => {
 				flexDirection: "column",
 				alignItems: "center",
 				justifyContent: "center",
-        marginTop: "80px",
+				marginTop: "80px",
 			}}
 		>
 			<Grid
@@ -91,7 +103,14 @@ const WaitingRoom = () => {
 				wrapperClass="wrapper-class"
 				visible={true}
 			/>
-			<div style={{ marginTop: "24px",  marginBottom: "24px", color: "#666", fontSize: "18px" }}>
+			<div
+				style={{
+					marginTop: "24px",
+					marginBottom: "24px",
+					color: "#666",
+					fontSize: "18px",
+				}}
+			>
 				しばらくお待ちください...
 			</div>
 			<div>
@@ -101,11 +120,11 @@ const WaitingRoom = () => {
 					))}
 				</div>
 			</div>
-      <div style={{ marginTop: "24px" }}>
-        <StartButton />
-      </div>
+			<div style={{ marginTop: "24px" }}>
+				<StartButton />
+			</div>
 		</div>
 	);
-}
+};
 
 export default WaitingRoom;
