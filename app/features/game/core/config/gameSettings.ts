@@ -1,7 +1,4 @@
-const DISPLAY_WIDTH = import.meta.env.VITE_DISPLAY_WIDTH as unknown as number;
-const DISPLAY_HEIGHT = import.meta.env.VITE_DISPLAY_HEIGHT as unknown as number;
-if(!DISPLAY_WIDTH || !DISPLAY_HEIGHT) throw new Error("環境変数が設定されていません：DISPLAY_WIDTH, DISPLAY_HEIGHT");
-if (isNaN(DISPLAY_WIDTH) || isNaN(DISPLAY_HEIGHT)) throw new Error("環境変数が不正です：DISPLAY_WIDTH, DISPLAY_HEIGHT");
+import { DISPLAY_HEIGHT, DISPLAY_WIDTH } from "./config";
 
 /**
  * ゲーム設定を管理するオブジェクト

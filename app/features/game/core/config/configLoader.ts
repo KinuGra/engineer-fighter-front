@@ -1,14 +1,9 @@
 import type { Player } from "../objects/player";
 import ClientGameStateManager from "../state/ClientGameStateManager";
 import type { GameSettings } from "./gameSettings";
+import { FIELD_WIDTH, FIELD_HEIGHT } from "./config";
 
 const stateManager = ClientGameStateManager.getInstance();
-
-// 環境変数からフィールドの幅と高さを取得
-const FIELD_WIDTH = Number(import.meta.env.VITE_FIELD_WIDTH);
-const FIELD_HEIGHT = Number(import.meta.env.VITE_FIELD_HEIGHT);
-if(!FIELD_WIDTH || !FIELD_HEIGHT) throw new Error("環境変数が設定されていません：FIELD_WIDTH, FIELD_HEIGHT");
-if (isNaN(FIELD_WIDTH) || isNaN(FIELD_HEIGHT)) throw new Error("環境変数が不正です：FIELD_WIDTH, FIELD_HEIGHT");
 
 /**
  * Phaserゲーム設定を生成する関数。
