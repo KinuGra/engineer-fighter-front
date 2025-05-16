@@ -3,25 +3,7 @@ import { useLoaderData } from "@remix-run/react";
 import PhaserGame from "~/features/game/components/PhaserGame";
 import { getGameSettings } from "~/features/game/loader";
 
-export const loader = getGameSettings;
-
-export const meta: MetaFunction = () => {
-	return [
-		{ title: "Phaser Debug" },
-		{ name: "description", content: "Phaser Debug Page" },
-	];
-};
-
-/**
- * Phaserのデバッグページコンポーネント
- * PhaserGameコンポーネントを使用してゲーム機能を表示します
- */
-export default function Debug() {
-	const { gameSettings } = useLoaderData<typeof loader>();
-	const gameSettingsCopy = { ...gameSettings };
-	gameSettingsCopy.physics.debug = true;
-
-	const samplePlayers = [
+const samplePlayers = [
 		{
 			id: "player1",
 			icon: "",
@@ -55,6 +37,23 @@ export default function Debug() {
 			cd: 600,
 		},
 	];
+
+export const loader = getGameSettings;
+export const meta: MetaFunction = () => {
+	return [
+		{ title: "Phaser Debug" },
+		{ name: "description", content: "Phaser Debug Page" },
+	];
+};
+
+/**
+ * Phaserのデバッグページコンポーネント
+ * PhaserGameコンポーネントを使用してゲーム機能を表示します
+ */
+export default function Debug() {
+	const { gameSettings } = useLoaderData<typeof loader>();
+	const gameSettingsCopy = { ...gameSettings };
+	gameSettingsCopy.physics.debug = true;
 
 	// メインプレイヤーのIDを設定
 	const mainPlayerId = "player1";
