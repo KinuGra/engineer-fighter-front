@@ -1,7 +1,7 @@
 import type { Player } from "../objects/player";
 import ClientGameStateManager from "../state/ClientGameStateManager";
 import type { GameSettings } from "./gameSettings";
-import { FIELD_WIDTH, FIELD_HEIGHT } from "./config";
+import { FIELD_WIDTH, FIELD_HEIGHT, COLORS } from "./config";
 
 const stateManager = ClientGameStateManager.getInstance();
 
@@ -45,7 +45,7 @@ export const createGameConfig = async (
 				});
 			},
 			create: async function (this: Phaser.Scene) {
-				this.cameras.main.setBackgroundColor("#BBFBFF");
+				this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
 
 				// 物理世界の境界をフィールドサイズに一致させる（重要）
 				this.physics.world.setBounds(
@@ -64,13 +64,13 @@ export const createGameConfig = async (
 					this.cameras.main.centerY,
 					FIELD_WIDTH,
 					FIELD_HEIGHT,
-					0x00ff00,
+					COLORS.FIELD,
 				);
 				field.setOrigin(0.5, 0.5);
 
 				// フィールドの境界線を作成
 				const fieldBorder = this.add.graphics();
-				fieldBorder.lineStyle(5, 0x00ee00, 1);
+				fieldBorder.lineStyle(5, COLORS.FIELD_BORDER, 1);
 				fieldBorder.strokeRect(
 					this.cameras.main.centerX - FIELD_WIDTH / 2,
 					this.cameras.main.centerY - FIELD_HEIGHT / 2,
@@ -119,7 +119,7 @@ export const createGameConfig = async (
 							500, // cooldown
 						);
 
-						enemyPlayer.setFillStyle(0xffffff, 1);
+						enemyPlayer.setFillStyle(COLORS.ENEMY, 1);
 
 						// 敵プレイヤーを配列に追加
 						players.push(enemyPlayer);
@@ -183,7 +183,7 @@ export const createGameConfig = async (
 					statusText = this.add
 						.text(0, 0, `status: ${status}`, {
 							font: "15px",
-							color: "#222",
+							color: COLORS.UI_TEXT,
 							padding: { left: 8, right: 8, top: 4, bottom: 4 },
 						})
 						.setOrigin(0, 0)

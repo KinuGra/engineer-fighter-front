@@ -1,5 +1,6 @@
 import { GameObjects } from "phaser";
 import ClientGameStateManager from "../state/ClientGameStateManager";
+import { COLORS } from "../config/config";
 
 /**
  * Phaserゲーム内のプレイヤーオブジェクトクラス
@@ -34,7 +35,7 @@ export class Player extends GameObjects.Arc {
 		cd: number,
 	) {
 		// 赤い円としてプレイヤーを作成
-		super(scene, x, y, radius, 0, 360, false, 0xff0000);
+		super(scene, x, y, radius, 0, 360, false, COLORS.PLAYER);
 
 		// シーンに追加
 		scene.add.existing(this);
