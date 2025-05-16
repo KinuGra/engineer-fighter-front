@@ -5,8 +5,8 @@ import type { GameSettings } from "./gameSettings";
 const stateManager = ClientGameStateManager.getInstance();
 
 // 環境変数からフィールドの幅と高さを取得
-const FIELD_WIDTH = process.env.FIELD_WIDTH as unknown as number;
-const FIELD_HEIGHT = process.env.FIELD_HEIGHT as unknown as number;
+const FIELD_WIDTH = Number(import.meta.env.VITE_FIELD_WIDTH);
+const FIELD_HEIGHT = Number(import.meta.env.VITE_FIELD_HEIGHT);
 if(!FIELD_WIDTH || !FIELD_HEIGHT) throw new Error("環境変数が設定されていません：FIELD_WIDTH, FIELD_HEIGHT");
 if (isNaN(FIELD_WIDTH) || isNaN(FIELD_HEIGHT)) throw new Error("環境変数が不正です：FIELD_WIDTH, FIELD_HEIGHT");
 
@@ -51,8 +51,6 @@ export const createGameConfig = async (
 			},
 			create: async function (this: Phaser.Scene) {
 				this.cameras.main.setBackgroundColor("#BBFBFF");
-
-				// フィールドの寸法
 
 				// 物理世界の境界をフィールドサイズに一致させる（重要）
 				this.physics.world.setBounds(
