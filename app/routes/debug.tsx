@@ -4,39 +4,39 @@ import PhaserGame from "~/features/game/components/PhaserGame";
 import { getGameSettings } from "~/features/game/loader";
 
 const samplePlayers = [
-		{
-			id: "player1",
-			icon: "",
-			power: 70,
-			weight: 50,
-			volume: 60,
-			cd: 500,
-		},
-		{
-			id: "enemy1",
-			icon: "",
-			power: 50,
-			weight: 60,
-			volume: 40,
-			cd: 400,
-		},
-		{
-			id: "enemy2",
-			icon: "",
-			power: 40,
-			weight: 30,
-			volume: 80,
-			cd: 300,
-		},
-		{
-			id: "enemy3",
-			icon: "",
-			power: 80,
-			weight: 80,
-			volume: 30,
-			cd: 600,
-		},
-	];
+	{
+		id: "player1",
+		icon: "",
+		power: 70,
+		weight: 50,
+		volume: 60,
+		cd: 500,
+	},
+	{
+		id: "enemy1",
+		icon: "",
+		power: 50,
+		weight: 60,
+		volume: 40,
+		cd: 400,
+	},
+	{
+		id: "enemy2",
+		icon: "",
+		power: 40,
+		weight: 30,
+		volume: 80,
+		cd: 300,
+	},
+	{
+		id: "enemy3",
+		icon: "",
+		power: 80,
+		weight: 80,
+		volume: 30,
+		cd: 600,
+	},
+];
 
 export const loader = getGameSettings;
 export const meta: MetaFunction = () => {
