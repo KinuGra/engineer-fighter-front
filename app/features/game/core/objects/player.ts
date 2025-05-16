@@ -48,7 +48,7 @@ export class Player extends GameObjects.Arc {
 		this.cd = cd;
 
 		// 物理演算を有効化
-		if (scene.physics && scene.physics.add) {
+		if (scene.physics?.add) {
 			scene.physics.add.existing(this);
 
 			// 物理ボディがあれば円形に設定
