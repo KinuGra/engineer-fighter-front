@@ -4,6 +4,12 @@ import type { GameSettings } from "./gameSettings";
 
 const stateManager = ClientGameStateManager.getInstance();
 
+// 環境変数からフィールドの幅と高さを取得
+const FIELD_WIDTH = process.env.FIELD_WIDTH as unknown as number;
+const FIELD_HEIGHT = process.env.FIELD_HEIGHT as unknown as number;
+if(!FIELD_WIDTH || !FIELD_HEIGHT) throw new Error("環境変数が設定されていません：FIELD_WIDTH, FIELD_HEIGHT");
+if (isNaN(FIELD_WIDTH) || isNaN(FIELD_HEIGHT)) throw new Error("環境変数が不正です：FIELD_WIDTH, FIELD_HEIGHT");
+
 /**
  * Phaserゲーム設定を生成する関数。
  * **必ずクライアントサイド（useEffect内）で呼び出す** こと！！
@@ -47,15 +53,13 @@ export const createGameConfig = async (
 				this.cameras.main.setBackgroundColor("#BBFBFF");
 
 				// フィールドの寸法
-				const fieldWidth = 600;
-				const fieldHeight = 400;
 
 				// 物理世界の境界をフィールドサイズに一致させる（重要）
 				this.physics.world.setBounds(
-					this.cameras.main.centerX - fieldWidth / 2,
-					this.cameras.main.centerY - fieldHeight / 2,
-					fieldWidth,
-					fieldHeight,
+					this.cameras.main.centerX - FIELD_WIDTH / 2,
+					this.cameras.main.centerY - FIELD_HEIGHT / 2,
+					FIELD_WIDTH,
+					FIELD_HEIGHT,
 				);
 
 				// 物理境界のデバッグ出力
@@ -65,8 +69,8 @@ export const createGameConfig = async (
 				const field = this.add.rectangle(
 					this.cameras.main.centerX,
 					this.cameras.main.centerY,
-					fieldWidth,
-					fieldHeight,
+					FIELD_WIDTH,
+					FIELD_HEIGHT,
 					0x00ff00,
 				);
 				field.setOrigin(0.5, 0.5);
@@ -75,10 +79,10 @@ export const createGameConfig = async (
 				const fieldBorder = this.add.graphics();
 				fieldBorder.lineStyle(5, 0x00ee00, 1);
 				fieldBorder.strokeRect(
-					this.cameras.main.centerX - fieldWidth / 2,
-					this.cameras.main.centerY - fieldHeight / 2,
-					fieldWidth,
-					fieldHeight,
+					this.cameras.main.centerX - FIELD_WIDTH / 2,
+					this.cameras.main.centerY - FIELD_HEIGHT / 2,
+					FIELD_WIDTH,
+					FIELD_HEIGHT,
 				);
 
 				try {
@@ -111,8 +115,8 @@ export const createGameConfig = async (
 					for (let i = 0; i < 5; i++) {
 						const enemyPlayer = new Player(
 							this,
-							Phaser.Math.Between(0, fieldWidth),
-							Phaser.Math.Between(0, fieldWidth),
+							Phaser.Math.Between(0, FIELD_WIDTH),
+							Phaser.Math.Between(0, FIELD_WIDTH),
 							20, // 半径
 							`enemy${i}`,
 							"",

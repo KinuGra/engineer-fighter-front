@@ -1,3 +1,8 @@
+const DISPLAY_WIDTH = process.env.DISPLAY_WIDTH as unknown as number;
+const DISPLAY_HEIGHT = process.env.DISPLAY_HEIGHT as unknown as number;
+if(!DISPLAY_WIDTH || !DISPLAY_HEIGHT) throw new Error("環境変数が設定されていません：DISPLAY_WIDTH, DISPLAY_HEIGHT");
+if (isNaN(DISPLAY_WIDTH) || isNaN(DISPLAY_HEIGHT)) throw new Error("環境変数が不正です：DISPLAY_WIDTH, DISPLAY_HEIGHT");
+
 /**
  * ゲーム設定を管理するオブジェクト
  */
@@ -7,8 +12,8 @@ export const defaultGameSettings = {
 		debug: false,
 	},
 	display: {
-		width: 800,
-		height: 600,
+		width: DISPLAY_WIDTH,
+		height: DISPLAY_HEIGHT,
 	},
 	userPreferences: {
 		controls: "keyboard",
