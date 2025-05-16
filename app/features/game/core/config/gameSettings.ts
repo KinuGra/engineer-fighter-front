@@ -2,15 +2,15 @@
  * プレイヤーステータスの型定義
  */
 export interface PlayerData {
-  id: string;
-  icon: string;
-  power: number; // 力の強さ
-  weight: number; // 重さ
-  volume: number; // 体積
-  cd: number; // クールダウン時間
-  isMainPlayer?: boolean; // メインプレイヤーかどうか
-  x?: number; // 初期x座標
-  y?: number; // 初期y座標
+	id: string;
+	icon: string;
+	power: number; // 力の強さ
+	weight: number; // 重さ
+	volume: number; // 体積
+	cd: number; // クールダウン時間
+	isMainPlayer?: boolean; // メインプレイヤーかどうか
+	x?: number; // 初期x座標
+	y?: number; // 初期y座標
 }
 
 /**
