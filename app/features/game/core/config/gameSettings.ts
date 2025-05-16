@@ -1,3 +1,5 @@
+import { DISPLAY_HEIGHT, DISPLAY_WIDTH } from "./config";
+
 /**
  * ゲーム設定を管理するオブジェクト
  */
@@ -7,8 +9,8 @@ export const defaultGameSettings = {
 		debug: false,
 	},
 	display: {
-		width: 800,
-		height: 600,
+		width: DISPLAY_WIDTH,
+		height: DISPLAY_HEIGHT,
 	},
 	userPreferences: {
 		controls: "keyboard",
