@@ -1,18 +1,22 @@
 import { useEffect, useRef } from "react";
-import type { GameSettings } from "../core/config/gameSettings";
+import type { GameSettings, PlayerData } from "../core/config/gameSettings";
 import { createGameConfig } from "../core/config/configLoader";
 import { ClientOnly } from "remix-utils/client-only";
 
 interface PhaserGameProps {
   gameSettings: GameSettings;
+  players?: PlayerData[];
+  mainPlayerId?: string;
 }
 
 /**
  * Phaserゲームコンポーネント
  *
  * @param props.gameSettings ゲーム設定
+ * @param props.players プレイヤーデータ配列
+ * @param props.mainPlayerId メインプレイヤーID
  */
-export default function PhaserGame({ gameSettings }: PhaserGameProps) {
+export default function PhaserGame({ gameSettings, players = [], mainPlayerId }: PhaserGameProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameInitializedRef = useRef<boolean>(false);
 
@@ -22,8 +26,20 @@ export default function PhaserGame({ gameSettings }: PhaserGameProps) {
     if (containerRef.current.querySelector("canvas")) return;
 
     try {
+      // プレイヤーデータを加工してゲーム設定に追加
+      const processedPlayers = players.map(player => ({
+        ...player,
+        isMainPlayer: player.id === mainPlayerId
+      }));
+
+      // 設定をコピーしてプレイヤーデータを追加
+      const gameSettingsWithPlayers = {
+        ...gameSettings,
+        players: processedPlayers
+      };
+
       const config = await createGameConfig(
-        gameSettings,
+        gameSettingsWithPlayers,
         containerRef.current
       );
 
