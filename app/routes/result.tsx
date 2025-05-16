@@ -1,12 +1,23 @@
+import { useNavigate } from "@remix-run/react";
 import React from "react";
 
-const mockResults = [
+// 型定義
+interface Results {
+	rank: number;
+	name: string;
+	username: string;
+	score: number;
+}
+
+const mockResults: Results[] = [
 	{ rank: 1, name: "ホストユーザー", username: "@host_user", score: 250 },
 	{ rank: 2, name: "ユーザー1", username: "@user1", score: 180 },
 	{ rank: 3, name: "ユーザー2", username: "@user2", score: 120 },
 ];
 
 export default function Result() {
+	const navigate = useNavigate();
+
 	return (
 		<div className="w-full min-h-screen flex flex-col items-center justify-center bg-white px-4 py-8">
 			<h1 className="text-3xl font-bold mb-2">ゲーム結果</h1>
@@ -56,13 +67,17 @@ export default function Result() {
 			<div className="flex gap-4 w-full max-w-md">
 				<button
 					className="flex-1 py-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-100 font-semibold"
-					onClick={() => {}}
+					onClick={() => {
+						navigate("/home");
+					}}
 				>
 					ホームに戻る
 				</button>
 				<button
 					className="flex-1 py-3 rounded-lg bg-black text-white font-semibold hover:bg-gray-800"
-					onClick={() => {}}
+					onClick={() => {
+						navigate("/waiting");
+					}}
 				>
 					もう一度プレイ
 				</button>
