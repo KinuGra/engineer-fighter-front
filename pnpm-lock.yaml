@@ -26,6 +26,9 @@ importers:
       isbot:
         specifier: ^4.1.0
         version: 4.4.0
+      jotai:
+        specifier: ^2.12.4
+        version: 2.12.4(@types/react@18.3.21)(react@18.3.1)
       phaser:
         specifier: ^3.88.2
         version: 3.88.2
@@ -35,6 +38,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+      remix-utils:
+        specifier: ^8.7.0
+        version: 8.7.0(react@18.3.1)
       react-loader-spinner:
         specifier: ^6.1.6
         version: 6.1.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2797,6 +2803,18 @@ packages:
     resolution: {integrity: sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==}
     hasBin: true
 
+  jotai@2.12.4:
+    resolution: {integrity: sha512-eFXLJol4oOLM8BS1+QV+XwaYQITG8n1tatBCFl4F5HE3zR5j2WIK8QpMt7VJIYmlogNUZfvB7wjwLoVk+umB9Q==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=17.0.0'
+      react: '>=17.0.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      react:
+        optional: true
+
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -3695,6 +3713,42 @@ packages:
   remark-rehype@10.1.0:
     resolution: {integrity: sha512-EFmR5zppdBp0WQeDVZ/b66CWJipB2q2VLNFMabzDSGR66Z2fQii83G5gTBbgGEnEEA0QRussvrFHxk1HWGJskw==}
 
+  remix-utils@8.7.0:
+    resolution: {integrity: sha512-oRumofsYFaxHyPtqLuYe3g2nQi4SMYjCoebaeed0gYHIOKBiPPYdNP6cgmQbFjQQ5pwXV+uQiKLqO6pM9ep3VA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@edgefirst-dev/batcher': ^1.0.0
+      '@edgefirst-dev/jwt': ^1.2.0
+      '@edgefirst-dev/server-timing': ^0.0.1
+      '@oslojs/crypto': ^1.0.1
+      '@oslojs/encoding': ^1.1.0
+      intl-parse-accept-language: ^1.0.0
+      is-ip: ^5.0.1
+      react: ^18.0.0 || ^19.0.0
+      react-router: ^7.0.0
+      zod: ^3.22.4
+    peerDependenciesMeta:
+      '@edgefirst-dev/batcher':
+        optional: true
+      '@edgefirst-dev/jwt':
+        optional: true
+      '@edgefirst-dev/server-timing':
+        optional: true
+      '@oslojs/crypto':
+        optional: true
+      '@oslojs/encoding':
+        optional: true
+      intl-parse-accept-language:
+        optional: true
+      is-ip:
+        optional: true
+      react:
+        optional: true
+      react-router:
+        optional: true
+      zod:
+        optional: true
+
   require-like@0.1.2:
     resolution: {integrity: sha512-oyrU88skkMtDdauHDuKVrgR+zuItqr6/c//FXzvmxRGMexSDc6hNvJInGW3LL46n+8b50RykrvwSUIIQH2LQ5A==}
 
@@ -4089,6 +4143,10 @@ packages:
   type-fest@0.20.2:
     resolution: {integrity: sha512-Ne+eE4r0/iWnpAxD852z3A+N0Bt5RN//NjJwRd2VFHEmrywxf5vsZlh4R6lixl6B+wz/8d+maTSAkN1FIkI3LQ==}
     engines: {node: '>=10'}
+
+  type-fest@4.41.0:
+    resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
+    engines: {node: '>=16'}
 
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
@@ -7251,6 +7309,11 @@ snapshots:
 
   jiti@1.21.7: {}
 
+  jotai@2.12.4(@types/react@18.3.21)(react@18.3.1):
+    optionalDependencies:
+      '@types/react': 18.3.21
+      react: 18.3.1
+
   js-tokens@4.0.0: {}
 
   js-yaml@4.1.0:
@@ -8336,6 +8399,12 @@ snapshots:
       mdast-util-to-hast: 12.3.0
       unified: 10.1.2
 
+  remix-utils@8.7.0(react@18.3.1):
+    dependencies:
+      type-fest: 4.41.0
+    optionalDependencies:
+      react: 18.3.1
+
   require-like@0.1.2: {}
 
   resolve-from@4.0.0: {}
@@ -8856,6 +8925,8 @@ snapshots:
       prelude-ls: 1.2.1
 
   type-fest@0.20.2: {}
+
+  type-fest@4.41.0: {}
 
   type-is@1.6.18:
     dependencies:

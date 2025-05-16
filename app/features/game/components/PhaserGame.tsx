@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
-import type { GameSettings } from "../config/gameSettings";
+import type { GameSettings } from "../core/config/gameSettings";
+import { createGameConfig } from "../core/config/configLoader";
+import { ClientOnly } from "remix-utils/client-only";
 
 interface PhaserGameProps {
-	gameSettings: GameSettings;
+  gameSettings: GameSettings;
 }
 
 /**
@@ -11,94 +13,57 @@ interface PhaserGameProps {
  * @param props.gameSettings ゲーム設定
  */
 export default function PhaserGame({ gameSettings }: PhaserGameProps) {
-	const containerRef = useRef<HTMLDivElement>(null);
-	const gameInitializedRef = useRef<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const gameInitializedRef = useRef<boolean>(false);
 
-	useEffect(() => {
-		let game: Phaser.Game | undefined;
+  // Phaserの初期化処理をClientOnlyの外に出し、コンテナ要素が存在する場合のみ実行する
+  const initPhaser = async () => {
+    if (!containerRef.current || gameInitializedRef.current) return;
+    if (containerRef.current.querySelector("canvas")) return;
 
-		const loadPhaser = async () => {
-			if (gameInitializedRef.current || !containerRef.current) {
-				return;
-			}
+    try {
+      const config = await createGameConfig(
+        gameSettings,
+        containerRef.current
+      );
 
-			try {
-				// Phaserはクライアント側でのみインポート
-				// @ts-expect-error 動的インポート(tsconfig.jsonでのmodules設定に依存)
-				const Phaser = (await import("phaser")).default;
-				if (
-					!containerRef.current ||
-					containerRef.current.querySelector("canvas")
-				) {
-					return;
-				}
+      const game = new Phaser.Game(config);
+      gameInitializedRef.current = true;
 
-				// ゲーム設定を使用してPhaser.Gameを初期化
-				const config: Phaser.Types.Core.GameConfig = {
-					type: Phaser.AUTO,
-					width: gameSettings.display.width,
-					height: gameSettings.display.height,
-					parent: containerRef.current || undefined,
-					physics: {
-						default: "arcade",
-						arcade: {
-							gravity: gameSettings.physics.gravity,
-							debug: gameSettings.physics.debug,
-						},
-					},
-					scene: {
-						preload: function (this: Phaser.Scene) {
-							this.load.setBaseURL(gameSettings.assets.baseUrl);
-							gameSettings.assets.images.forEach((img) => {
-								this.load.image(img.key, img.path);
-							});
-						},
-						create: function (this: Phaser.Scene) {
-							this.add.image(400, 300, "sky");
+      // コンポーネントのアンマウント時にゲームを破棄するためにcleanup関数を返す
+      return () => {
+        if (game) {
+          game.destroy(true);
+          gameInitializedRef.current = false;
+        }
+      };
+    } catch (error) {
+      console.error("Failed to initialize Phaser:", error);
+    }
+  };
 
-							// パーティクルエミッターを作成
-							const particles = this.add.particles(0, 0, "red", {
-								speed: 100,
-								scale: { start: 1, end: 0 },
-								blendMode: "ADD",
-							});
+  // クライアントサイドの処理のため、useEffectを使用する
+  useEffect(() => {
+    // ClientOnlyの中でレンダリングされた後にPhaserを初期化するため、
+    // setTimeout を使って非同期にする
+    const timeoutId = setTimeout(() => {
+      initPhaser();
+    }, 0);
 
-							// ロゴに物理演算を適用
-							const logo = this.physics.add.image(400, 100, "logo");
-							logo.setVelocity(100, 200);
-							logo.setBounce(1, 1);
-							logo.setCollideWorldBounds(true);
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
-							// パーティクルをロゴに追従させる
-							particles.startFollow(logo);
-						},
-					},
-				};
-
-				// ゲームインスタンスを作成
-				game = new Phaser.Game(config);
-				gameInitializedRef.current = true;
-			} catch (error) {
-				console.error("Failed to initialize Phaser:", error);
-			}
-		};
-
-		loadPhaser();
-
-		// クリーンアップ時にゲームを破棄
-		return () => {
-			if (game) {
-				game.destroy(true);
-				gameInitializedRef.current = false;
-			}
-		};
-	}, [gameSettings]); // gameSettingsが変更された場合に再初期化
-
-	return (
-		<div
-			ref={containerRef}
-			id="phaser-container"
-			className="w-[800px] h-[600px]"
-		/>
-	);
+  return (
+    <ClientOnly>
+      {() => (
+        <div
+          ref={containerRef}
+          id="phaser-container"
+          className="w-[800px] h-[600px]"
+        />
+      )}
+    </ClientOnly>
+  );
 }
