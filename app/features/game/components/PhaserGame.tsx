@@ -3,6 +3,8 @@ import { useEffect, useRef } from "react";
 import { ClientOnly } from "remix-utils/client-only";
 import { createGameConfig } from "../core/config/configLoader";
 import type { GameSettings, PlayerData } from "../core/config/gameSettings";
+import { useAtomValue } from "jotai";
+import { websocketAtom } from "~/atoms/socket";
 
 interface PhaserGameProps {
 	gameSettings: GameSettings;
@@ -24,6 +26,7 @@ export default function PhaserGame({
 }: PhaserGameProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const gameInitializedRef = useRef<boolean>(false);
+	const ws = useAtomValue(websocketAtom);
 	const navigate = useNavigate();
 
 	// ゲーム終了時のリダイレクトイベントリスナー
@@ -31,6 +34,12 @@ export default function PhaserGame({
 		const handleGameRedirect = () => {
 			console.log("Redirecting to result page");
 			navigate("/result");
+			
+			return () => {
+				if (ws) {
+					ws.close();
+				}
+			}
 		};
 
 		// イベントリスナーを追加

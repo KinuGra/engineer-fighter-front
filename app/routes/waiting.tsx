@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { redirect, useLoaderData, useNavigate } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import { useAtom, useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { FaRegCopy } from "react-icons/fa";
