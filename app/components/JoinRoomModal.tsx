@@ -96,7 +96,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 						<div style={{ marginBottom: 28 }}>
 							<label
 								htmlFor="password"
-								style={{ fontWeight: 600, display: "block", marginBottom: 6 }}
+								style={{ fontWeight: 600, display: "block", marginBottom: 6,color:"black" }}
 							>
 								あいことば
 							</label>
@@ -112,6 +112,9 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 									border: "1px solid #ddd",
 									borderRadius: "6px",
 									fontSize: "16px",
+									backgroundColor: "white",
+									color:"black",
+
 								}}
 							/>
 							<div style={{ color: "#888", fontSize: "13px", marginTop: 4 }}>
