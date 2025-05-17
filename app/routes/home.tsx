@@ -1,6 +1,12 @@
+import React, { useState } from "react";
 import RoomCard from "~/components/RoomCard";
+import CreateRoomModal from "../components/CreateRoomModal";
+import JoinRoomModal from "../components/JoinRoomModal";
 
 export default function Home() {
+	const [open, setOpen] = useState(false);
+	const [showModal, setShowModal] = useState(false);
+
 	return (
 		<div className="w-full flex flex-col items-center px-4 md:px-5">
 			{/* メインカード部分 */}
@@ -10,7 +16,7 @@ export default function Home() {
 					description="新しいゲーム部屋を作成して友達を招待しましょう"
 					icon="create"
 					onClick={() => {
-						// TODO: 部屋作成処理
+						setShowModal(true);
 					}}
 				/>
 				<RoomCard
@@ -18,10 +24,12 @@ export default function Home() {
 					description="友達が作成した部屋に参加しましょう"
 					icon="join"
 					onClick={() => {
-						// TODO: 部屋参加処理
+						setOpen(true);
 					}}
 				/>
 			</div>
+			<JoinRoomModal open={open} onClose={() => setOpen(false)} />
+			<CreateRoomModal open={showModal} onClose={() => setShowModal(false)} />
 		</div>
 	);
 }

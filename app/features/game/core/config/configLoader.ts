@@ -1,6 +1,7 @@
 import type { Player } from "../objects/player";
 import ClientGameStateManager from "../state/ClientGameStateManager";
 import type { GameSettings } from "./gameSettings";
+import { FIELD_WIDTH, FIELD_HEIGHT, COLORS } from "./config";
 
 const stateManager = ClientGameStateManager.getInstance();
 
@@ -44,18 +45,14 @@ export const createGameConfig = async (
 				}
 			},
 			create: async function (this: Phaser.Scene) {
-				this.cameras.main.setBackgroundColor("#BBFBFF");
-
-				// フィールドの寸法
-				const fieldWidth = 600;
-				const fieldHeight = 400;
+				this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
 
 				// 物理世界の境界をフィールドサイズに一致させる（重要）
 				this.physics.world.setBounds(
-					this.cameras.main.centerX - fieldWidth / 2,
-					this.cameras.main.centerY - fieldHeight / 2,
-					fieldWidth,
-					fieldHeight,
+					this.cameras.main.centerX - FIELD_WIDTH / 2,
+					this.cameras.main.centerY - FIELD_HEIGHT / 2,
+					FIELD_WIDTH,
+					FIELD_HEIGHT,
 				);
 
 				// 物理境界のデバッグ出力
@@ -65,20 +62,20 @@ export const createGameConfig = async (
 				const field = this.add.rectangle(
 					this.cameras.main.centerX,
 					this.cameras.main.centerY,
-					fieldWidth,
-					fieldHeight,
-					0x00ff00,
+					FIELD_WIDTH,
+					FIELD_HEIGHT,
+					COLORS.FIELD,
 				);
 				field.setOrigin(0.5, 0.5);
 
 				// フィールドの境界線を作成
 				const fieldBorder = this.add.graphics();
-				fieldBorder.lineStyle(5, 0x00ee00, 1);
+				fieldBorder.lineStyle(5, COLORS.FIELD_BORDER, 1);
 				fieldBorder.strokeRect(
-					this.cameras.main.centerX - fieldWidth / 2,
-					this.cameras.main.centerY - fieldHeight / 2,
-					fieldWidth,
-					fieldHeight,
+					this.cameras.main.centerX - FIELD_WIDTH / 2,
+					this.cameras.main.centerY - FIELD_HEIGHT / 2,
+					FIELD_WIDTH,
+					FIELD_HEIGHT,
 				);
 
 				try {
@@ -93,99 +90,55 @@ export const createGameConfig = async (
 					// メインプレイヤーが見つかったかどうか追跡する変数
 					let mainPlayer: Player | null = null;
 
-					if (playerDataArray.length > 0) {
-						// プレイヤーデータが設定されている場合はそれを使用
-						for (const playerData of playerDataArray) {
-							// プレイヤー位置の決定
-							let x: number;
-							if (playerData.x !== undefined) {
-								x = playerData.x;
-							} else {
-								x = Phaser.Math.Between(
-									this.cameras.main.centerX - fieldWidth / 2 + 40,
-									this.cameras.main.centerX + fieldWidth / 2 - 40,
-								);
-							}
+          if(playerDataArray.length === 0) {
+            throw new Error("No player data found. please provide player data.");
+          }
 
-							let y: number;
-							if (playerData.y !== undefined) {
-								y = playerData.y;
-							} else {
-								y = Phaser.Math.Between(
-									this.cameras.main.centerY - fieldHeight / 2 + 40,
-									this.cameras.main.centerY + fieldHeight / 2 - 40,
-								);
-							}
+          for (const playerData of playerDataArray) {
+            // プレイヤー位置の決定
+            let x: number;
+            if (playerData.x !== undefined) {
+              x = playerData.x;
+            } else {
+              x = Phaser.Math.Between(
+                this.cameras.main.centerX - FIELD_WIDTH / 2 + 40,
+                this.cameras.main.centerX + FIELD_WIDTH / 2 - 40,
+              );
+            }
 
-							const player = new Player(
-								this,
-								x,
-								y,
-								20, // 半径
-								playerData.id,
-								playerData.icon,
-								playerData.power,
-								playerData.weight,
-								playerData.volume,
-								playerData.cd,
-							);
+            let y: number;
+            if (playerData.y !== undefined) {
+              y = playerData.y;
+            } else {
+              y = Phaser.Math.Between(
+                this.cameras.main.centerY - FIELD_HEIGHT / 2 + 40,
+                this.cameras.main.centerY + FIELD_HEIGHT / 2 - 40,
+              );
+            }
 
-							// メインプレイヤーは赤色、その他は白色
-							if (playerData.isMainPlayer) {
-								player.setFillStyle(0xff0000, 1);
-								mainPlayer = player;
-							} else {
-								player.setFillStyle(0xffffff, 1);
-							}
+            const player = new Player(
+              this,
+              x,
+              y,
+              20, // 半径
+              playerData.id,
+              playerData.icon,
+              playerData.power,
+              playerData.weight,
+              playerData.volume,
+              playerData.cd,
+            );
 
-							playerObjects.push(player);
-						}
-					} else {
-						// プレイヤーデータが設定されていない場合はデフォルト値を使用
-						// メインプレイヤーを赤い円として描画
-						mainPlayer = new Player(
-							this,
-							this.cameras.main.centerX,
-							this.cameras.main.centerY,
-							20,
-							"player1",
-							"",
-							50,
-							50,
-							50,
-							500,
-						);
+            // メインプレイヤーは赤色、その他は白色
+            if (playerData.isMainPlayer) {
+              player.setFillStyle(0xff0000, 1);
+              mainPlayer = player;
+            } else {
+              player.setFillStyle(0xffffff, 1);
+            }
 
-						// メインプレイヤーを配列に追加
-						playerObjects.push(mainPlayer);
-
-						// 適当な敵プレイヤーを作成
-						for (let i = 0; i < 5; i++) {
-							const enemyPlayer = new Player(
-								this,
-								Phaser.Math.Between(
-									this.cameras.main.centerX - fieldWidth / 2 + 40,
-									this.cameras.main.centerX + fieldWidth / 2 - 40,
-								),
-								Phaser.Math.Between(
-									this.cameras.main.centerY - fieldHeight / 2 + 40,
-									this.cameras.main.centerY + fieldHeight / 2 - 40,
-								),
-								20, // 半径
-								`enemy${i}`,
-								"",
-								Phaser.Math.Between(10, 100), // power
-								Phaser.Math.Between(10, 100), // weight
-								Phaser.Math.Between(10, 100), // volume
-								500, // cooldown
-							);
-
-							enemyPlayer.setFillStyle(0xffffff, 1);
-
-							// 敵プレイヤーを配列に追加
-							playerObjects.push(enemyPlayer);
-						}
-					}
+            playerObjects.push(player);
+          }
 
 					// プレイヤー配列をシーンのデータとして保存（update内で使用するため）
 					this.data.set("playerObjects", playerObjects);
@@ -254,7 +207,7 @@ export const createGameConfig = async (
 					statusText = this.add
 						.text(0, 0, `status: ${status}`, {
 							font: "15px",
-							color: "#222",
+							color: COLORS.UI_TEXT,
 							padding: { left: 8, right: 8, top: 4, bottom: 4 },
 						})
 						.setOrigin(0, 0)
