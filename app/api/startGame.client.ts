@@ -20,8 +20,7 @@ const startGame = async (
 		throw new Error("Failed to start game");
 	}
 
-	const data: StartGameResponse = await response.json();
-	return data;
+	return {};
 };
 
 export default startGame;

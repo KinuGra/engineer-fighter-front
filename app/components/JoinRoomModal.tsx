@@ -28,58 +28,58 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 		<ClientOnly>
 			{() => (
 				<div
+					style={{
+						position: "fixed",
+						top: 0,
+						left: 0,
+						width: "100vw",
+						height: "100vh",
+						background: "rgba(0,0,0,0.3)",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						zIndex: 1000,
+					}}
+				>
+					<div
 						style={{
-							position: "fixed",
-							top: 0,
-							left: 0,
-							width: "100vw",
-							height: "100vh",
-							background: "rgba(0,0,0,0.3)",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							zIndex: 1000,
+							background: "#fff",
+							borderRadius: "12px",
+							padding: "32px",
+							minWidth: "340px",
+							boxShadow: "0 2px 16px rgba(0,0,0,0.15)",
+							position: "relative",
 						}}
 					>
-						<div
+						<button
+							type="button"
 							style={{
-								background: "#fff",
-								borderRadius: "12px",
-								padding: "32px",
-								minWidth: "340px",
-								boxShadow: "0 2px 16px rgba(0,0,0,0.15)",
-								position: "relative",
+								position: "absolute",
+								top: 16,
+								right: 16,
+								background: "none",
+								border: "none",
+								fontSize: "20px",
+								cursor: "pointer",
 							}}
+							aria-label="閉じる"
+							onClick={onClose}
 						>
-							<button
-								type="button"
-								style={{
-									position: "absolute",
-									top: 16,
-									right: 16,
-									background: "none",
-									border: "none",
-									fontSize: "20px",
-									cursor: "pointer",
-								}}
-								aria-label="閉じる"
-								onClick={onClose}
-								>
-								×
-							</button>
-							<h2 style={{ margin: 0, fontSize: "1.7rem", fontWeight: 700 }}>
-								部屋に参加
-							</h2>
-							<p style={{ color: "#666", marginBottom: 24 }}>
-								あいことばを入力して部屋に参加しましょう
-							</p>
-							<form
-								onSubmit={async (e) => {
-									e.preventDefault();
-									// 参加処理をここに実装
-									const request: JoinRoomRequest = {
-										password: keyword,
-									};
+							×
+						</button>
+						<h2 style={{ margin: 0, fontSize: "1.7rem", fontWeight: 700 }}>
+							部屋に参加
+						</h2>
+						<p style={{ color: "#666", marginBottom: 24 }}>
+							あいことばを入力して部屋に参加しましょう
+						</p>
+						<form
+							onSubmit={async (e) => {
+								e.preventDefault();
+								// 参加処理をここに実装
+								const request: JoinRoomRequest = {
+									password: keyword,
+								};
 
 								const data = await JoinRoom(request, apiUrl);
 
