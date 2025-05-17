@@ -34,6 +34,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 
 	return {
 		websocketUrl,
+		apiUrl,
 		roomID,
 		users: result.users,
 	};
@@ -94,7 +95,7 @@ const styles = {
 };
 
 const WaitingRoom = () => {
-	const { websocketUrl, roomID, users } = useLoaderData<typeof loader>();
+	const { websocketUrl, apiUrl, roomID, users } = useLoaderData<typeof loader>();
 	const socketRef = useRef<WebSocket | null>(null);
 	const [players, setPlayers] = useState<Player[]>(
 		users.map((user: User) => ({
@@ -216,7 +217,7 @@ const WaitingRoom = () => {
 						</div>
 					</div>
 					<div style={{ marginTop: "24px" }}>
-						<StartButton />
+						<StartButton apiUrl={apiUrl} roomId={roomID}/>
 					</div>
 				</div>
 			)}
