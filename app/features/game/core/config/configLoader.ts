@@ -131,10 +131,10 @@ export const createGameConfig = async (
 
             // メインプレイヤーは赤色、その他は白色
             if (playerData.isMainPlayer) {
-              player.setFillStyle(0xff0000, 1);
+              player.setFillStyle(COLORS.PLAYER, 1);
               mainPlayer = player;
             } else {
-              player.setFillStyle(0xffffff, 1);
+              player.setFillStyle(COLORS.ENEMY, 1);
             }
 
             playerObjects.push(player);
