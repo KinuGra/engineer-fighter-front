@@ -2,6 +2,7 @@ import type React from "react";
 import { useState } from "react";
 import { JoinRoom } from "~/api/joinRoom.client";
 import type { JoinRoomRequest } from "~/api/joinRoom.client";
+import { useNavigate } from "@remix-run/react";
 
 interface JoinRoomModalProps {
 	open: boolean;
@@ -11,6 +12,8 @@ interface JoinRoomModalProps {
 
 const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ open, onClose, apiUrl }) => {
 	const [keyword, setKeyword] = useState("");
+	const router = useNavigate();
+
 	if (!open) return null;
 	return (
 		<div
@@ -70,6 +73,9 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ open, onClose, apiUrl }) 
 						const data = await JoinRoom(request, apiUrl);
 
 						console.log("data:", data);
+						if (data.status === "ok") {
+							router(`/waiting?roomId=${keyword}`);
+						}
 
 						onClose();
 					}}
