@@ -164,7 +164,7 @@ const WaitingRoom = () => {
 					...prevPlayers,
 					{
 						id: data.message.id,
-						icon: data.message.iconUrl,
+						icon: data.message.icon_url,
 						power: data.message.power,
 						weight: data.message.weight,
 						volume: data.message.volume,
