@@ -67,7 +67,11 @@ class ClientGameStateManager {
 		}
 
 		return {
-			getState: () => ({ players: {}, gameStatus: "waiting", eliminationOrder: [] }),
+			getState: () => ({
+				players: {},
+				gameStatus: "waiting",
+				eliminationOrder: [],
+			}),
 			addPlayer: () => {},
 			updatePlayer: () => {},
 			removePlayer: () => {},
@@ -144,18 +148,18 @@ class ClientGameStateManager {
 	 */
 	public setWinner(winnerId: string): void {
 		this._state.winner = winnerId;
-		
+
 		// 勝者を脱落順序の先頭に追加（最後に脱落＝優勝）
 		if (!this._state.eliminationOrder.includes(winnerId)) {
 			this._state.eliminationOrder.unshift(winnerId);
 		}
-		
+
 		this.notifyListeners({
 			type: "winnerSet",
 			winnerId,
 		});
 	}
-	
+
 	/**
 	 * 脱落したプレイヤーを記録
 	 * @param playerId 脱落したプレイヤーのID

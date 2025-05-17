@@ -18,6 +18,7 @@ export class Player extends GameObjects.Arc {
 	private isCooldown = false;
 	private moveSpeed = 0;
 	private cooldownTimer: Phaser.Time.TimerEvent | null = null;
+	private nameText: Phaser.GameObjects.Text | null = null;
 
 	// ひっぱり用の変数
 	private dragStartPoint: Phaser.Math.Vector2 | null = null;
@@ -47,6 +48,17 @@ export class Player extends GameObjects.Arc {
 		this.weight = weight;
 		this.volume = volume;
 		this.cd = cd;
+
+		// 名前表示を作成
+		this.nameText = scene.add.text(x, y - radius - 20, `@${id}`, {
+			fontFamily: 'Arial',
+			fontSize: '14px',
+			color: '#222',
+			align: 'center',
+			stroke: '#fff',
+			strokeThickness: 2
+		}).setOrigin(0.5, 0.5);
+		this.nameText.setDepth(10); // テキストを上のレイヤーに表示
 
 		// 物理演算を有効化
 		if (scene.physics?.add) {
@@ -95,6 +107,9 @@ export class Player extends GameObjects.Arc {
 
 		// プレイヤーが更新されたときにゲーム状態も更新
 		this.on("destroy", () => {
+			if (this.nameText) {
+				this.nameText.destroy();
+			}
 			ClientGameStateManager.getInstance().removePlayer(this.id);
 		});
 	}
@@ -115,6 +130,14 @@ export class Player extends GameObjects.Arc {
 			isAlive: this.isAlive,
 			isActive: this.isAlive && !this.isCooldown,
 		});
+
+		// 名前の位置を更新
+		if (this.nameText) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.nameText.setPosition(this.x, this.y - radius - 20);
+			this.nameText.setVisible(this.visible);
+			this.nameText.setAlpha(this.alpha);
+		}
 	}
 
 	/**
@@ -407,7 +430,7 @@ export class Player extends GameObjects.Arc {
 			isAlive: false,
 			isActive: false,
 		});
-		
+
 		// 脱落プレイヤーとして記録
 		ClientGameStateManager.getInstance().addEliminatedPlayer(this.id);
 
