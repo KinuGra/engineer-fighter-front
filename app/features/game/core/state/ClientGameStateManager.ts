@@ -7,6 +7,9 @@
 export interface GameState {
 	players: Record<string, PlayerState>;
 	gameStatus: "waiting" | "playing" | "finished";
+	winner?: string;
+	// 脱落順序（最後に残ったプレイヤーが先頭）
+	eliminationOrder: string[];
 }
 
 // プレイヤー状態を定義
@@ -29,6 +32,7 @@ type GameEvent =
 	| { type: "playerUpdated"; player: PlayerState }
 	| { type: "playerRemoved"; playerId: string }
 	| { type: "gameStatusChanged"; status: "waiting" | "playing" | "finished" }
+	| { type: "winnerSet"; winnerId: string }
 	| { type: "stateReset" };
 
 // イベントリスナーの型
@@ -42,6 +46,7 @@ class ClientGameStateManager {
 	private _state: GameState = {
 		players: {},
 		gameStatus: "waiting",
+		eliminationOrder: [],
 	};
 	private listeners: GameEventListener[] = [];
 
@@ -62,11 +67,13 @@ class ClientGameStateManager {
 		}
 
 		return {
-			getState: () => ({ players: {}, gameStatus: "waiting" }),
+			getState: () => ({ players: {}, gameStatus: "waiting", eliminationOrder: [] }),
 			addPlayer: () => {},
 			updatePlayer: () => {},
 			removePlayer: () => {},
 			setGameStatus: () => {},
+			setWinner: () => {},
+			addEliminatedPlayer: () => {},
 			resetState: () => {},
 			addEventListener: () => {},
 			removeEventListener: () => {},
@@ -133,12 +140,41 @@ class ClientGameStateManager {
 	}
 
 	/**
+	 * 勝者IDを設定
+	 */
+	public setWinner(winnerId: string): void {
+		this._state.winner = winnerId;
+		
+		// 勝者を脱落順序の先頭に追加（最後に脱落＝優勝）
+		if (!this._state.eliminationOrder.includes(winnerId)) {
+			this._state.eliminationOrder.unshift(winnerId);
+		}
+		
+		this.notifyListeners({
+			type: "winnerSet",
+			winnerId,
+		});
+	}
+	
+	/**
+	 * 脱落したプレイヤーを記録
+	 * @param playerId 脱落したプレイヤーのID
+	 */
+	public addEliminatedPlayer(playerId: string): void {
+		// すでに記録されている場合は追加しない
+		if (!this._state.eliminationOrder.includes(playerId)) {
+			this._state.eliminationOrder.push(playerId);
+		}
+	}
+
+	/**
 	 * ゲーム状態をリセット
 	 */
 	public resetState(): void {
 		this._state = {
 			players: {},
 			gameStatus: "waiting",
+			eliminationOrder: [],
 		};
 		this.notifyListeners({ type: "stateReset" });
 	}

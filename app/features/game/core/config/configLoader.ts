@@ -1,7 +1,7 @@
 import type { Player } from "../objects/player";
 import ClientGameStateManager from "../state/ClientGameStateManager";
+import { COLORS, FIELD_HEIGHT, FIELD_WIDTH } from "./config";
 import type { GameSettings } from "./gameSettings";
-import { FIELD_WIDTH, FIELD_HEIGHT, COLORS } from "./config";
 
 const stateManager = ClientGameStateManager.getInstance();
 
@@ -90,55 +90,57 @@ export const createGameConfig = async (
 					// メインプレイヤーが見つかったかどうか追跡する変数
 					let mainPlayer: Player | null = null;
 
-          if(playerDataArray.length === 0) {
-            throw new Error("No player data found. please provide player data.");
-          }
+					if (playerDataArray.length === 0) {
+						throw new Error(
+							"No player data found. please provide player data.",
+						);
+					}
 
-          for (const playerData of playerDataArray) {
-            // プレイヤー位置の決定
-            let x: number;
-            if (playerData.x !== undefined) {
-              x = playerData.x;
-            } else {
-              x = Phaser.Math.Between(
-                this.cameras.main.centerX - FIELD_WIDTH / 2 + 40,
-                this.cameras.main.centerX + FIELD_WIDTH / 2 - 40,
-              );
-            }
+					for (const playerData of playerDataArray) {
+						// プレイヤー位置の決定
+						let x: number;
+						if (playerData.x !== undefined) {
+							x = playerData.x;
+						} else {
+							x = Phaser.Math.Between(
+								this.cameras.main.centerX - FIELD_WIDTH / 2 + 40,
+								this.cameras.main.centerX + FIELD_WIDTH / 2 - 40,
+							);
+						}
 
-            let y: number;
-            if (playerData.y !== undefined) {
-              y = playerData.y;
-            } else {
-              y = Phaser.Math.Between(
-                this.cameras.main.centerY - FIELD_HEIGHT / 2 + 40,
-                this.cameras.main.centerY + FIELD_HEIGHT / 2 - 40,
-              );
-            }
+						let y: number;
+						if (playerData.y !== undefined) {
+							y = playerData.y;
+						} else {
+							y = Phaser.Math.Between(
+								this.cameras.main.centerY - FIELD_HEIGHT / 2 + 40,
+								this.cameras.main.centerY + FIELD_HEIGHT / 2 - 40,
+							);
+						}
 
-            const player = new Player(
-              this,
-              x,
-              y,
-              20, // 半径
-              playerData.id,
-              playerData.icon,
-              playerData.power,
-              playerData.weight,
-              playerData.volume,
-              playerData.cd,
-            );
+						const player = new Player(
+							this,
+							x,
+							y,
+							20, // 半径
+							playerData.id,
+							playerData.icon,
+							playerData.power,
+							playerData.weight,
+							playerData.volume,
+							playerData.cd,
+						);
 
-            // メインプレイヤーは赤色、その他は白色
-            if (playerData.isMainPlayer) {
-              player.setFillStyle(COLORS.PLAYER, 1);
-              mainPlayer = player;
-            } else {
-              player.setFillStyle(COLORS.ENEMY, 1);
-            }
+						// メインプレイヤーは赤色、その他は白色
+						if (playerData.isMainPlayer) {
+							player.setFillStyle(COLORS.PLAYER, 1);
+							mainPlayer = player;
+						} else {
+							player.setFillStyle(COLORS.ENEMY, 1);
+						}
 
-            playerObjects.push(player);
-          }
+						playerObjects.push(player);
+					}
 
 					// プレイヤー配列をシーンのデータとして保存（update内で使用するため）
 					this.data.set("playerObjects", playerObjects);
@@ -229,6 +231,64 @@ export const createGameConfig = async (
 							console.log(
 								`Updating player ${player.id} at (${player.x}, ${player.y})`,
 							);
+						}
+					}
+
+					// ゲームが進行中の場合のみ終了判定を行う
+					if (status === "playing") {
+						// 生存プレイヤー数をカウント
+						const alivePlayers = players.filter((player) => player.isAlive);
+						
+						// 生存プレイヤーが1名のみになった場合、ゲーム終了
+						if (alivePlayers.length === 1) {
+							// 既にゲーム終了イベントが発生していないことを確認
+							if (!this.data.get("gameFinished")) {
+								console.log("Game finished! Winner:", alivePlayers[0].id);
+								
+								// ゲーム終了フラグを立てる
+								this.data.set("gameFinished", true);
+								
+								// ゲーム状態を終了に設定
+								stateManager.setGameStatus("finished");
+								
+								// 勝者情報を記録
+								stateManager.setWinner(alivePlayers[0].id);
+
+								// GAME SETの表示
+								const gameSetText = this.add
+									.text(
+										this.cameras.main.centerX,
+										this.cameras.main.centerY,
+										"GAME SET",
+										{
+											font: "bold 64px Arial",
+											color: "#FF0000",
+											stroke: "#FFFFFF",
+											strokeThickness: 6,
+											padding: { left: 16, right: 16, top: 8, bottom: 8 },
+										},
+									)
+									.setOrigin(0.5, 0.5)
+									.setDepth(2000);
+
+								// テキストアニメーション
+								this.tweens.add({
+									targets: gameSetText,
+									scaleX: 1.2,
+									scaleY: 1.2,
+									duration: 500,
+									yoyo: true,
+									repeat: 1,
+									ease: "Sine.easeInOut",
+								});
+
+								// 3秒後に結果画面へリダイレクト
+								this.time.delayedCall(3000, () => {
+									// リダイレクトイベントを発火
+									const event = new CustomEvent("gameRedirectToResult");
+									window.dispatchEvent(event);
+								});
+							}
 						}
 					}
 				}

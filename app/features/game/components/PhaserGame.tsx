@@ -1,3 +1,4 @@
+import { useNavigate } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { ClientOnly } from "remix-utils/client-only";
 import { createGameConfig } from "../core/config/configLoader";
@@ -23,6 +24,23 @@ export default function PhaserGame({
 }: PhaserGameProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const gameInitializedRef = useRef<boolean>(false);
+	const navigate = useNavigate();
+
+	// ゲーム終了時のリダイレクトイベントリスナー
+	useEffect(() => {
+		const handleGameRedirect = () => {
+			console.log("Redirecting to result page");
+			navigate("/result");
+		};
+
+		// イベントリスナーを追加
+		window.addEventListener("gameRedirectToResult", handleGameRedirect);
+
+		// クリーンアップ関数
+		return () => {
+			window.removeEventListener("gameRedirectToResult", handleGameRedirect);
+		};
+	}, [navigate]);
 
 	// Phaserの初期化処理をClientOnlyの外に出し、コンテナ要素が存在する場合のみ実行する
 	const initPhaser = async () => {

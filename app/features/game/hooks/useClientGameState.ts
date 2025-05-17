@@ -8,18 +8,6 @@ import ClientGameStateManager, {
  * クライアントサイドのゲーム状態を利用するためのカスタムフック
  */
 export function useClientGameState() {
-	// サーバーサイドレンダリング時は空のオブジェクトを返す
-	if (typeof window === "undefined") {
-		return {
-			gameState: { players: {}, gameStatus: "waiting" },
-			addPlayer: () => {},
-			updatePlayer: () => {},
-			removePlayer: () => {},
-			setGameStatus: () => {},
-			resetState: () => {},
-		};
-	}
-
 	const [gameState, setGameState] = useState<GameState>(
 		ClientGameStateManager.getInstance().getState(),
 	);
@@ -38,6 +26,25 @@ export function useClientGameState() {
 		};
 	}, []);
 
+	// サーバーサイドレンダリング時は空のオブジェクトを返す
+	if (typeof window === "undefined") {
+		return {
+			gameState: {
+				players: {},
+				gameStatus: "waiting",
+				winner: undefined,
+				eliminationOrder: [],
+			} as GameState,
+			addPlayer: () => {},
+			updatePlayer: () => {},
+			removePlayer: () => {},
+			setGameStatus: () => {},
+			setWinner: () => {},
+			addEliminatedPlayer: () => {},
+			resetState: () => {},
+		};
+	}
+
 	return {
 		gameState,
 		addPlayer: (player: PlayerState) =>
@@ -48,6 +55,10 @@ export function useClientGameState() {
 			ClientGameStateManager.getInstance().removePlayer(playerId),
 		setGameStatus: (status: "waiting" | "playing" | "finished") =>
 			ClientGameStateManager.getInstance().setGameStatus(status),
+		setWinner: (winnerId: string) =>
+			ClientGameStateManager.getInstance().setWinner(winnerId),
+		addEliminatedPlayer: (playerId: string) =>
+			ClientGameStateManager.getInstance().addEliminatedPlayer(playerId),
 		resetState: () => ClientGameStateManager.getInstance().resetState(),
 	};
 }
