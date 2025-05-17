@@ -65,7 +65,11 @@ const styles = {
 	},
 };
 
-const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ open, onClose, apiUrl }) => {
+const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
+	open,
+	onClose,
+	apiUrl,
+}) => {
 	const [roomName, setRoomName] = useState("");
 	const [maxPlayers, setMaxPlayers] = useState(4);
 
@@ -89,7 +93,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ open, onClose, apiUrl
 			capacity: maxPlayers,
 		};
 
-		createRoom(request, apiUrl)
+		createRoom(request, apiUrl);
 
 		onClose();
 	};

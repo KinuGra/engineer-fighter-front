@@ -1,21 +1,20 @@
-import { useState } from "react";
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
+import { useState } from "react";
 import RoomCard from "~/components/RoomCard";
 import CreateRoomModal from "../components/CreateRoomModal";
 import JoinRoomModal from "../components/JoinRoomModal";
 
 export const loader = async ({ context }: LoaderFunctionArgs) => {
-	const apiUrl = context.cloudflare.env.API_URL
-	return { apiUrl }
-}
+	const apiUrl = context.cloudflare.env.API_URL;
+	return { apiUrl };
+};
 
 export default function Home() {
 	const [open, setOpen] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 
 	const { apiUrl } = useLoaderData<typeof loader>();
-
 
 	return (
 		<div className="w-full flex flex-col items-center px-4 md:px-5">
@@ -40,21 +39,17 @@ export default function Home() {
 			</div>
 			<JoinRoomModal
 				apiUrl={apiUrl}
-			 	open={open} 
-				onClose={
-					() => {
-						setOpen(false);
-					}
-				}
+				open={open}
+				onClose={() => {
+					setOpen(false);
+				}}
 			/>
-			<CreateRoomModal 
+			<CreateRoomModal
 				apiUrl={apiUrl}
-				open={showModal} 
-				onClose={
-					() => {
-						setShowModal(false);
-					}
-				} 
+				open={showModal}
+				onClose={() => {
+					setShowModal(false);
+				}}
 			/>
 		</div>
 	);
