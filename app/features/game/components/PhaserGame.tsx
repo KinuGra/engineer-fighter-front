@@ -1,6 +1,6 @@
+import { useNavigate } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { ClientOnly } from "remix-utils/client-only";
-import { useNavigate } from "@remix-run/react";
 import { createGameConfig } from "../core/config/configLoader";
 import type { GameSettings, PlayerData } from "../core/config/gameSettings";
 

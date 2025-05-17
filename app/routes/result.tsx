@@ -1,5 +1,5 @@
 import { useNavigate } from "@remix-run/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useClientGameState } from "~/features/game/hooks/useClientGameState";
 
 // 型定義
@@ -26,7 +26,7 @@ export default function Result() {
 		if (gameState.winner) {
 			// ゲーム状態から勝者のIDを取得
 			const winnerId = gameState.winner;
-			
+
 			// プレイヤー情報から勝者の名前を取得（もしあれば）
 			const winner = gameState.players[winnerId];
 			if (winner) {

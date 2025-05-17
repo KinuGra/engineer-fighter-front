@@ -8,19 +8,6 @@ import ClientGameStateManager, {
  * クライアントサイドのゲーム状態を利用するためのカスタムフック
  */
 export function useClientGameState() {
-	// サーバーサイドレンダリング時は空のオブジェクトを返す
-	if (typeof window === "undefined") {
-		return {
-			gameState: { players: {}, gameStatus: "waiting", winner: undefined } as GameState,
-			addPlayer: () => {},
-			updatePlayer: () => {},
-			removePlayer: () => {},
-			setGameStatus: () => {},
-			setWinner: () => {},
-			resetState: () => {},
-		};
-	}
-
 	const [gameState, setGameState] = useState<GameState>(
 		ClientGameStateManager.getInstance().getState(),
 	);
@@ -38,6 +25,23 @@ export function useClientGameState() {
 			gameStateManager.removeEventListener(handleEvent);
 		};
 	}, []);
+
+	// サーバーサイドレンダリング時は空のオブジェクトを返す
+	if (typeof window === "undefined") {
+		return {
+			gameState: {
+				players: {},
+				gameStatus: "waiting",
+				winner: undefined,
+			} as GameState,
+			addPlayer: () => {},
+			updatePlayer: () => {},
+			removePlayer: () => {},
+			setGameStatus: () => {},
+			setWinner: () => {},
+			resetState: () => {},
+		};
+	}
 
 	return {
 		gameState,
