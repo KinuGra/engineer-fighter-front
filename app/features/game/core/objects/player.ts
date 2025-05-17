@@ -22,6 +22,8 @@ export class Player extends GameObjects.Arc {
 	private iconSprite: Phaser.GameObjects.Sprite | null = null;
 	private iconMask: Phaser.Display.Masks.GeometryMask | null = null;
 	private iconMaskGraphics: Phaser.GameObjects.Graphics | null = null;
+	private highlightGraphics: Phaser.GameObjects.Graphics | null = null;
+	private youIndicator: Phaser.GameObjects.Text | null = null;
 
 	// ひっぱり用の変数
 	private dragStartPoint: Phaser.Math.Vector2 | null = null;
@@ -140,6 +142,12 @@ export class Player extends GameObjects.Arc {
 			if (this.iconMaskGraphics) {
 				this.iconMaskGraphics.destroy();
 			}
+			if (this.highlightGraphics) {
+				this.highlightGraphics.destroy();
+			}
+			if (this.youIndicator) {
+				this.youIndicator.destroy();
+			}
 			ClientGameStateManager.getInstance().removePlayer(this.id);
 		});
 	}
@@ -183,6 +191,24 @@ export class Player extends GameObjects.Arc {
 				this.iconMaskGraphics.fillCircle(this.x, this.y, radius);
 			}
 		}
+
+		// ハイライトグラフィックの位置を更新
+		if (this.highlightGraphics) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.highlightGraphics.clear();
+			this.highlightGraphics.lineStyle(3, 0xFFD700);
+			this.highlightGraphics.strokeCircle(this.x, this.y, radius + 5);
+			this.highlightGraphics.setVisible(this.visible);
+			this.highlightGraphics.setAlpha(this.alpha > 0.6 ? 0.6 : this.alpha);
+		}
+
+		// YOUインジケーターの位置を更新
+		if (this.youIndicator) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.youIndicator.setPosition(this.x, this.y + radius + 15);
+			this.youIndicator.setVisible(this.visible);
+			this.youIndicator.setAlpha(this.alpha);
+		}
 	}
 
 	/**
@@ -210,6 +236,20 @@ export class Player extends GameObjects.Arc {
 		if (this.nameText) {
 			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
 			this.nameText.setPosition(x, y - radius - 20);
+		}
+
+		// ハイライトグラフィックの位置を更新
+		if (this.highlightGraphics) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.highlightGraphics.clear();
+			this.highlightGraphics.lineStyle(3, 0xFFD700);
+			this.highlightGraphics.strokeCircle(x, y, radius + 5);
+		}
+
+		// YOUインジケーターの位置を更新
+		if (this.youIndicator) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.youIndicator.setPosition(x, y + radius + 15);
 		}
 
 		// グローバル状態を更新
@@ -484,6 +524,12 @@ export class Player extends GameObjects.Arc {
 		if (this.iconSprite) {
 			this.iconSprite.setAlpha(0.5);
 		}
+		if (this.highlightGraphics) {
+			this.highlightGraphics.setAlpha(0.3);
+		}
+		if (this.youIndicator) {
+			this.youIndicator.setAlpha(0.5);
+		}
 		this.cancelDrag();
 		this.isCooldown = false;
 
@@ -576,5 +622,52 @@ export class Player extends GameObjects.Arc {
 		console.log(`Player: ${this.id}, isWithinField: ${isWithinField}`);
 
 		return isWithinField;
+	}
+
+	/**
+	 * プレイヤーをメインプレイヤーとして設定し、視覚的に強調する
+	 */
+	public setAsMainPlayer(): void {
+		const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+
+		// 背景色は変更せず、輝く金色の円形アウトラインを追加
+		this.highlightGraphics = this.scene.add.graphics();
+		this.highlightGraphics.lineStyle(3, 0xFFD700); // 3px太さの金色の線
+		this.highlightGraphics.strokeCircle(this.x, this.y, radius + 5);
+		this.highlightGraphics.setDepth(4); // アイコンの下、プレイヤーの上
+
+		// 「YOU」表示を追加
+		this.youIndicator = this.scene.add.text(this.x, this.y + radius + 15, 'YOU', {
+			fontFamily: 'Arial',
+			fontSize: '12px',
+			fontStyle: 'bold',
+			color: '#FFFFFF',
+			align: 'center',
+			stroke: '#000000',
+			strokeThickness: 3
+		}).setOrigin(0.5, 0.5);
+		this.youIndicator.setDepth(10);
+
+		// プレイヤー名のスタイルを強調（太字なし）
+		if (this.nameText) {
+			this.nameText.setStyle({
+				fontFamily: 'Arial',
+				fontSize: '16px',
+				color: '#000000',
+				align: 'center',
+				stroke: '#FFFFFF',
+				strokeThickness: 3
+			});
+		}
+
+		// 輝くアニメーションを追加
+		this.scene.tweens.add({
+			targets: this.highlightGraphics,
+			alpha: 0.6,
+			duration: 800,
+			yoyo: true,
+			repeat: -1,
+			ease: 'Sine.easeInOut'
+		});
 	}
 }

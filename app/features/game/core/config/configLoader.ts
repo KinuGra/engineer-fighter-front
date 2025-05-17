@@ -132,9 +132,15 @@ export const createGameConfig = async (
 							playerData.volume,
 							playerData.cd,
 						);
-						player.setFillStyle(COLORS.ENEMY, 1);
 						
-						if(playerData.isMainPlayer) mainPlayer = player;
+						if(playerData.isMainPlayer) {
+							mainPlayer = player;
+							// メインプレイヤーの視覚強調を設定
+							player.setAsMainPlayer();
+						} else {
+							player.setFillStyle(COLORS.ENEMY, 1);
+						}
+						
 						playerObjects.push(player);
 					}
 
