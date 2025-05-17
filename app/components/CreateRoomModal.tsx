@@ -22,6 +22,7 @@ const styles = {
 		alignItems: "center",
 		justifyContent: "center",
 		zIndex: 1000,
+
 	},
 	modal: {
 		background: "#fff",
@@ -41,7 +42,7 @@ const styles = {
 		cursor: "pointer",
 		color: "#333",
 	},
-	title: { margin: 0, fontSize: "1.7rem", fontWeight: 700 },
+	title: { margin: 0, fontSize: "1.7rem", fontWeight: 700, color: "gray"},
 	subtitle: { color: "#666", marginBottom: 24 },
 	formGroup: { marginBottom: 24 },
 	input: {

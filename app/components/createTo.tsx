@@ -97,12 +97,13 @@ const cardStyles: { [key: string]: React.CSSProperties } = {
 		boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
 		textAlign: "center",
 		border: "1px solid #eee",
+		color: "black",
 	},
 	title: {
 		fontSize: 26,
 		fontWeight: 700,
 		margin: "0 0 8px 0",
-		color: "black",
+		color: "0 2px 8px rgba(0,0,0,0.08)",
 	},
 	subtitle: {
 		color: "#888",

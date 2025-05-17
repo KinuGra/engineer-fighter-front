@@ -18,7 +18,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ open, onClose }) => {
 				left: 0,
 				width: "100vw",
 				height: "100vh",
-				background: "rgba(0,0,0,0.3)",
+				background: "rgba(0, 0, 0, 0.1)",
 				display: "flex",
 				alignItems: "center",
 				justifyContent: "center",
@@ -51,7 +51,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ open, onClose }) => {
 				>
 					×
 				</button>
-				<h2 style={{ margin: 0, fontSize: "1.7rem", fontWeight: 700 }}>
+				<h2 style={{ margin: 0, fontSize: "1.7rem", fontWeight: 700, color:"#fff" }}>
 					部屋に参加
 				</h2>
 				<p style={{ color: "#666", marginBottom: 24 }}>
