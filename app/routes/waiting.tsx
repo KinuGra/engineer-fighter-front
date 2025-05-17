@@ -8,6 +8,7 @@ import StartButton from "~/components/StartButton";
 import genPoint from "~/utils/genPoint.client";
 import { useAtomValue } from "jotai";
 import { githubUserAtom } from "~/atoms/githubUser";
+import { getUsers, type User } from "~/api/getUsers.server";
 
 type Player = {
 	id: string;
@@ -20,6 +21,7 @@ interface PlayerCardProps {
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 	const websocketUrl = context.cloudflare.env.WS_URL;
+	const apiUrl = context.cloudflare.env.API_URL;
 
 	const url = new URL(request.url);
 	const roomID = url.searchParams.get("roomId");
@@ -27,9 +29,12 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 		throw new Error("Room ID is required");
 	}
 
+	const result = await getUsers(roomID, apiUrl);
+
 	return {
 		websocketUrl,
 		roomID,
+		users: result.users,
 	};
 };
 
@@ -88,9 +93,14 @@ const styles = {
 };
 
 const WaitingRoom = () => {
-	const { websocketUrl, roomID } = useLoaderData<typeof loader>();
+	const { websocketUrl, roomID, users } = useLoaderData<typeof loader>();
 	const socketRef = useRef<WebSocket | null>(null);
-	const [players, setPlayers] = useState<Player[]>([]);
+	const [players, setPlayers] = useState<Player[]>(
+		users.map((user: User) => ({
+			id: user.userId,
+			iconUrl: user.iconUrl,
+		}))
+	);
 	const githubUser = useAtomValue(githubUserAtom);
 
 	useEffect(() => {
@@ -105,10 +115,9 @@ const WaitingRoom = () => {
 		// GitHubユーザー情報を使用する
 		const userID = githubUser?.login || "guest";
 		const iconUrl = githubUser?.avatar_url || "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png";
-		const roomID = "821047cb-f394-41d3-a928-71ea2567c960";
 
 		const params = new URLSearchParams({
-			roomID: roomID,
+			roomID,
 			userID,
 			iconUrl,
 			power: power.toString(),
@@ -122,7 +131,7 @@ const WaitingRoom = () => {
 		const ws = new WebSocket(`${websocketUrl}?${params.toString()}`);
 		socketRef.current = ws;
 
-		ws.onopen = () => {
+		ws.onopen = async () => {
 			console.log("WebSocket connected");
 			setPlayers((prevPlayers) => [...prevPlayers, { id: userID, iconUrl }]);
 		};
