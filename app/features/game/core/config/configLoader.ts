@@ -237,9 +237,6 @@ export const createGameConfig = async (
 						if (player && typeof player.update === "function") {
 							// プレイヤーのアップデート関数を呼び出し
 							player.update();
-							console.log(
-								`Updating player ${player.id} at (${player.x}, ${player.y})`,
-							);
 						}
 					}
 
