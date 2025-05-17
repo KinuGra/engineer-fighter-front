@@ -1,7 +1,7 @@
+import { useNavigate } from "@remix-run/react";
 import type React from "react";
 import { useState } from "react";
 import { type CreateRoomRequest, createRoom } from "~/api/createRoom.client";
-import { useNavigate } from "@remix-run/react";
 
 interface CreateRoomModalProps {
 	open: boolean;
