@@ -118,6 +118,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 						border: "none",
 						fontSize: "20px",
 						cursor: "pointer",
+						color: "black",
 					}}
 					aria-label="閉じる"
 					onClick={onClose}

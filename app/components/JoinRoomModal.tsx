@@ -61,12 +61,14 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 							border: "none",
 							fontSize: "20px",
 							cursor: "pointer",
+							color: "black"
 						}}
 						aria-label="閉じる"
+						onClick={() => {open = false}}
 					>
 						×
 					</button>
-					<h2 style={{ margin: 0, fontSize: "1.7rem", fontWeight: 700 }}>
+					<h2 style={{ margin: 0, fontSize: "1.7rem", fontWeight: 700, color: "black"}}>
 						部屋に参加
 					</h2>
 					<p style={{ color: "#666", marginBottom: 24 }}>
