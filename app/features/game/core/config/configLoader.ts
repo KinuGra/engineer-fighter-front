@@ -16,6 +16,8 @@ const stateManager = ClientGameStateManager.getInstance();
 export const createGameConfig = async (
 	gameSettings: GameSettings,
 	parent: HTMLElement | undefined,
+	apiUrl: string,
+	roomId: string,
 ): Promise<Phaser.Types.Core.GameConfig> => {
 	const players = gameSettings.players;
 
@@ -122,9 +124,9 @@ export const createGameConfig = async (
 
 						// volume に基づいて半径を計算（最小10、最大40）
 						const baseRadius = 10;
-						const volumeEffect = playerData.volume / 100 * 30; // volume最大(100)で+30
+						const volumeEffect = (playerData.volume / 100) * 30; // volume最大(100)で+30
 						const radius = Math.floor(baseRadius + volumeEffect);
-						
+
 						const player = new Player(
 							this,
 							x,
@@ -137,15 +139,15 @@ export const createGameConfig = async (
 							playerData.volume,
 							playerData.cd,
 						);
-						
-						if(playerData.isMainPlayer) {
+
+						if (playerData.isMainPlayer) {
 							mainPlayer = player;
 							// メインプレイヤーの視覚強調を設定
 							player.setAsMainPlayer();
 						} else {
 							player.setFillStyle(COLORS.ENEMY, 1);
 						}
-						
+
 						playerObjects.push(player);
 					}
 
@@ -188,8 +190,8 @@ export const createGameConfig = async (
 								isFirstClick = false;
 							} else {
 								// 2回目のクリック：ひっぱりを完了して移動
-								const didMove = mainPlayer.completeDrag(pointer.x, pointer.y);
-								isFirstClick = true; // 次回のクリックに備えてリセット
+								const didMove = mainPlayer.completeDrag(pointer.x, pointer.y, apiUrl, roomId);
+								isFirstClick = true;
 
 								if (!didMove) {
 									// 移動できなかった場合は直接新しいドラッグを開始
@@ -235,9 +237,6 @@ export const createGameConfig = async (
 						if (player && typeof player.update === "function") {
 							// プレイヤーのアップデート関数を呼び出し
 							player.update();
-							console.log(
-								`Updating player ${player.id} at (${player.x}, ${player.y})`,
-							);
 						}
 					}
 

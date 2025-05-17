@@ -1,15 +1,17 @@
 import { useNavigate } from "@remix-run/react";
+import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 import { ClientOnly } from "remix-utils/client-only";
+import { websocketAtom } from "~/atoms/socket";
 import { createGameConfig } from "../core/config/configLoader";
 import type { GameSettings, PlayerData } from "../core/config/gameSettings";
-import { useAtomValue } from "jotai";
-import { websocketAtom } from "~/atoms/socket";
 
 interface PhaserGameProps {
 	gameSettings: GameSettings;
 	players?: PlayerData[];
 	mainPlayerId?: string;
+	apiUrl?: string;
+	roomId?: string;
 }
 
 /**
@@ -23,11 +25,51 @@ export default function PhaserGame({
 	gameSettings,
 	players = [],
 	mainPlayerId,
+	apiUrl,
+	roomId,
 }: PhaserGameProps) {
+	if (!apiUrl) {
+		throw new Error("API URL is required");
+	}
+	if (!roomId) {
+		throw new Error("Room ID is required");
+	}
+
 	const containerRef = useRef<HTMLDivElement>(null);
 	const gameInitializedRef = useRef<boolean>(false);
+	// const roomId
 	const ws = useAtomValue(websocketAtom);
+	if (!ws) {
+		throw new Error("WebSocket is required");
+	}
 	const navigate = useNavigate();
+
+	// ws debug
+	useEffect(() => {
+		ws.onopen = () => {
+			console.log("WebSocket connected");
+		};
+
+		ws.onmessage = (event) => {
+			console.log("message", event)
+		};
+
+		ws.onerror = (error) => {
+			console.error("WebSocket error:", error);
+		};
+
+		ws.onclose = (event) => {
+			console.warn("WebSocket closed", {
+				code: event.code,
+				reason: event.reason,
+				wasClean: event.wasClean,
+			});
+		};
+
+		return () => {
+			ws.close();
+		};
+	}, []);
 
 	// ゲーム終了時のリダイレクトイベントリスナー
 	useEffect(() => {
@@ -35,10 +77,10 @@ export default function PhaserGame({
 			console.log("Redirecting to result page");
 			navigate("/result");
 		};
-		
+
 		// イベントリスナーを追加
 		window.addEventListener("gameRedirectToResult", handleGameRedirect);
-		
+
 		// クリーンアップ関数
 		return () => {
 			if (ws) {
@@ -47,7 +89,7 @@ export default function PhaserGame({
 			window.removeEventListener("gameRedirectToResult", handleGameRedirect);
 		};
 	}, [navigate]);
-	
+
 	// Phaserの初期化処理をClientOnlyの外に出し、コンテナ要素が存在する場合のみ実行する
 	const initPhaser = async () => {
 		if (!containerRef.current || gameInitializedRef.current) return;
@@ -69,6 +111,8 @@ export default function PhaserGame({
 			const config = await createGameConfig(
 				gameSettingsWithPlayers,
 				containerRef.current,
+				apiUrl,
+				roomId
 			);
 
 			const game = new Phaser.Game(config);

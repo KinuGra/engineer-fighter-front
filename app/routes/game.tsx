@@ -1,42 +1,9 @@
 import type { MetaFunction } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
+import { useAtomValue } from "jotai";
+import { playersAtom } from "~/atoms/players";
 import PhaserGame from "~/features/game/components/PhaserGame";
 import { getGameSettings } from "~/features/game/loader";
-
-const samplePlayers = [
-	{
-		id: "ulxsth",
-		icon: "https://avatars.githubusercontent.com/u/114195789?v=4",
-		power: 70,
-		weight: 50,
-		volume: 60,
-		cd: 500,
-	},
-	{
-		id: "ogatakatsuya",
-		icon: "https://avatars.githubusercontent.com/u/114989748?s=130&v=4",
-		power: 50,
-		weight: 60,
-		volume: 40,
-		cd: 400,
-	},
-	{
-		id: "zatunohito",
-		icon: "https://avatars.githubusercontent.com/u/166904542?v=4",
-		power: 40,
-		weight: 30,
-		volume: 80,
-		cd: 300,
-	},
-	{
-		id: "KinuGra",
-		icon: "https://avatars.githubusercontent.com/u/197525874?v=4",
-		power: 80,
-		weight: 80,
-		volume: 30,
-		cd: 600,
-	},
-];
 
 export const loader = getGameSettings;
 export const meta: MetaFunction = () => {
@@ -51,7 +18,13 @@ export const meta: MetaFunction = () => {
  * PhaserGameコンポーネントを使用してゲーム機能を表示します
  */
 export default function GameScreen() {
-	const { gameSettings } = useLoaderData<typeof loader>();
+	const { apiUrl, gameSettings } = useLoaderData<typeof loader>();
+	const roomId = new URLSearchParams(window.location.search).get("roomId");
+	if(!roomId) {
+		throw new Error("Room ID is required");
+	}
+
+	const players = useAtomValue(playersAtom);
 
 	// メインプレイヤーのIDを設定
 	const mainPlayerId = "ulxsth";
@@ -62,8 +35,10 @@ export default function GameScreen() {
 			<div className="bg-slate-100 border border-slate-300 rounded shadow-md p-2">
 				<PhaserGame
 					gameSettings={gameSettings}
-					players={samplePlayers}
+					players={players}
 					mainPlayerId={mainPlayerId}
+					apiUrl={apiUrl}
+					roomId={roomId}
 				/>
 			</div>
 			<div className="mt-4 text-sm text-gray-600">
