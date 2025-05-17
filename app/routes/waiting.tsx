@@ -13,6 +13,7 @@ import calcStatus from "~/utils/calcStatus";
 import genPoint from "~/utils/genPoint.client";
 const { Grid } = pkg;
 import type { PlayerData } from "~/features/game/core/config/gameSettings";
+import { playersAtom } from "~/atoms/players";
 
 interface PlayerCardProps {
 	player: PlayerData;
@@ -96,8 +97,16 @@ const WaitingRoom = () => {
 	const { websocketUrl, apiUrl, roomID, users } =
 		useLoaderData<typeof loader>();
 	const socketRef = useRef<WebSocket | null>(null);
-	const [players, setPlayers] = useState<PlayerData[]>(
-		users.map((user: User) => ({
+	const [players, setPlayers] = useAtom<PlayerData[]>(playersAtom);
+	const githubUser = useAtomValue(githubUserAtom);
+	const githubStatus = useAtomValue(githubGraphQLAtom);
+	const [, setWebsocket] = useAtom(websocketAtom);
+	const router = useNavigate();
+	const [isCopied, setIsCopied] = useState(false);
+	const redirectRef = useRef(false);
+
+	useEffect(() => {
+		setPlayers(users.map((user: User) => ({
 			id: user.userId,
 			icon: user.iconUrl,
 			power: user.power,
@@ -106,14 +115,8 @@ const WaitingRoom = () => {
 			cd: user.cd,
 			x: user.point[0],
 			y: user.point[1],
-		})),
-	);
-	const githubUser = useAtomValue(githubUserAtom);
-	const githubStatus = useAtomValue(githubGraphQLAtom);
-	const [, setWebsocket] = useAtom(websocketAtom);
-	const router = useNavigate();
-	const [isCopied, setIsCopied] = useState(false);
-	const redirectRef = useRef(false);
+		})));
+	}, [users, setPlayers]);
 
 	useEffect(() => {
 		const { x, y } = genPoint();
