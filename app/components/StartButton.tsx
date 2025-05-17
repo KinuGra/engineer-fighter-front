@@ -12,7 +12,7 @@ export const startGameHandler = async (apiUrl: string, roomID: string) => {
 const StartButton = (props: StartButtonProps) => {
 	return (
 		<button
-			className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+			className="bg-black text-white font-bold py-2 px-4 rounded"
 			type="button"
 			onClick={() => startGameHandler(props.roomId, props.apiUrl)}
 		>

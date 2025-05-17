@@ -10,6 +10,7 @@ import { type User, getUsers } from "~/api/getUsers.server";
 import { githubUserAtom } from "~/atoms/githubUser";
 import StartButton from "~/components/StartButton";
 import genPoint from "~/utils/genPoint.client";
+import { FaRegCopy } from "react-icons/fa";
 
 type Player = {
 	id: string;
@@ -181,6 +182,12 @@ const WaitingRoom = () => {
 		};
 	}, [websocketUrl, githubUser]);
 
+	// クリップボードにコピー
+	const copyToClipboard = async (text: string) => {
+		await navigator.clipboard.writeText(text);
+		console.log("copied to clipboard");
+	}
+
 	return (
 		<ClientOnly>
 			{() => (
@@ -193,6 +200,18 @@ const WaitingRoom = () => {
 						marginTop: "80px",
 					}}
 				>
+					<div className="container">
+						<div className="flex items-center justify-center gap-2">
+							{roomID}
+							<button onClick={() => copyToClipboard(roomID)}>
+								<FaRegCopy />
+							</button>
+						</div>
+					</div>
+					{/* ゲーム開始ボタン */}
+					<div style={{ margin: "20px" }}>
+						<StartButton apiUrl={apiUrl} roomId={roomID} />
+					</div>
 					<Grid
 						height="50"
 						width="50"
@@ -218,9 +237,6 @@ const WaitingRoom = () => {
 								<PlayerCard key={player.id} player={player} />
 							))}
 						</div>
-					</div>
-					<div style={{ marginTop: "24px" }}>
-						<StartButton apiUrl={apiUrl} roomId={roomID} />
 					</div>
 				</div>
 			)}
