@@ -2,6 +2,9 @@ import { useNavigate } from "@remix-run/react";
 import type React from "react";
 import { useState } from "react";
 import { type CreateRoomRequest, createRoom } from "~/api/createRoom.client";
+import * as pkg from "react-loader-spinner";
+const { InfinitySpin } = pkg;
+import { ClientOnly } from "remix-utils/client-only";
 
 interface CreateRoomModalProps {
 	open: boolean;
@@ -73,10 +76,17 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 }) => {
 	const [roomName, setRoomName] = useState("");
 	const [maxPlayers, setMaxPlayers] = useState(4);
+	const [submitting, setSubmitting] = useState(false);
 
 	const router = useNavigate();
 
 	if (!open) return null;
+
+	const handleSubmitting = () => {
+		if (roomName.length > 0) {
+			setSubmitting(true);
+		}
+	}
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -99,66 +109,75 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 		const data = await createRoom(request, apiUrl);
 		if (data !== undefined || null) {
 			router(`/waiting?roomId=${data.room_id}`);
+		} else{
+			window.alert("部屋の作成に失敗しました");
+			setSubmitting(false);
 		}
 
 		onClose();
 	};
 
 	return (
-		<div style={styles.overlay}>
-			<div style={styles.modal}>
-				<button
-					type="button"
-					style={{
-						position: "absolute",
-						top: 16,
-						right: 16,
-						background: "none",
-						border: "none",
-						fontSize: "20px",
-						cursor: "pointer",
-					}}
-					aria-label="閉じる"
-					onClick={onClose}
-				>
-					×
-				</button>
-				<h2 style={styles.title}>部屋を作成</h2>
-				<p style={styles.subtitle}>あいことばを設定して部屋を作成しましょう</p>
-				<form onSubmit={handleSubmit}>
-					<div style={styles.formGroup}>
-						<label htmlFor="roomName">部屋の名前</label>
-						<input
-							type="text"
-							id="roomName"
-							placeholder="例: 楽しいゲーム部屋"
-							value={roomName}
-							onChange={(e) => setRoomName(e.target.value)}
-							style={styles.input}
-							required
-						/>
-					</div>
-					<div style={styles.formGroup}>
-						<label htmlFor="maxPlayers">最大プレイヤー数</label>
-						<select
-							value={maxPlayers}
-							id="maxPlayers"
-							onChange={(e) => setMaxPlayers(Number(e.target.value))}
-							style={styles.input}
+		<ClientOnly>
+			{() => (
+				<div style={styles.overlay}>
+					<div style={styles.modal}>
+						<button
+							type="button"
+							style={{
+								position: "absolute",
+								top: 16,
+								right: 16,
+								background: "none",
+								border: "none",
+								fontSize: "20px",
+								cursor: "pointer",
+							}}
+							aria-label="閉じる"
+							onClick={onClose}
 						>
-							{maxPlayersOptions.map((opt) => (
-								<option key={opt} value={opt}>
-									{opt}
-								</option>
-							))}
-						</select>
+							×
+						</button>
+						<h2 style={styles.title}>部屋を作成</h2>
+						<p style={styles.subtitle}>あいことばを設定して部屋を作成しましょう</p>
+						<form onSubmit={handleSubmit}>
+							<div style={styles.formGroup}>
+								<label htmlFor="roomName">部屋の名前</label>
+								<input
+									type="text"
+									id="roomName"
+									placeholder="例: 楽しいゲーム部屋"
+									value={roomName}
+									onChange={(e) => setRoomName(e.target.value)}
+									style={styles.input}
+									required
+								/>
+							</div>
+							<div style={styles.formGroup}>
+								<label htmlFor="maxPlayers">最大プレイヤー数</label>
+								<select
+									value={maxPlayers}
+									id="maxPlayers"
+									onChange={(e) => setMaxPlayers(Number(e.target.value))}
+									style={styles.input}
+								>
+									{maxPlayersOptions.map((opt) => (
+										<option key={opt} value={opt}>
+											{opt}
+										</option>
+									))}
+								</select>
+							</div>
+							<button type="submit" style={styles.submitButton} onClick={() => handleSubmitting()}>
+								<div className="flex items-center justify-center h-10">
+									{submitting && roomName.length > 0 ? <InfinitySpin width="200"/> : "部屋を作成"}
+								</div>
+							</button>
+						</form>
 					</div>
-					<button type="submit" style={styles.submitButton}>
-						部屋を作成
-					</button>
-				</form>
-			</div>
-		</div>
+				</div>
+			)}
+		</ClientOnly>
 	);
 };
 
