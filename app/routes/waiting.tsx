@@ -145,7 +145,10 @@ const WaitingRoom = () => {
 		ws.onopen = async () => {
 			console.log("WebSocket connected");
 			setWebsocket(ws);
-			setPlayers((prevPlayers) => [...prevPlayers, { id: userID, icon: iconUrl, power, weight, volume, cd, x, y }]);
+			setPlayers((prevPlayers) => [
+				...prevPlayers,
+				{ id: userID, icon: iconUrl, power, weight, volume, cd, x, y },
+			]);
 		};
 
 		ws.onmessage = (event) => {
