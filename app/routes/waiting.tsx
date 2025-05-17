@@ -2,13 +2,14 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import * as pkg from "react-loader-spinner";
 const { Grid } = pkg;
 import { useLoaderData } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
+import { useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { ClientOnly } from "remix-utils/client-only";
+import { type User, getUsers } from "~/api/getUsers.server";
+import { githubUserAtom } from "~/atoms/githubUser";
 import StartButton from "~/components/StartButton";
 import genPoint from "~/utils/genPoint.client";
-import { useAtomValue } from "jotai";
-import { githubUserAtom } from "~/atoms/githubUser";
-import { getUsers, type User } from "~/api/getUsers.server";
 
 type Player = {
 	id: string;
@@ -33,6 +34,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 
 	return {
 		websocketUrl,
+		apiUrl,
 		roomID,
 		users: result.users,
 	};
@@ -93,15 +95,17 @@ const styles = {
 };
 
 const WaitingRoom = () => {
-	const { websocketUrl, roomID, users } = useLoaderData<typeof loader>();
+	const { websocketUrl, apiUrl, roomID, users } =
+		useLoaderData<typeof loader>();
 	const socketRef = useRef<WebSocket | null>(null);
 	const [players, setPlayers] = useState<Player[]>(
 		users.map((user: User) => ({
 			id: user.userId,
 			iconUrl: user.iconUrl,
-		}))
+		})),
 	);
 	const githubUser = useAtomValue(githubUserAtom);
+	const router = useNavigate();
 
 	useEffect(() => {
 		const { x, y } = genPoint();
@@ -111,10 +115,12 @@ const WaitingRoom = () => {
 		const weight = 1;
 		const volume = 5;
 		const cd = 7;
-		
+
 		// GitHubユーザー情報を使用する
 		const userID = githubUser?.login || "guest";
-		const iconUrl = githubUser?.avatar_url || "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png";
+		const iconUrl =
+			githubUser?.avatar_url ||
+			"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png";
 
 		const params = new URLSearchParams({
 			roomID,
@@ -144,9 +150,9 @@ const WaitingRoom = () => {
 				}
 				setPlayers((prevPlayers) => [
 					...prevPlayers,
-					{ 
-						id: data.message.id, 
-						iconUrl: data.message.icon_url, 
+					{
+						id: data.message.id,
+						iconUrl: data.message.icon_url,
 					},
 				]);
 			} else if (data.type === "leave") {
@@ -154,7 +160,7 @@ const WaitingRoom = () => {
 					prevPlayers.filter((player) => player.id !== data.message.id),
 				);
 			} else if (data.type === "start") {
-				console.log("Game started");
+				router(`/game?roomId=${roomID}`);
 			}
 		};
 
@@ -214,7 +220,7 @@ const WaitingRoom = () => {
 						</div>
 					</div>
 					<div style={{ marginTop: "24px" }}>
-						<StartButton />
+						<StartButton apiUrl={apiUrl} roomId={roomID} />
 					</div>
 				</div>
 			)}
