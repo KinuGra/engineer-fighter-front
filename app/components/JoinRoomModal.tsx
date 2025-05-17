@@ -19,13 +19,8 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 	apiUrl,
 }) => {
 	const [keyword, setKeyword] = useState("");
-	const [submit, setSubmit] = useState(false);
+	const [submitting, setSubmitting] = useState(false);
 	const router = useNavigate();
-
-	const handleSubmit = () => {
-		setSubmit(false);
-		onClose();
-	}
 
 	if (!open) return null;
 	return (
@@ -57,7 +52,6 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 				>
 					<button
 						type="button"
-						onClick={handleSubmit}
 						style={{
 							position: "absolute",
 							top: 16,
@@ -90,9 +84,10 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 							console.log("data:", data);
 							if (data.status === "ok") {
 								router(`/waiting?roomId=${keyword}`);
+							} else {
+								alert("合言葉が間違っています");
+								setSubmitting(false);
 							}
-
-							handleSubmit();
 						}}
 					>
 						<div style={{ marginBottom: 28 }}>
@@ -133,11 +128,16 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 								fontWeight: 600,
 								cursor: "pointer",
 							}}
-							disabled={submit}
-							onClick={() => setSubmit(true)}
+							onClick={() => setSubmitting(true)}
 						>
 							<div className="flex items-center justify-center h-10">
-									{submit ? <InfinitySpin/> : "参加する"}
+									{submitting ?(
+										<InfinitySpin
+											width="200"
+										/>
+									):(
+										<span>参加する</span>
+									)}
 							</div>
 						</button>
 					</form>
