@@ -119,49 +119,6 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 	};
 
 	return (
-<<<<<<< HEAD
-		<div style={styles.overlay}>
-			<div style={styles.modal}>
-				<button
-					type="button"
-					style={{
-						position: "absolute",
-						top: 16,
-						right: 16,
-						background: "none",
-						border: "none",
-						fontSize: "20px",
-						cursor: "pointer",
-						color: "black",
-					}}
-					aria-label="閉じる"
-					onClick={onClose}
-				>
-					×
-				</button>
-				<h2 style={styles.title}>部屋を作成</h2>
-				<p style={styles.subtitle}>あいことばを設定して部屋を作成しましょう</p>
-				<form onSubmit={handleSubmit}>
-					<div style={styles.formGroup}>
-						<label htmlFor="roomName">部屋の名前</label>
-						<input
-							type="text"
-							id="roomName"
-							placeholder="例: 楽しいゲーム部屋"
-							value={roomName}
-							onChange={(e) => setRoomName(e.target.value)}
-							style={styles.input}
-							required
-						/>
-					</div>
-					<div style={styles.formGroup}>
-						<label htmlFor="maxPlayers">最大プレイヤー数</label>
-						<select
-							value={maxPlayers}
-							id="maxPlayers"
-							onChange={(e) => setMaxPlayers(Number(e.target.value))}
-							style={styles.input}
-=======
 		<ClientOnly>
 			{() => (
 				<div style={styles.overlay}>
@@ -179,7 +136,6 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 							}}
 							aria-label="閉じる"
 							onClick={onClose}
->>>>>>> c17b451f388cf2852a3e79aecff01e198481a5c6
 						>
 							×
 						</button>

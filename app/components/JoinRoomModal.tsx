@@ -64,11 +64,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 							color: "black"
 						}}
 						aria-label="閉じる"
-<<<<<<< HEAD
-						onClick={() => {open = false}}
-=======
 						onClick={onClose}
->>>>>>> c17b451f388cf2852a3e79aecff01e198481a5c6
 					>
 						×
 					</button>
