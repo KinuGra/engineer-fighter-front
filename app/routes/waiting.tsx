@@ -5,12 +5,12 @@ import { useLoaderData } from "@remix-run/react";
 import { useNavigate } from "@remix-run/react";
 import { useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
+import { FaRegCopy } from "react-icons/fa";
 import { ClientOnly } from "remix-utils/client-only";
 import { type User, getUsers } from "~/api/getUsers.server";
 import { githubUserAtom } from "~/atoms/githubUser";
 import StartButton from "~/components/StartButton";
 import genPoint from "~/utils/genPoint.client";
-import { FaRegCopy } from "react-icons/fa";
 
 type Player = {
 	id: string;
@@ -191,7 +191,7 @@ const WaitingRoom = () => {
 			setIsCopied(false);
 		}, 2000);
 		console.log("copied to clipboard");
-	}
+	};
 
 	return (
 		<ClientOnly>
