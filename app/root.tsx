@@ -11,8 +11,8 @@ import {
 import { serializeCookieHeader } from "@supabase/ssr";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
-import type { GitHubUser } from "~/types/github";
 import { githubUserAtom } from "~/atoms/githubUser";
+import type { GitHubUser } from "~/types/github";
 import Header from "./components/Header";
 import { authCookies } from "./const";
 import { signOut } from "./utils/auth.server";
@@ -79,7 +79,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
 	const user = useLoaderData<GitHubUser | null>();
 	const [, setGithubUser] = useAtom(githubUserAtom);
-	
+
 	useEffect(() => {
 		if (user) {
 			setGithubUser(user);
