@@ -17,6 +17,8 @@ export const createGameConfig = async (
 	gameSettings: GameSettings,
 	parent: HTMLElement | undefined,
 ): Promise<Phaser.Types.Core.GameConfig> => {
+	const players = gameSettings.players;
+
 	// Phaserはクライアント側でのみインポート
 	// @ts-expect-error 動的インポート(tsconfig.jsonでのmodules設定に依存)
 	const Phaser = (await import("phaser")).default;
@@ -39,9 +41,9 @@ export const createGameConfig = async (
 		},
 		scene: {
 			preload: function (this: Phaser.Scene) {
-				this.load.setBaseURL(gameSettings.assets.baseUrl);
-				for (const img of gameSettings.assets.images) {
-					this.load.image(img.key, img.path);
+				for (const player of players) {
+					// プレイヤーのアイコンをプリロード
+					this.load.image(player.id, player.icon);
 				}
 			},
 			create: async function (this: Phaser.Scene) {

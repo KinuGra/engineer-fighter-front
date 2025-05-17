@@ -1,15 +1,14 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import * as pkg from "react-loader-spinner";
-const { Grid } = pkg;
-import { useLoaderData } from "@remix-run/react";
-import { useNavigate } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import { useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
+import * as pkg from "react-loader-spinner";
 import { ClientOnly } from "remix-utils/client-only";
 import { type User, getUsers } from "~/api/getUsers.server";
 import { githubUserAtom } from "~/atoms/githubUser";
 import StartButton from "~/components/StartButton";
 import genPoint from "~/utils/genPoint.client";
+const { Grid } = pkg;
 
 type Player = {
 	id: string;
