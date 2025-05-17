@@ -1,5 +1,5 @@
 import { GameObjects } from "phaser";
-import sendAction from "~/api/sendAction.server";
+import sendAction from "~/api/sendAction.client";
 import { COLORS } from "../config/config";
 import ClientGameStateManager from "../state/ClientGameStateManager";
 
