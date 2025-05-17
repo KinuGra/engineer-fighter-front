@@ -115,12 +115,6 @@ export class Player extends GameObjects.Arc {
 				// 境界との衝突を無効化（フィールド外に出られるようにする）
 				body.setCollideWorldBounds(false);
 
-				// フィールド境界をコンソールに出力
-				console.log(
-					`Player ${id} created, world bounds:`,
-					this.scene.physics.world.bounds,
-				);
-
 				// 初期設定（質量と摩擦係数）
 				const weightFactor = this.weight / 100;
 				const volumeFactor = this.volume / 100;
@@ -602,14 +596,6 @@ export class Player extends GameObjects.Arc {
 		const centerX = this.x;
 		const centerY = this.y;
 
-		// デバッグ用：座標とバウンド情報をログ出力
-		console.log(
-			`Player: ${this.id}, X: ${centerX}, Y: ${centerY}, Radius: ${radius}`,
-		);
-		console.log(
-			`Bounds: X: ${bounds.x}, Y: ${bounds.y}, Width: ${bounds.width}, Height: ${bounds.height}`,
-		);
-
 		// プレイヤーの円形が完全にフィールド外に出ているかチェック
 		// 円がフィールドと少しでも重なっていれば、フィールド内と判定
 		const isCompletelyOutsideX =
@@ -619,13 +605,6 @@ export class Player extends GameObjects.Arc {
 			centerY - radius > bounds.y + bounds.height;
 
 		const isWithinField = !(isCompletelyOutsideX || isCompletelyOutsideY);
-
-		// デバッグ用：判定結果をログ出力
-		console.log(
-			`Player: ${this.id}, isCompletelyOutsideX: ${isCompletelyOutsideX}, isCompletelyOutsideY: ${isCompletelyOutsideY}`,
-		);
-		console.log(`Player: ${this.id}, isWithinField: ${isWithinField}`);
-
 		return isWithinField;
 	}
 
