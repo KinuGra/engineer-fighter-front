@@ -55,14 +55,16 @@ export class Player extends GameObjects.Arc {
 		this.cd = cd;
 
 		// 名前表示を作成
-		this.nameText = scene.add.text(x, y - radius - 20, `@${id}`, {
-			fontFamily: 'Arial',
-			fontSize: '14px',
-			color: '#222',
-			align: 'center',
-			stroke: '#fff',
-			strokeThickness: 2
-		}).setOrigin(0.5, 0.5);
+		this.nameText = scene.add
+			.text(x, y - radius - 20, `@${id}`, {
+				fontFamily: "Arial",
+				fontSize: "14px",
+				color: "#222",
+				align: "center",
+				stroke: "#fff",
+				strokeThickness: 2,
+			})
+			.setOrigin(0.5, 0.5);
 		this.nameText.setDepth(10); // テキストを上のレイヤーに表示
 
 		// アイコンが設定されていればスプライトを作成

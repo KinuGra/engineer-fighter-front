@@ -1,8 +1,8 @@
 import { useNavigate } from "@remix-run/react";
 import type React from "react";
 import { useState } from "react";
-import { type CreateRoomRequest, createRoom } from "~/api/createRoom.client";
 import * as pkg from "react-loader-spinner";
+import { type CreateRoomRequest, createRoom } from "~/api/createRoom.client";
 const { InfinitySpin } = pkg;
 import { ClientOnly } from "remix-utils/client-only";
 
@@ -86,7 +86,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 		if (roomName.length > 0) {
 			setSubmitting(true);
 		}
-	}
+	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -109,7 +109,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 		const data = await createRoom(request, apiUrl);
 		if (data !== undefined || null) {
 			router(`/waiting?roomId=${data.room_id}`);
-		} else{
+		} else {
 			window.alert("部屋の作成に失敗しました");
 			setSubmitting(false);
 		}
@@ -139,7 +139,9 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 							×
 						</button>
 						<h2 style={styles.title}>部屋を作成</h2>
-						<p style={styles.subtitle}>あいことばを設定して部屋を作成しましょう</p>
+						<p style={styles.subtitle}>
+							あいことばを設定して部屋を作成しましょう
+						</p>
 						<form onSubmit={handleSubmit}>
 							<div style={styles.formGroup}>
 								<label htmlFor="roomName">部屋の名前</label>
@@ -168,9 +170,17 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 									))}
 								</select>
 							</div>
-							<button type="submit" style={styles.submitButton} onClick={() => handleSubmitting()}>
+							<button
+								type="submit"
+								style={styles.submitButton}
+								onClick={() => handleSubmitting()}
+							>
 								<div className="flex items-center justify-center h-10">
-									{submitting && roomName.length > 0 ? <InfinitySpin width="200"/> : "部屋を作成"}
+									{submitting && roomName.length > 0 ? (
+										<InfinitySpin width="200" />
+									) : (
+										"部屋を作成"
+									)}
 								</div>
 							</button>
 						</form>
