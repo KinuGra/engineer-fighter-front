@@ -16,6 +16,8 @@ const stateManager = ClientGameStateManager.getInstance();
 export const createGameConfig = async (
 	gameSettings: GameSettings,
 	parent: HTMLElement | undefined,
+	apiUrl: string,
+	roomId: string,
 ): Promise<Phaser.Types.Core.GameConfig> => {
 	const players = gameSettings.players;
 
@@ -188,8 +190,8 @@ export const createGameConfig = async (
 								isFirstClick = false;
 							} else {
 								// 2回目のクリック：ひっぱりを完了して移動
-								const didMove = mainPlayer.completeDrag(pointer.x, pointer.y);
-								isFirstClick = true; // 次回のクリックに備えてリセット
+								const didMove = mainPlayer.completeDrag(pointer.x, pointer.y, apiUrl, roomId);
+								isFirstClick = true;
 
 								if (!didMove) {
 									// 移動できなかった場合は直接新しいドラッグを開始

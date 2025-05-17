@@ -51,7 +51,11 @@ export const meta: MetaFunction = () => {
  * PhaserGameコンポーネントを使用してゲーム機能を表示します
  */
 export default function GameScreen() {
-	const { gameSettings } = useLoaderData<typeof loader>();
+	const { apiUrl, gameSettings } = useLoaderData<typeof loader>();
+	const roomId = new URLSearchParams(window.location.search).get("roomId");
+	if(!roomId) {
+		throw new Error("Room ID is required");
+	}
 
 	// メインプレイヤーのIDを設定
 	const mainPlayerId = "ulxsth";
@@ -64,6 +68,8 @@ export default function GameScreen() {
 					gameSettings={gameSettings}
 					players={samplePlayers}
 					mainPlayerId={mainPlayerId}
+					apiUrl={apiUrl}
+					roomId={roomId}
 				/>
 			</div>
 			<div className="mt-4 text-sm text-gray-600">

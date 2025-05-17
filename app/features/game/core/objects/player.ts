@@ -1,4 +1,5 @@
 import { GameObjects } from "phaser";
+import sendAction from "~/api/sendAction.server";
 import { COLORS } from "../config/config";
 import ClientGameStateManager from "../state/ClientGameStateManager";
 
@@ -24,12 +25,12 @@ export class Player extends GameObjects.Arc {
 	private iconMaskGraphics: Phaser.GameObjects.Graphics | null = null;
 	private highlightGraphics: Phaser.GameObjects.Graphics | null = null;
 	private youIndicator: Phaser.GameObjects.Text | null = null;
-	
+
 	// マスク更新最適化用の変数
 	private lastMaskX: number = 0;
 	private lastMaskY: number = 0;
 	private lastMaskRadius: number = 0;
-	
+
 	// ハイライト更新最適化用の変数
 	private lastHighlightX: number = 0;
 	private lastHighlightY: number = 0;
@@ -85,14 +86,14 @@ export class Player extends GameObjects.Arc {
 				// アイコンのサイズを設定（プレイヤーの円と同じサイズに）
 				this.iconSprite.setDisplaySize(radius * 2, radius * 2);
 				this.iconSprite.setDepth(5);
-				
+
 				// 円形マスクを作成してアイコンに適用（円形に切り抜く）
 				this.iconMaskGraphics = scene.make.graphics({});
 				this.iconMaskGraphics.fillStyle(0xffffff);
 				this.iconMaskGraphics.fillCircle(x, y, radius);
 				this.iconMask = this.iconMaskGraphics.createGeometryMask();
 				this.iconSprite.setMask(this.iconMask);
-				
+
 				// マスク更新の最適化用に初期位置と半径を記録
 				this.lastMaskX = x;
 				this.lastMaskY = y;
@@ -193,7 +194,7 @@ export class Player extends GameObjects.Arc {
 			this.iconSprite.setPosition(this.x, this.y);
 			this.iconSprite.setVisible(this.visible);
 			this.iconSprite.setAlpha(this.alpha);
-			
+
 			// マスクの位置も更新（必要な場合のみ）
 			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
 			this.updateMask(this.x, this.y, radius);
@@ -227,7 +228,7 @@ export class Player extends GameObjects.Arc {
 		// アイコンの位置を更新
 		if (this.iconSprite) {
 			this.iconSprite.setPosition(x, y);
-			
+
 			// マスクも位置を更新（必要な場合のみ）
 			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
 			this.updateMask(x, y, radius);
@@ -406,7 +407,7 @@ export class Player extends GameObjects.Arc {
 	 * @param y ひっぱり終了地点のY座標
 	 * @returns 移動が実行されたかどうか
 	 */
-	public completeDrag(x: number, y: number): boolean {
+	public completeDrag(x: number, y: number, apiUrl: string, roomId: string): boolean {
 		// クールダウン中、ドラッグ中でない、または死亡している場合は操作を受け付けない
 		if (this.isInCooldown() || !this.dragStartPoint || !this.isAlive)
 			return false;
@@ -460,6 +461,17 @@ export class Player extends GameObjects.Arc {
 
 			// バウンス（跳ね返り）を小さめに設定（重い方が跳ね返りが小さい）
 			body.setBounce(0.3 - weightFactor * 0.2); // 0.1～0.3の間
+
+			// イベントの送信
+			// TODO: apiUrl
+			sendAction({
+				type: "action",
+				message: {
+					id: this.id,
+					angle: [angle, 0],
+					pull_power: finalStrength,
+				}
+			}, apiUrl, roomId)
 
 			// 速度の適用
 			body.setVelocity(velocityX, velocityY);
@@ -619,7 +631,7 @@ export class Player extends GameObjects.Arc {
 		this.highlightGraphics.lineStyle(3, 0xFFD700); // 3px太さの金色の線
 		this.highlightGraphics.strokeCircle(this.x, this.y, radius + 5);
 		this.highlightGraphics.setDepth(4); // アイコンの下、プレイヤーの上
-		
+
 		// ハイライト位置を記録
 		this.lastHighlightX = this.x;
 		this.lastHighlightY = this.y;
@@ -681,7 +693,7 @@ export class Player extends GameObjects.Arc {
 			this.iconMaskGraphics.clear();
 			this.iconMaskGraphics.fillStyle(0xffffff);
 			this.iconMaskGraphics.fillCircle(x, y, radius);
-			
+
 			// 新しい位置と半径を記録
 			this.lastMaskX = x;
 			this.lastMaskY = y;
@@ -710,7 +722,7 @@ export class Player extends GameObjects.Arc {
 			this.highlightGraphics.clear();
 			this.highlightGraphics.lineStyle(3, 0xFFD700);
 			this.highlightGraphics.strokeCircle(x, y, radius + 5);
-			
+
 			// 新しい位置と半径を記録
 			this.lastHighlightX = x;
 			this.lastHighlightY = y;

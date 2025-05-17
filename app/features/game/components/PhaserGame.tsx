@@ -1,15 +1,17 @@
 import { useNavigate } from "@remix-run/react";
+import { useAtomValue } from "jotai";
 import { useEffect, useRef } from "react";
 import { ClientOnly } from "remix-utils/client-only";
+import { websocketAtom } from "~/atoms/socket";
 import { createGameConfig } from "../core/config/configLoader";
 import type { GameSettings, PlayerData } from "../core/config/gameSettings";
-import { useAtomValue } from "jotai";
-import { websocketAtom } from "~/atoms/socket";
 
 interface PhaserGameProps {
 	gameSettings: GameSettings;
 	players?: PlayerData[];
 	mainPlayerId?: string;
+	apiUrl?: string;
+	roomId?: string;
 }
 
 /**
@@ -23,9 +25,19 @@ export default function PhaserGame({
 	gameSettings,
 	players = [],
 	mainPlayerId,
+	apiUrl,
+	roomId,
 }: PhaserGameProps) {
+	if(!apiUrl) {
+		throw new Error("API URL is required");
+	}
+	if(!roomId) {
+		throw new Error("Room ID is required");
+	}
+
 	const containerRef = useRef<HTMLDivElement>(null);
 	const gameInitializedRef = useRef<boolean>(false);
+	// const roomId
 	const ws = useAtomValue(websocketAtom);
 	const navigate = useNavigate();
 
@@ -69,6 +81,8 @@ export default function PhaserGame({
 			const config = await createGameConfig(
 				gameSettingsWithPlayers,
 				containerRef.current,
+				apiUrl,
+				roomId
 			);
 
 			const game = new Phaser.Game(config);

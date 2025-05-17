@@ -1,5 +1,7 @@
 type Message = {
 	id: string;
+	// FIXME: numberでよかった（angleはひとつ）
+	// とりあえず[angle, 0]で運用
 	angle: number[];
 	pull_power: number;
 };

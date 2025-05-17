@@ -1,10 +1,12 @@
-import { data } from "@remix-run/cloudflare";
+import { data, LoaderFunctionArgs } from "@remix-run/cloudflare";
 import { defaultGameSettings } from "./core/config/gameSettings";
 
 /**
  * ゲーム設定を取得するローダー関数
  */
-export async function getGameSettings() {
+export async function getGameSettings({ context }: LoaderFunctionArgs) {
+	const apiUrl = context.cloudflare.env.API_URL;
+
 	const gameSettings = defaultGameSettings;
-	return data({ gameSettings });
+	return data({ apiUrl, gameSettings });
 }
