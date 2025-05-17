@@ -18,10 +18,19 @@ interface PlayerCardProps {
 	player: Player;
 }
 
-export const loader = async ({ context }: LoaderFunctionArgs) => {
+export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 	const websocketUrl = context.cloudflare.env.WS_URL;
 
-	return { websocketUrl };
+	const url = new URL(request.url);
+	const roomID = url.searchParams.get("roomId");
+	if (!roomID) {
+		throw new Error("Room ID is required");
+	}
+
+	return {
+		websocketUrl,
+		roomID,
+	};
 };
 
 const PlayerCard = (props: PlayerCardProps) => {
@@ -79,7 +88,7 @@ const styles = {
 };
 
 const WaitingRoom = () => {
-	const { websocketUrl } = useLoaderData<typeof loader>();
+	const { websocketUrl, roomID } = useLoaderData<typeof loader>();
 	const socketRef = useRef<WebSocket | null>(null);
 	const [players, setPlayers] = useState<Player[]>([]);
 	const githubUser = useAtomValue(githubUserAtom);
@@ -99,7 +108,7 @@ const WaitingRoom = () => {
 		const roomID = "821047cb-f394-41d3-a928-71ea2567c960";
 
 		const params = new URLSearchParams({
-			roomID,
+			roomID: roomID,
 			userID,
 			iconUrl,
 			power: power.toString(),

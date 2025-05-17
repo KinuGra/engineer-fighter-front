@@ -1,6 +1,7 @@
 import type React from "react";
 import { useState } from "react";
 import { type CreateRoomRequest, createRoom } from "~/api/createRoom.client";
+import { useNavigate } from "@remix-run/react";
 
 interface CreateRoomModalProps {
 	open: boolean;
@@ -73,9 +74,11 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 	const [roomName, setRoomName] = useState("");
 	const [maxPlayers, setMaxPlayers] = useState(4);
 
+	const router = useNavigate();
+
 	if (!open) return null;
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		const cookie = document.cookie
 			.split("; ")
@@ -93,7 +96,10 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 			capacity: maxPlayers,
 		};
 
-		createRoom(request, apiUrl);
+		const data = await createRoom(request, apiUrl);
+		if (data !== undefined || null) {
+			router(`/waiting?roomId=${data.room_id}`);
+		}
 
 		onClose();
 	};
