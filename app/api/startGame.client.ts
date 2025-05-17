@@ -20,7 +20,7 @@ const startGame = async (
 		throw new Error("Failed to start game");
 	}
 
-	return {}
+	return {};
 };
 
 export default startGame;
