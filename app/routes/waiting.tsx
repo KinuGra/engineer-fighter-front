@@ -7,8 +7,9 @@ import { useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { ClientOnly } from "remix-utils/client-only";
 import { type User, getUsers } from "~/api/getUsers.server";
-import { githubUserAtom } from "~/atoms/githubUser";
+import { githubGraphQLAtom, githubUserAtom } from "~/atoms/githubUser";
 import StartButton from "~/components/StartButton";
+import calcStatus from "~/utils/calcStatus";
 import genPoint from "~/utils/genPoint.client";
 
 type Player = {
@@ -105,16 +106,18 @@ const WaitingRoom = () => {
 		})),
 	);
 	const githubUser = useAtomValue(githubUserAtom);
+	const githubStatus = useAtomValue(githubGraphQLAtom);
 	const router = useNavigate();
 
 	useEffect(() => {
 		const { x, y } = genPoint();
 
 		// GitHubの情報をもとに計算する
-		const power = 2;
-		const weight = 1;
-		const volume = 5;
-		const cd = 7;
+		const { power, weight, volume, cd } = calcStatus(githubStatus);
+		console.log("power", power);
+		console.log("weight", weight);
+		console.log("volume", volume);
+		console.log("cd", cd);
 
 		// GitHubユーザー情報を使用する
 		const userID = githubUser?.login || "guest";
