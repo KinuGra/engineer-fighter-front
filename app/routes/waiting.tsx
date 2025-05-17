@@ -139,6 +139,9 @@ const WaitingRoom = () => {
 		ws.onmessage = (event) => {
 			const data = JSON.parse(event.data);
 			if (data.type === "join") {
+				if (data.message.id === githubUser?.login) {
+					return;
+				}
 				setPlayers((prevPlayers) => [
 					...prevPlayers,
 					{ 
