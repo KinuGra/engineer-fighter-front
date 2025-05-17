@@ -1,15 +1,17 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import * as pkg from "react-loader-spinner";
-const { Grid } = pkg;
-import { useLoaderData } from "@remix-run/react";
-import { useNavigate } from "@remix-run/react";
-import { useAtomValue } from "jotai";
+import { useLoaderData, useNavigate } from "@remix-run/react";
+import { useAtom, useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
+import { FaRegCopy } from "react-icons/fa";
+import * as pkg from "react-loader-spinner";
 import { ClientOnly } from "remix-utils/client-only";
 import { type User, getUsers } from "~/api/getUsers.server";
-import { githubUserAtom } from "~/atoms/githubUser";
+import { githubGraphQLAtom, githubUserAtom } from "~/atoms/githubUser";
+import { websocketAtom } from "~/atoms/socket";
 import StartButton from "~/components/StartButton";
+import calcStatus from "~/utils/calcStatus";
 import genPoint from "~/utils/genPoint.client";
+const { Grid } = pkg;
 
 type Player = {
 	id: string;
@@ -105,16 +107,17 @@ const WaitingRoom = () => {
 		})),
 	);
 	const githubUser = useAtomValue(githubUserAtom);
+	const githubStatus = useAtomValue(githubGraphQLAtom);
+	const [, setWebsocket] = useAtom(websocketAtom);
 	const router = useNavigate();
+	const [isCopied, setIsCopied] = useState(false);
+	const redirectRef = useRef(false);
 
 	useEffect(() => {
 		const { x, y } = genPoint();
 
 		// GitHubの情報をもとに計算する
-		const power = 2;
-		const weight = 1;
-		const volume = 5;
-		const cd = 7;
+		const { power, weight, volume, cd } = calcStatus(githubStatus);
 
 		// GitHubユーザー情報を使用する
 		const userID = githubUser?.login || "guest";
@@ -139,6 +142,7 @@ const WaitingRoom = () => {
 
 		ws.onopen = async () => {
 			console.log("WebSocket connected");
+			setWebsocket(ws);
 			setPlayers((prevPlayers) => [...prevPlayers, { id: userID, iconUrl }]);
 		};
 
@@ -160,6 +164,7 @@ const WaitingRoom = () => {
 					prevPlayers.filter((player) => player.id !== data.message.id),
 				);
 			} else if (data.type === "start") {
+				redirectRef.current = true;
 				router(`/game?roomId=${roomID}`);
 			}
 		};
@@ -177,9 +182,21 @@ const WaitingRoom = () => {
 		};
 
 		return () => {
-			ws.close();
+			if(!redirectRef.current) {
+				ws.close();
+			}
 		};
 	}, [websocketUrl, githubUser]);
+
+	// クリップボードにコピー
+	const copyToClipboard = async (text: string) => {
+		await navigator.clipboard.writeText(text);
+		setIsCopied(true);
+		setTimeout(() => {
+			setIsCopied(false);
+		}, 2000);
+		console.log("copied to clipboard");
+	};
 
 	return (
 		<ClientOnly>
@@ -193,15 +210,38 @@ const WaitingRoom = () => {
 						marginTop: "80px",
 					}}
 				>
-					<Grid
-						height="50"
-						width="50"
-						color="#4fa94d"
-						ariaLabel="audio-loading"
-						wrapperStyle={{}}
-						wrapperClass="wrapper-class"
-						visible={true}
-					/>
+					<div style={{ marginBottom: "20px", fontSize: "20px" }}>
+						合言葉をコピーして、友達と共有してください
+					</div>
+					{/* 部屋ID */}
+					<div className="container">
+						<div className="flex items-center justify-center gap-2">
+							{roomID}
+							<button
+								onClick={() => copyToClipboard(roomID)}
+								className="relative"
+							>
+								<FaRegCopy className={isCopied ? "text-green-500" : ""} />
+								{isCopied && (
+									<span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-600 text-white text-xs py-1 px-4 rounded whitespace-nowrap min-w-90px] text-center">
+										Copied!
+									</span>
+								)}
+							</button>
+						</div>
+					</div>
+
+					<div className="mt-3">
+						<Grid
+							height="50"
+							width="50"
+							color="#4fa94d"
+							ariaLabel="audio-loading"
+							wrapperStyle={{}}
+							wrapperClass="wrapper-class"
+							visible={true}
+						/>
+					</div>
 					<div
 						style={{
 							marginTop: "24px",
@@ -219,7 +259,8 @@ const WaitingRoom = () => {
 							))}
 						</div>
 					</div>
-					<div style={{ marginTop: "24px" }}>
+					{/* ゲーム開始ボタン */}
+					<div style={{ margin: "20px" }}>
 						<StartButton apiUrl={apiUrl} roomId={roomID} />
 					</div>
 				</div>

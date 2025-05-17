@@ -30,15 +30,6 @@ export const defaultGameSettings = {
 	userPreferences: {
 		controls: "keyboard",
 	},
-	// アセット情報
-	assets: {
-		baseUrl: "https://labs.phaser.io",
-		images: [
-			{ key: "sky", path: "assets/skies/space3.png" },
-			{ key: "logo", path: "assets/sprites/phaser3-logo.png" },
-			{ key: "red", path: "assets/particles/red.png" },
-		],
-	},
 	// プレイヤーデータ情報
 	players: [] as PlayerData[],
 };
