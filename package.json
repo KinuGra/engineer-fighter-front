@@ -15,12 +15,15 @@
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
+		"@octokit/core": "^6.1.5",
 		"@remix-run/cloudflare": "^2.16.5",
 		"@remix-run/node": "^2.16.6",
 		"@remix-run/react": "^2.16.5",
 		"@remix-run/server-runtime": "^2.16.5",
 		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.49.4",
+		"dayjs": "^1.11.13",
+		"graphql": "^16.11.0",
 		"isbot": "^4.1.0",
 		"jotai": "^2.12.4",
 		"phaser": "^3.88.2",
