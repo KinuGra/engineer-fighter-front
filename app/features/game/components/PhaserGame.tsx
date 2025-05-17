@@ -28,10 +28,10 @@ export default function PhaserGame({
 	apiUrl,
 	roomId,
 }: PhaserGameProps) {
-	if(!apiUrl) {
+	if (!apiUrl) {
 		throw new Error("API URL is required");
 	}
-	if(!roomId) {
+	if (!roomId) {
 		throw new Error("Room ID is required");
 	}
 
@@ -39,7 +39,37 @@ export default function PhaserGame({
 	const gameInitializedRef = useRef<boolean>(false);
 	// const roomId
 	const ws = useAtomValue(websocketAtom);
+	if (!ws) {
+		throw new Error("WebSocket is required");
+	}
 	const navigate = useNavigate();
+
+	// ws debug
+	useEffect(() => {
+		ws.onopen = () => {
+			console.log("WebSocket connected");
+		};
+
+		ws.onmessage = (event) => {
+			console.log("message", event)
+		};
+
+		ws.onerror = (error) => {
+			console.error("WebSocket error:", error);
+		};
+
+		ws.onclose = (event) => {
+			console.warn("WebSocket closed", {
+				code: event.code,
+				reason: event.reason,
+				wasClean: event.wasClean,
+			});
+		};
+
+		return () => {
+			ws.close();
+		};
+	}, []);
 
 	// ゲーム終了時のリダイレクトイベントリスナー
 	useEffect(() => {
