@@ -29,7 +29,7 @@ export default function SignIn() {
 				<h2 className="mb-2 text-center text-3xl font-bold text-gray-900">
 					Engineer Fighters
 				</h2>
-				<p className="mb-6 text-center text-gray-600 text-base">
+				<p className="mb-6 text-center text-gray-600 text-base break-all">
 					GitHubアカウントでログインして始めましょう
 				</p>
 				<Form method="post">
