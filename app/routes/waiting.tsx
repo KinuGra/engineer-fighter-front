@@ -4,10 +4,12 @@ const { Grid } = pkg;
 import { useLoaderData } from "@remix-run/react";
 import { useNavigate } from "@remix-run/react";
 import { useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { ClientOnly } from "remix-utils/client-only";
 import { type User, getUsers } from "~/api/getUsers.server";
 import { githubGraphQLAtom, githubUserAtom } from "~/atoms/githubUser";
+import { websocketAtom } from "~/atoms/socket";
 import StartButton from "~/components/StartButton";
 import calcStatus from "~/utils/calcStatus";
 import genPoint from "~/utils/genPoint.client";
@@ -107,6 +109,7 @@ const WaitingRoom = () => {
 	);
 	const githubUser = useAtomValue(githubUserAtom);
 	const githubStatus = useAtomValue(githubGraphQLAtom);
+	const [, setWebsocket] = useAtom(websocketAtom);
 	const router = useNavigate();
 
 	useEffect(() => {
@@ -114,10 +117,6 @@ const WaitingRoom = () => {
 
 		// GitHubの情報をもとに計算する
 		const { power, weight, volume, cd } = calcStatus(githubStatus);
-		console.log("power", power);
-		console.log("weight", weight);
-		console.log("volume", volume);
-		console.log("cd", cd);
 
 		// GitHubユーザー情報を使用する
 		const userID = githubUser?.login || "guest";
@@ -142,6 +141,7 @@ const WaitingRoom = () => {
 
 		ws.onopen = async () => {
 			console.log("WebSocket connected");
+			setWebsocket(ws);
 			setPlayers((prevPlayers) => [...prevPlayers, { id: userID, iconUrl }]);
 		};
 
