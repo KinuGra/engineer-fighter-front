@@ -161,7 +161,9 @@ class ClientGameStateManager {
 	 * リスナーに通知
 	 */
 	private notifyListeners(event: GameEvent): void {
-		this.listeners.forEach((listener) => listener(event));
+		for (const listener of this.listeners) {
+			listener(event);
+		}
 	}
 }
 
