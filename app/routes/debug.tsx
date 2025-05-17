@@ -14,7 +14,7 @@ const samplePlayers = [
 	},
 	{
 		id: "ogatakatsuya",
-		icon: "https://avatars.githubusercontent.com/u/114989748?s=130&v=4",
+		icon: "https://avatars.githubusercontent.com/u/130939004?v=4",
 		power: 50,
 		weight: 60,
 		volume: 40,
