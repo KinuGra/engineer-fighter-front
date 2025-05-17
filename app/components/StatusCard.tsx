@@ -1,5 +1,5 @@
 import type { UserStatus } from "~/utils/calcStatus";
-import StatusChart from "./statusChart";
+import StatusChart from "./StatusChart";
 
 interface StatusCardProps {
 	status: UserStatus;
