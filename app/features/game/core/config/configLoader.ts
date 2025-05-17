@@ -120,11 +120,16 @@ export const createGameConfig = async (
 							);
 						}
 
+						// volume に基づいて半径を計算（最小10、最大40）
+						const baseRadius = 10;
+						const volumeEffect = playerData.volume / 100 * 30; // volume最大(100)で+30
+						const radius = Math.floor(baseRadius + volumeEffect);
+						
 						const player = new Player(
 							this,
 							x,
 							y,
-							20, // 半径
+							radius, // volumeに基づいた半径
 							playerData.id,
 							playerData.icon,
 							playerData.power,

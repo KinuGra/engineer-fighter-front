@@ -9,7 +9,7 @@ const samplePlayers = [
 		icon: "https://avatars.githubusercontent.com/u/114195789?v=4",
 		power: 70,
 		weight: 50,
-		volume: 60,
+		volume: 100,
 		cd: 500,
 	},
 	{
