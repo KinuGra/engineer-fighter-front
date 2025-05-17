@@ -176,7 +176,7 @@ const WaitingRoom = () => {
 				);
 			} else if (data.type === "start") {
 				redirectRef.current = true;
-				router(`/game?roomId=${roomID}`);
+				router(`/game?roomId=${roomID}&hoge=${redirectRef.current}`);
 			}
 		};
 
@@ -193,11 +193,11 @@ const WaitingRoom = () => {
 		};
 
 		return () => {
-			if (!redirectRef.current) {
-				ws.close();
+			if(!redirectRef.current) {
+				// ws.close();
 			}
 		};
-	}, [websocketUrl, githubUser]);
+	}, []);
 
 	// クリップボードにコピー
 	const copyToClipboard = async (text: string) => {

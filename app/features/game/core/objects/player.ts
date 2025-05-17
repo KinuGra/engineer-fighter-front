@@ -1,4 +1,5 @@
 import { GameObjects } from "phaser";
+import sendAction from "~/api/sendAction.client";
 import { COLORS } from "../config/config";
 import ClientGameStateManager from "../state/ClientGameStateManager";
 
@@ -26,9 +27,9 @@ export class Player extends GameObjects.Arc {
 	private youIndicator: Phaser.GameObjects.Text | null = null;
 
 	// マスク更新最適化用の変数
-	private lastMaskX = 0;
-	private lastMaskY = 0;
-	private lastMaskRadius = 0;
+	private lastMaskX: number = 0;
+	private lastMaskY: number = 0;
+	private lastMaskRadius: number = 0;
 
 	// ハイライト更新最適化用の変数
 	private lastHighlightX = 0;
@@ -406,7 +407,7 @@ export class Player extends GameObjects.Arc {
 	 * @param y ひっぱり終了地点のY座標
 	 * @returns 移動が実行されたかどうか
 	 */
-	public completeDrag(x: number, y: number): boolean {
+	public completeDrag(x: number, y: number, apiUrl: string, roomId: string): boolean {
 		// クールダウン中、ドラッグ中でない、または死亡している場合は操作を受け付けない
 		if (this.isInCooldown() || !this.dragStartPoint || !this.isAlive)
 			return false;
@@ -460,6 +461,17 @@ export class Player extends GameObjects.Arc {
 
 			// バウンス（跳ね返り）を小さめに設定（重い方が跳ね返りが小さい）
 			body.setBounce(0.3 - weightFactor * 0.2); // 0.1～0.3の間
+
+			// イベントの送信
+			// TODO: apiUrl
+			sendAction({
+				type: "action",
+				message: {
+					id: this.id,
+					angle: [angle, 0],
+					pull_power: finalStrength,
+				}
+			}, apiUrl, roomId)
 
 			// 速度の適用
 			body.setVelocity(velocityX, velocityY);
