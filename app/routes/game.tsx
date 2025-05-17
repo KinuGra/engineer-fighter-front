@@ -54,7 +54,7 @@ export default function GameScreen() {
 	const { gameSettings } = useLoaderData<typeof loader>();
 
 	// メインプレイヤーのIDを設定
-	const mainPlayerId = "player1";
+	const mainPlayerId = "ulxsth";
 
 	return (
 		<div className="flex flex-col items-center p-4">

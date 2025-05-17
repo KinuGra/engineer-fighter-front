@@ -19,6 +19,9 @@ export class Player extends GameObjects.Arc {
 	private moveSpeed = 0;
 	private cooldownTimer: Phaser.Time.TimerEvent | null = null;
 	private nameText: Phaser.GameObjects.Text | null = null;
+	private iconSprite: Phaser.GameObjects.Sprite | null = null;
+	private iconMask: Phaser.Display.Masks.GeometryMask | null = null;
+	private iconMaskGraphics: Phaser.GameObjects.Graphics | null = null;
 
 	// ひっぱり用の変数
 	private dragStartPoint: Phaser.Math.Vector2 | null = null;
@@ -59,6 +62,30 @@ export class Player extends GameObjects.Arc {
 			strokeThickness: 2
 		}).setOrigin(0.5, 0.5);
 		this.nameText.setDepth(10); // テキストを上のレイヤーに表示
+
+		// アイコンが設定されていればスプライトを作成
+		if (this.icon && this.icon !== '') {
+			try {
+				// プレイヤーIDをキーとしてアイコンを表示
+				this.iconSprite = scene.add.sprite(x, y, this.id);
+				// アイコンのサイズを設定（プレイヤーの円と同じサイズに）
+				this.iconSprite.setDisplaySize(radius * 2, radius * 2);
+				this.iconSprite.setDepth(5); // プレイヤー円よりも上、テキストよりも下に表示
+				
+				// 円形マスクを作成してアイコンに適用（円形に切り抜く）
+				this.iconMaskGraphics = scene.make.graphics({});
+				this.iconMaskGraphics.fillStyle(0xffffff);
+				this.iconMaskGraphics.fillCircle(x, y, radius);
+				this.iconMask = this.iconMaskGraphics.createGeometryMask();
+				this.iconSprite.setMask(this.iconMask);
+				
+				// アイコンが表示される場合は、背景の円を半透明にする
+				this.setAlpha(0.7);
+			} catch (error) {
+				console.error(`Failed to load icon for player ${id}:`, error);
+				this.iconSprite = null;
+			}
+		}
 
 		// 物理演算を有効化
 		if (scene.physics?.add) {
@@ -110,6 +137,12 @@ export class Player extends GameObjects.Arc {
 			if (this.nameText) {
 				this.nameText.destroy();
 			}
+			if (this.iconSprite) {
+				this.iconSprite.destroy();
+			}
+			if (this.iconMaskGraphics) {
+				this.iconMaskGraphics.destroy();
+			}
 			ClientGameStateManager.getInstance().removePlayer(this.id);
 		});
 	}
@@ -138,6 +171,21 @@ export class Player extends GameObjects.Arc {
 			this.nameText.setVisible(this.visible);
 			this.nameText.setAlpha(this.alpha);
 		}
+
+		// アイコンの位置を更新
+		if (this.iconSprite) {
+			this.iconSprite.setPosition(this.x, this.y);
+			this.iconSprite.setVisible(this.visible);
+			this.iconSprite.setAlpha(this.alpha);
+			
+			// マスクの位置も更新
+			if (this.iconMaskGraphics && this.iconMask) {
+				const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+				this.iconMaskGraphics.clear();
+				this.iconMaskGraphics.fillStyle(0xffffff);
+				this.iconMaskGraphics.fillCircle(this.x, this.y, radius);
+			}
+		}
 	}
 
 	/**
@@ -147,6 +195,25 @@ export class Player extends GameObjects.Arc {
 	 */
 	public setPosition(x: number, y: number): this {
 		super.setPosition(x, y);
+
+		// アイコンの位置を更新
+		if (this.iconSprite) {
+			this.iconSprite.setPosition(x, y);
+			
+			// マスクも位置を更新
+			if (this.iconMaskGraphics && this.iconMask) {
+				const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+				this.iconMaskGraphics.clear();
+				this.iconMaskGraphics.fillStyle(0xffffff);
+				this.iconMaskGraphics.fillCircle(x, y, radius);
+			}
+		}
+
+		// 名前の位置を更新
+		if (this.nameText) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.nameText.setPosition(x, y - radius - 20);
+		}
 
 		// グローバル状態を更新
 		ClientGameStateManager.getInstance().updatePlayer(this.id, {
@@ -417,6 +484,9 @@ export class Player extends GameObjects.Arc {
 		this.isAlive = false;
 
 		this.setAlpha(0.5);
+		if (this.iconSprite) {
+			this.iconSprite.setAlpha(0.5);
+		}
 		this.cancelDrag();
 		this.isCooldown = false;
 
