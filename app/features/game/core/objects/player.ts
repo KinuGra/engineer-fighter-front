@@ -1,6 +1,6 @@
 import { GameObjects } from "phaser";
-import ClientGameStateManager from "../state/ClientGameStateManager";
 import { COLORS } from "../config/config";
+import ClientGameStateManager from "../state/ClientGameStateManager";
 
 /**
  * Phaserゲーム内のプレイヤーオブジェクトクラス

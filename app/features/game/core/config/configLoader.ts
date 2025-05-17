@@ -1,7 +1,7 @@
 import type { Player } from "../objects/player";
 import ClientGameStateManager from "../state/ClientGameStateManager";
+import { COLORS, FIELD_HEIGHT, FIELD_WIDTH } from "./config";
 import type { GameSettings } from "./gameSettings";
-import { FIELD_WIDTH, FIELD_HEIGHT, COLORS } from "./config";
 
 const stateManager = ClientGameStateManager.getInstance();
 
@@ -90,55 +90,57 @@ export const createGameConfig = async (
 					// メインプレイヤーが見つかったかどうか追跡する変数
 					let mainPlayer: Player | null = null;
 
-          if(playerDataArray.length === 0) {
-            throw new Error("No player data found. please provide player data.");
-          }
+					if (playerDataArray.length === 0) {
+						throw new Error(
+							"No player data found. please provide player data.",
+						);
+					}
 
-          for (const playerData of playerDataArray) {
-            // プレイヤー位置の決定
-            let x: number;
-            if (playerData.x !== undefined) {
-              x = playerData.x;
-            } else {
-              x = Phaser.Math.Between(
-                this.cameras.main.centerX - FIELD_WIDTH / 2 + 40,
-                this.cameras.main.centerX + FIELD_WIDTH / 2 - 40,
-              );
-            }
+					for (const playerData of playerDataArray) {
+						// プレイヤー位置の決定
+						let x: number;
+						if (playerData.x !== undefined) {
+							x = playerData.x;
+						} else {
+							x = Phaser.Math.Between(
+								this.cameras.main.centerX - FIELD_WIDTH / 2 + 40,
+								this.cameras.main.centerX + FIELD_WIDTH / 2 - 40,
+							);
+						}
 
-            let y: number;
-            if (playerData.y !== undefined) {
-              y = playerData.y;
-            } else {
-              y = Phaser.Math.Between(
-                this.cameras.main.centerY - FIELD_HEIGHT / 2 + 40,
-                this.cameras.main.centerY + FIELD_HEIGHT / 2 - 40,
-              );
-            }
+						let y: number;
+						if (playerData.y !== undefined) {
+							y = playerData.y;
+						} else {
+							y = Phaser.Math.Between(
+								this.cameras.main.centerY - FIELD_HEIGHT / 2 + 40,
+								this.cameras.main.centerY + FIELD_HEIGHT / 2 - 40,
+							);
+						}
 
-            const player = new Player(
-              this,
-              x,
-              y,
-              20, // 半径
-              playerData.id,
-              playerData.icon,
-              playerData.power,
-              playerData.weight,
-              playerData.volume,
-              playerData.cd,
-            );
+						const player = new Player(
+							this,
+							x,
+							y,
+							20, // 半径
+							playerData.id,
+							playerData.icon,
+							playerData.power,
+							playerData.weight,
+							playerData.volume,
+							playerData.cd,
+						);
 
-            // メインプレイヤーは赤色、その他は白色
-            if (playerData.isMainPlayer) {
-              player.setFillStyle(COLORS.PLAYER, 1);
-              mainPlayer = player;
-            } else {
-              player.setFillStyle(COLORS.ENEMY, 1);
-            }
+						// メインプレイヤーは赤色、その他は白色
+						if (playerData.isMainPlayer) {
+							player.setFillStyle(COLORS.PLAYER, 1);
+							mainPlayer = player;
+						} else {
+							player.setFillStyle(COLORS.ENEMY, 1);
+						}
 
-            playerObjects.push(player);
-          }
+						playerObjects.push(player);
+					}
 
 					// プレイヤー配列をシーンのデータとして保存（update内で使用するため）
 					this.data.set("playerObjects", playerObjects);

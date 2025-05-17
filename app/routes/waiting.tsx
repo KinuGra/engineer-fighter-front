@@ -1,10 +1,10 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
 import * as pkg from "react-loader-spinner";
 const { Grid } = pkg;
-import { ClientOnly } from "remix-utils/client-only";
-import StartButton from "~/components/StartButton";
 import { useLoaderData } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
+import { ClientOnly } from "remix-utils/client-only";
+import StartButton from "~/components/StartButton";
 import genPoint from "~/utils/genPoint.client";
 
 type Player = {
@@ -20,7 +20,7 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
 	const websocketUrl = context.cloudflare.env.WS_URL;
 
 	return { websocketUrl };
-}
+};
 
 const PlayerCard = (props: PlayerCardProps) => {
 	return (
@@ -90,7 +90,7 @@ const WaitingRoom = () => {
 		const cd = 7;
 		const userID = "ogatakatsuya";
 		const iconUrl = "https://avatars.githubusercontent.com/u/130939004?v=4";
-		const roomID = "821047cb-f394-41d3-a928-71ea2567c960"
+		const roomID = "821047cb-f394-41d3-a928-71ea2567c960";
 
 		const params = new URLSearchParams({
 			roomID,
@@ -115,9 +115,14 @@ const WaitingRoom = () => {
 		ws.onmessage = (event) => {
 			const data = JSON.parse(event.data);
 			if (data.type === "join") {
-				setPlayers((prevPlayers) => [...prevPlayers, { id: data.message.id, iconUrl: data.message.icon_url }]);
+				setPlayers((prevPlayers) => [
+					...prevPlayers,
+					{ id: data.message.id, iconUrl: data.message.icon_url },
+				]);
 			} else if (data.type === "leave") {
-				setPlayers((prevPlayers) => prevPlayers.filter((player) => player.id !== data.message.id));
+				setPlayers((prevPlayers) =>
+					prevPlayers.filter((player) => player.id !== data.message.id),
+				);
 			} else if (data.type === "start") {
 				console.log("Game started");
 			}
