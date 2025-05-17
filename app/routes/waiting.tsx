@@ -36,9 +36,6 @@ const PlayerCard = (props: PlayerCardProps) => {
 			</div>
 			<div style={styles.idContainer}>
 				<div>
-					{props.player.name && (
-						<div style={styles.name}>{props.player.name}</div>
-					)}
 					<span style={styles.id}>@{props.player.id}</span>
 				</div>
 			</div>
