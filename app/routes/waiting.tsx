@@ -107,6 +107,7 @@ const WaitingRoom = () => {
 	);
 	const githubUser = useAtomValue(githubUserAtom);
 	const router = useNavigate();
+	const [isCopied, setIsCopied] = useState(false);
 
 	useEffect(() => {
 		const { x, y } = genPoint();
@@ -185,6 +186,10 @@ const WaitingRoom = () => {
 	// クリップボードにコピー
 	const copyToClipboard = async (text: string) => {
 		await navigator.clipboard.writeText(text);
+		setIsCopied(true);
+		setTimeout(() => {
+			setIsCopied(false);
+		}, 2000);
 		console.log("copied to clipboard");
 	}
 
@@ -200,27 +205,38 @@ const WaitingRoom = () => {
 						marginTop: "80px",
 					}}
 				>
+					<div style={{ marginBottom: "20px", fontSize: "20px" }}>
+						合言葉をコピーして、友達と共有してください
+					</div>
+					{/* 部屋ID */}
 					<div className="container">
 						<div className="flex items-center justify-center gap-2">
 							{roomID}
-							<button onClick={() => copyToClipboard(roomID)}>
-								<FaRegCopy />
+							<button
+								onClick={() => copyToClipboard(roomID)}
+								className="relative"
+							>
+								<FaRegCopy className={isCopied ? "text-green-500" : ""} />
+								{isCopied && (
+									<span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-600 text-white text-xs py-1 px-4 rounded whitespace-nowrap min-w-90px] text-center">
+										Copied!
+									</span>
+								)}
 							</button>
 						</div>
 					</div>
-					{/* ゲーム開始ボタン */}
-					<div style={{ margin: "20px" }}>
-						<StartButton apiUrl={apiUrl} roomId={roomID} />
+
+					<div className="mt-3">
+						<Grid
+							height="50"
+							width="50"
+							color="#4fa94d"
+							ariaLabel="audio-loading"
+							wrapperStyle={{}}
+							wrapperClass="wrapper-class"
+							visible={true}
+						/>
 					</div>
-					<Grid
-						height="50"
-						width="50"
-						color="#4fa94d"
-						ariaLabel="audio-loading"
-						wrapperStyle={{}}
-						wrapperClass="wrapper-class"
-						visible={true}
-					/>
 					<div
 						style={{
 							marginTop: "24px",
@@ -237,6 +253,10 @@ const WaitingRoom = () => {
 								<PlayerCard key={player.id} player={player} />
 							))}
 						</div>
+					</div>
+					{/* ゲーム開始ボタン */}
+					<div style={{ margin: "20px" }}>
+						<StartButton apiUrl={apiUrl} roomId={roomID} />
 					</div>
 				</div>
 			)}
