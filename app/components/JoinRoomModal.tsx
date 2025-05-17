@@ -1,8 +1,8 @@
+import { useNavigate } from "@remix-run/react";
 import type React from "react";
 import { useState } from "react";
 import { JoinRoom } from "~/api/joinRoom.client";
 import type { JoinRoomRequest } from "~/api/joinRoom.client";
-import { useNavigate } from "@remix-run/react";
 
 interface JoinRoomModalProps {
 	open: boolean;
@@ -10,7 +10,11 @@ interface JoinRoomModalProps {
 	apiUrl: string;
 }
 
-const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ open, onClose, apiUrl }) => {
+const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
+	open,
+	onClose,
+	apiUrl,
+}) => {
 	const [keyword, setKeyword] = useState("");
 	const router = useNavigate();
 
@@ -68,7 +72,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ open, onClose, apiUrl }) 
 						// 参加処理をここに実装
 						const request: JoinRoomRequest = {
 							password: keyword,
-						}
+						};
 
 						const data = await JoinRoom(request, apiUrl);
 

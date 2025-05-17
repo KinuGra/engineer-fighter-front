@@ -407,7 +407,7 @@ export class Player extends GameObjects.Arc {
 			isAlive: false,
 			isActive: false,
 		});
-		
+
 		// 脱落プレイヤーとして記録
 		ClientGameStateManager.getInstance().addEliminatedPlayer(this.id);
 

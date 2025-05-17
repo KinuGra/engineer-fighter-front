@@ -26,7 +26,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 	if (!roomID) {
 		throw new Error("Room ID is required");
 	}
-	
+
 	return {
 		websocketUrl,
 		roomID,
