@@ -33,12 +33,14 @@ export function useClientGameState() {
 				players: {},
 				gameStatus: "waiting",
 				winner: undefined,
+				eliminationOrder: [],
 			} as GameState,
 			addPlayer: () => {},
 			updatePlayer: () => {},
 			removePlayer: () => {},
 			setGameStatus: () => {},
 			setWinner: () => {},
+			addEliminatedPlayer: () => {},
 			resetState: () => {},
 		};
 	}
@@ -55,6 +57,8 @@ export function useClientGameState() {
 			ClientGameStateManager.getInstance().setGameStatus(status),
 		setWinner: (winnerId: string) =>
 			ClientGameStateManager.getInstance().setWinner(winnerId),
+		addEliminatedPlayer: (playerId: string) =>
+			ClientGameStateManager.getInstance().addEliminatedPlayer(playerId),
 		resetState: () => ClientGameStateManager.getInstance().resetState(),
 	};
 }

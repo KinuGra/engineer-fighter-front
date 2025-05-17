@@ -238,19 +238,19 @@ export const createGameConfig = async (
 					if (status === "playing") {
 						// 生存プレイヤー数をカウント
 						const alivePlayers = players.filter((player) => player.isAlive);
-
+						
 						// 生存プレイヤーが1名のみになった場合、ゲーム終了
 						if (alivePlayers.length === 1) {
 							// 既にゲーム終了イベントが発生していないことを確認
 							if (!this.data.get("gameFinished")) {
 								console.log("Game finished! Winner:", alivePlayers[0].id);
-
+								
 								// ゲーム終了フラグを立てる
 								this.data.set("gameFinished", true);
-
+								
 								// ゲーム状態を終了に設定
 								stateManager.setGameStatus("finished");
-
+								
 								// 勝者情報を記録
 								stateManager.setWinner(alivePlayers[0].id);
 
