@@ -47,10 +47,10 @@ export default function PhaserGame({
 			console.log("Redirecting to result page");
 			navigate("/result");
 		};
-		
+
 		// イベントリスナーを追加
 		window.addEventListener("gameRedirectToResult", handleGameRedirect);
-		
+
 		// クリーンアップ関数
 		return () => {
 			if (ws) {
@@ -59,7 +59,7 @@ export default function PhaserGame({
 			window.removeEventListener("gameRedirectToResult", handleGameRedirect);
 		};
 	}, [navigate]);
-	
+
 	// Phaserの初期化処理をClientOnlyの外に出し、コンテナ要素が存在する場合のみ実行する
 	const initPhaser = async () => {
 		if (!containerRef.current || gameInitializedRef.current) return;

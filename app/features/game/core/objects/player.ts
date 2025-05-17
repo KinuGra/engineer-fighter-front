@@ -32,9 +32,9 @@ export class Player extends GameObjects.Arc {
 	private lastMaskRadius: number = 0;
 
 	// ハイライト更新最適化用の変数
-	private lastHighlightX: number = 0;
-	private lastHighlightY: number = 0;
-	private lastHighlightRadius: number = 0;
+	private lastHighlightX = 0;
+	private lastHighlightY = 0;
+	private lastHighlightRadius = 0;
 
 	// ひっぱり用の変数
 	private dragStartPoint: Phaser.Math.Vector2 | null = null;
@@ -79,7 +79,7 @@ export class Player extends GameObjects.Arc {
 		this.nameText.setDepth(10); // テキストを上のレイヤーに表示
 
 		// アイコンが設定されていればスプライトを作成
-		if (this.icon && this.icon !== '') {
+		if (this.icon && this.icon !== "") {
 			try {
 				// プレイヤーIDをキーとしてアイコンを表示
 				this.iconSprite = scene.add.sprite(x, y, this.id);
@@ -628,7 +628,7 @@ export class Player extends GameObjects.Arc {
 
 		// 背景色は変更せず、輝く金色の円形アウトラインを追加
 		this.highlightGraphics = this.scene.add.graphics();
-		this.highlightGraphics.lineStyle(3, 0xFFD700); // 3px太さの金色の線
+		this.highlightGraphics.lineStyle(3, 0xffd700); // 3px太さの金色の線
 		this.highlightGraphics.strokeCircle(this.x, this.y, radius + 5);
 		this.highlightGraphics.setDepth(4); // アイコンの下、プレイヤーの上
 
@@ -638,26 +638,28 @@ export class Player extends GameObjects.Arc {
 		this.lastHighlightRadius = radius;
 
 		// 「YOU」表示を追加
-		this.youIndicator = this.scene.add.text(this.x, this.y + radius + 15, 'YOU', {
-			fontFamily: 'Arial',
-			fontSize: '12px',
-			fontStyle: 'bold',
-			color: '#FFFFFF',
-			align: 'center',
-			stroke: '#000000',
-			strokeThickness: 3
-		}).setOrigin(0.5, 0.5);
+		this.youIndicator = this.scene.add
+			.text(this.x, this.y + radius + 15, "YOU", {
+				fontFamily: "Arial",
+				fontSize: "12px",
+				fontStyle: "bold",
+				color: "#FFFFFF",
+				align: "center",
+				stroke: "#000000",
+				strokeThickness: 3,
+			})
+			.setOrigin(0.5, 0.5);
 		this.youIndicator.setDepth(10);
 
 		// プレイヤー名のスタイルを強調（太字なし）
 		if (this.nameText) {
 			this.nameText.setStyle({
-				fontFamily: 'Arial',
-				fontSize: '16px',
-				color: '#000000',
-				align: 'center',
-				stroke: '#FFFFFF',
-				strokeThickness: 3
+				fontFamily: "Arial",
+				fontSize: "16px",
+				color: "#000000",
+				align: "center",
+				stroke: "#FFFFFF",
+				strokeThickness: 3,
 			});
 		}
 
@@ -668,7 +670,7 @@ export class Player extends GameObjects.Arc {
 			duration: 800,
 			yoyo: true,
 			repeat: -1,
-			ease: 'Sine.easeInOut'
+			ease: "Sine.easeInOut",
 		});
 	}
 
@@ -720,7 +722,7 @@ export class Player extends GameObjects.Arc {
 		// ハイライトを更新
 		if (this.highlightGraphics) {
 			this.highlightGraphics.clear();
-			this.highlightGraphics.lineStyle(3, 0xFFD700);
+			this.highlightGraphics.lineStyle(3, 0xffd700);
 			this.highlightGraphics.strokeCircle(x, y, radius + 5);
 
 			// 新しい位置と半径を記録

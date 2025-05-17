@@ -12,14 +12,10 @@ import StartButton from "~/components/StartButton";
 import calcStatus from "~/utils/calcStatus";
 import genPoint from "~/utils/genPoint.client";
 const { Grid } = pkg;
-
-type Player = {
-	id: string;
-	iconUrl: string;
-};
+import type { PlayerData } from "~/features/game/core/config/gameSettings";
 
 interface PlayerCardProps {
-	player: Player;
+	player: PlayerData;
 }
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
@@ -47,7 +43,7 @@ const PlayerCard = (props: PlayerCardProps) => {
 		<div style={styles.card}>
 			<div style={styles.iconContainer}>
 				<img
-					src={props.player.iconUrl}
+					src={props.player.icon}
 					alt={`Icon for player ${props.player.id}`}
 					style={styles.icon}
 				/>
@@ -100,10 +96,16 @@ const WaitingRoom = () => {
 	const { websocketUrl, apiUrl, roomID, users } =
 		useLoaderData<typeof loader>();
 	const socketRef = useRef<WebSocket | null>(null);
-	const [players, setPlayers] = useState<Player[]>(
+	const [players, setPlayers] = useState<PlayerData[]>(
 		users.map((user: User) => ({
 			id: user.userId,
-			iconUrl: user.iconUrl,
+			icon: user.iconUrl,
+			power: user.power,
+			weight: user.weight,
+			volume: user.volume,
+			cd: user.cd,
+			x: user.point[0],
+			y: user.point[1],
 		})),
 	);
 	const githubUser = useAtomValue(githubUserAtom);
@@ -143,7 +145,10 @@ const WaitingRoom = () => {
 		ws.onopen = async () => {
 			console.log("WebSocket connected");
 			setWebsocket(ws);
-			setPlayers((prevPlayers) => [...prevPlayers, { id: userID, iconUrl }]);
+			setPlayers((prevPlayers) => [
+				...prevPlayers,
+				{ id: userID, icon: iconUrl, power, weight, volume, cd, x, y },
+			]);
 		};
 
 		ws.onmessage = (event) => {
@@ -156,7 +161,13 @@ const WaitingRoom = () => {
 					...prevPlayers,
 					{
 						id: data.message.id,
-						iconUrl: data.message.icon_url,
+						icon: data.message.iconUrl,
+						power: data.message.power,
+						weight: data.message.weight,
+						volume: data.message.volume,
+						cd: data.message.cd,
+						x: data.message.point[0],
+						y: data.message.point[1],
 					},
 				]);
 			} else if (data.type === "leave") {
@@ -220,6 +231,7 @@ const WaitingRoom = () => {
 							<button
 								onClick={() => copyToClipboard(roomID)}
 								className="relative"
+								type="button"
 							>
 								<FaRegCopy className={isCopied ? "text-green-500" : ""} />
 								{isCopied && (
@@ -254,7 +266,7 @@ const WaitingRoom = () => {
 					</div>
 					<div>
 						<div>
-							{players.map((player: Player) => (
+							{players.map((player: PlayerData) => (
 								<PlayerCard key={player.id} player={player} />
 							))}
 						</div>
