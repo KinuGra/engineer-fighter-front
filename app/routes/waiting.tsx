@@ -6,10 +6,13 @@ import { useEffect, useRef, useState } from "react";
 import { ClientOnly } from "remix-utils/client-only";
 import StartButton from "~/components/StartButton";
 import genPoint from "~/utils/genPoint.client";
+import { useAtomValue } from "jotai";
+import { githubUserAtom } from "~/atoms/githubUser";
 
 type Player = {
 	id: string;
 	iconUrl: string;
+	name?: string;
 };
 
 interface PlayerCardProps {
@@ -33,9 +36,13 @@ const PlayerCard = (props: PlayerCardProps) => {
 				/>
 			</div>
 			<div style={styles.idContainer}>
-				<span style={styles.id}>{props.player.id}</span>
+				<div>
+					{props.player.name && (
+						<div style={styles.name}>{props.player.name}</div>
+					)}
+					<span style={styles.id}>@{props.player.id}</span>
+				</div>
 			</div>
-			{/* 必要に応じて他のプレイヤー情報をここに追加できます */}
 		</div>
 	);
 };
@@ -59,8 +66,13 @@ const styles = {
 		height: "100%",
 	},
 	id: {
+		fontSize: "0.9em",
+		color: "#666",
+	},
+	name: {
 		fontSize: "1em",
 		fontWeight: "bold" as const,
+		marginBottom: "2px",
 	},
 	iconContainer: {
 		width: "50px",
@@ -79,23 +91,28 @@ const WaitingRoom = () => {
 	const { websocketUrl } = useLoaderData<typeof loader>();
 	const socketRef = useRef<WebSocket | null>(null);
 	const [players, setPlayers] = useState<Player[]>([]);
+	const githubUser = useAtomValue(githubUserAtom);
 
 	useEffect(() => {
 		const { x, y } = genPoint();
 
-		// ここはGitHubの情報をもとに計算する
+		// GitHubの情報をもとに計算する
 		const power = 2;
 		const weight = 1;
 		const volume = 5;
 		const cd = 7;
-		const userID = "ogatakatsuya";
-		const iconUrl = "https://avatars.githubusercontent.com/u/130939004?v=4";
+		
+		// GitHubユーザー情報を使用する
+		const userID = githubUser?.login || "guest";
+		const iconUrl = githubUser?.avatar_url || "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png";
+		const name = githubUser?.name || "";
 		const roomID = "821047cb-f394-41d3-a928-71ea2567c960";
 
 		const params = new URLSearchParams({
 			roomID,
 			userID,
 			iconUrl,
+			name,
 			power: power.toString(),
 			weight: weight.toString(),
 			volume: volume.toString(),
@@ -109,7 +126,7 @@ const WaitingRoom = () => {
 
 		ws.onopen = () => {
 			console.log("WebSocket connected");
-			setPlayers((prevPlayers) => [...prevPlayers, { id: userID, iconUrl }]);
+			setPlayers((prevPlayers) => [...prevPlayers, { id: userID, iconUrl, name }]);
 		};
 
 		ws.onmessage = (event) => {
@@ -117,7 +134,11 @@ const WaitingRoom = () => {
 			if (data.type === "join") {
 				setPlayers((prevPlayers) => [
 					...prevPlayers,
-					{ id: data.message.id, iconUrl: data.message.icon_url },
+					{ 
+						id: data.message.id, 
+						iconUrl: data.message.icon_url, 
+						name: data.message.name 
+					},
 				]);
 			} else if (data.type === "leave") {
 				setPlayers((prevPlayers) =>
@@ -143,7 +164,7 @@ const WaitingRoom = () => {
 		return () => {
 			ws.close();
 		};
-	}, []);
+	}, [websocketUrl, githubUser]);
 
 	return (
 		<ClientOnly>
