@@ -11,11 +11,12 @@ import {
 import { serializeCookieHeader } from "@supabase/ssr";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
-import { githubUserAtom } from "~/atoms/githubUser";
-import type { GitHubUser } from "~/types/github";
+import { githubGraphQLAtom, githubUserAtom } from "~/atoms/githubUser";
+import type { GitHubGraphQL, GitHubUser } from "~/types/github";
 import Header from "./components/Header";
 import { authCookies } from "./const";
 import { signOut } from "./utils/auth.server";
+import fetchGitHubGraphQL from "./utils/github-graphql.server";
 import { fetchGitHubApi } from "./utils/github.server";
 
 import "./tailwind.css";
@@ -25,7 +26,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 	if (result.error) {
 		return null;
 	}
-	return result.data;
+
+	const graphql = await fetchGitHubGraphQL(request);
+	if (graphql.error) {
+		return null;
+	}
+	return {
+		user: result.data,
+		status: graphql.data,
+	};
 };
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
@@ -77,14 +86,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-	const user = useLoaderData<GitHubUser | null>();
+	const { user, status } =
+		useLoaderData<{
+			user: GitHubUser | null;
+			status: GitHubGraphQL | null;
+		}>() || {};
 	const [, setGithubUser] = useAtom(githubUserAtom);
+	const [, setGithubGraphQL] = useAtom(githubGraphQLAtom);
 
 	useEffect(() => {
 		if (user) {
 			setGithubUser(user);
 		}
-	}, [user, setGithubUser]);
+
+		if (status) {
+			setGithubGraphQL(status);
+		}
+	}, [user, status, setGithubUser, setGithubGraphQL]);
 
 	return (
 		<div>
