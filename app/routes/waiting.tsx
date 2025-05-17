@@ -68,11 +68,6 @@ const styles = {
 		fontSize: "0.9em",
 		color: "#666",
 	},
-	name: {
-		fontSize: "1em",
-		fontWeight: "bold" as const,
-		marginBottom: "2px",
-	},
 	iconContainer: {
 		width: "50px",
 		height: "50px",
