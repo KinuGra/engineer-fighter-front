@@ -19,6 +19,21 @@ export class Player extends GameObjects.Arc {
 	private moveSpeed = 0;
 	private cooldownTimer: Phaser.Time.TimerEvent | null = null;
 	private nameText: Phaser.GameObjects.Text | null = null;
+	private iconSprite: Phaser.GameObjects.Sprite | null = null;
+	private iconMask: Phaser.Display.Masks.GeometryMask | null = null;
+	private iconMaskGraphics: Phaser.GameObjects.Graphics | null = null;
+	private highlightGraphics: Phaser.GameObjects.Graphics | null = null;
+	private youIndicator: Phaser.GameObjects.Text | null = null;
+	
+	// マスク更新最適化用の変数
+	private lastMaskX: number = 0;
+	private lastMaskY: number = 0;
+	private lastMaskRadius: number = 0;
+	
+	// ハイライト更新最適化用の変数
+	private lastHighlightX: number = 0;
+	private lastHighlightY: number = 0;
+	private lastHighlightRadius: number = 0;
 
 	// ひっぱり用の変数
 	private dragStartPoint: Phaser.Math.Vector2 | null = null;
@@ -61,6 +76,32 @@ export class Player extends GameObjects.Arc {
 			})
 			.setOrigin(0.5, 0.5);
 		this.nameText.setDepth(10); // テキストを上のレイヤーに表示
+
+		// アイコンが設定されていればスプライトを作成
+		if (this.icon && this.icon !== '') {
+			try {
+				// プレイヤーIDをキーとしてアイコンを表示
+				this.iconSprite = scene.add.sprite(x, y, this.id);
+				// アイコンのサイズを設定（プレイヤーの円と同じサイズに）
+				this.iconSprite.setDisplaySize(radius * 2, radius * 2);
+				this.iconSprite.setDepth(5);
+				
+				// 円形マスクを作成してアイコンに適用（円形に切り抜く）
+				this.iconMaskGraphics = scene.make.graphics({});
+				this.iconMaskGraphics.fillStyle(0xffffff);
+				this.iconMaskGraphics.fillCircle(x, y, radius);
+				this.iconMask = this.iconMaskGraphics.createGeometryMask();
+				this.iconSprite.setMask(this.iconMask);
+				
+				// マスク更新の最適化用に初期位置と半径を記録
+				this.lastMaskX = x;
+				this.lastMaskY = y;
+				this.lastMaskRadius = radius;
+			} catch (error) {
+				console.error(`Failed to load icon for player ${id}:`, error);
+				this.iconSprite = null;
+			}
+		}
 
 		// 物理演算を有効化
 		if (scene.physics?.add) {
@@ -112,6 +153,18 @@ export class Player extends GameObjects.Arc {
 			if (this.nameText) {
 				this.nameText.destroy();
 			}
+			if (this.iconSprite) {
+				this.iconSprite.destroy();
+			}
+			if (this.iconMaskGraphics) {
+				this.iconMaskGraphics.destroy();
+			}
+			if (this.highlightGraphics) {
+				this.highlightGraphics.destroy();
+			}
+			if (this.youIndicator) {
+				this.youIndicator.destroy();
+			}
 			ClientGameStateManager.getInstance().removePlayer(this.id);
 		});
 	}
@@ -140,6 +193,33 @@ export class Player extends GameObjects.Arc {
 			this.nameText.setVisible(this.visible);
 			this.nameText.setAlpha(this.alpha);
 		}
+
+		// アイコンの位置を更新
+		if (this.iconSprite) {
+			this.iconSprite.setPosition(this.x, this.y);
+			this.iconSprite.setVisible(this.visible);
+			this.iconSprite.setAlpha(this.alpha);
+			
+			// マスクの位置も更新（必要な場合のみ）
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.updateMask(this.x, this.y, radius);
+		}
+
+		// ハイライトグラフィックの位置を更新
+		if (this.highlightGraphics) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.updateHighlight(this.x, this.y, radius);
+			this.highlightGraphics.setVisible(this.visible);
+			this.highlightGraphics.setAlpha(this.alpha > 0.6 ? 0.6 : this.alpha);
+		}
+
+		// YOUインジケーターの位置を更新
+		if (this.youIndicator) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.youIndicator.setPosition(this.x, this.y + radius + 15);
+			this.youIndicator.setVisible(this.visible);
+			this.youIndicator.setAlpha(this.alpha);
+		}
 	}
 
 	/**
@@ -149,6 +229,33 @@ export class Player extends GameObjects.Arc {
 	 */
 	public setPosition(x: number, y: number): this {
 		super.setPosition(x, y);
+
+		// アイコンの位置を更新
+		if (this.iconSprite) {
+			this.iconSprite.setPosition(x, y);
+			
+			// マスクも位置を更新（必要な場合のみ）
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.updateMask(x, y, radius);
+		}
+
+		// 名前の位置を更新
+		if (this.nameText) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.nameText.setPosition(x, y - radius - 20);
+		}
+
+		// ハイライトグラフィックの位置を更新
+		if (this.highlightGraphics) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.updateHighlight(x, y, radius);
+		}
+
+		// YOUインジケーターの位置を更新
+		if (this.youIndicator) {
+			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+			this.youIndicator.setPosition(x, y + radius + 15);
+		}
 
 		// グローバル状態を更新
 		ClientGameStateManager.getInstance().updatePlayer(this.id, {
@@ -419,6 +526,15 @@ export class Player extends GameObjects.Arc {
 		this.isAlive = false;
 
 		this.setAlpha(0.5);
+		if (this.iconSprite) {
+			this.iconSprite.setAlpha(0.5);
+		}
+		if (this.highlightGraphics) {
+			this.highlightGraphics.setAlpha(0.3);
+		}
+		if (this.youIndicator) {
+			this.youIndicator.setAlpha(0.5);
+		}
 		this.cancelDrag();
 		this.isCooldown = false;
 
@@ -511,5 +627,115 @@ export class Player extends GameObjects.Arc {
 		console.log(`Player: ${this.id}, isWithinField: ${isWithinField}`);
 
 		return isWithinField;
+	}
+
+	/**
+	 * プレイヤーをメインプレイヤーとして設定し、視覚的に強調する
+	 */
+	public setAsMainPlayer(): void {
+		const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+
+		// 背景色は変更せず、輝く金色の円形アウトラインを追加
+		this.highlightGraphics = this.scene.add.graphics();
+		this.highlightGraphics.lineStyle(3, 0xFFD700); // 3px太さの金色の線
+		this.highlightGraphics.strokeCircle(this.x, this.y, radius + 5);
+		this.highlightGraphics.setDepth(4); // アイコンの下、プレイヤーの上
+		
+		// ハイライト位置を記録
+		this.lastHighlightX = this.x;
+		this.lastHighlightY = this.y;
+		this.lastHighlightRadius = radius;
+
+		// 「YOU」表示を追加
+		this.youIndicator = this.scene.add.text(this.x, this.y + radius + 15, 'YOU', {
+			fontFamily: 'Arial',
+			fontSize: '12px',
+			fontStyle: 'bold',
+			color: '#FFFFFF',
+			align: 'center',
+			stroke: '#000000',
+			strokeThickness: 3
+		}).setOrigin(0.5, 0.5);
+		this.youIndicator.setDepth(10);
+
+		// プレイヤー名のスタイルを強調（太字なし）
+		if (this.nameText) {
+			this.nameText.setStyle({
+				fontFamily: 'Arial',
+				fontSize: '16px',
+				color: '#000000',
+				align: 'center',
+				stroke: '#FFFFFF',
+				strokeThickness: 3
+			});
+		}
+
+		// 輝くアニメーションを追加
+		this.scene.tweens.add({
+			targets: this.highlightGraphics,
+			alpha: 0.6,
+			duration: 800,
+			yoyo: true,
+			repeat: -1,
+			ease: 'Sine.easeInOut'
+		});
+	}
+
+	/**
+	 * マスクを更新する（位置または半径が変わった場合のみ実行）
+	 * @param x X座標
+	 * @param y Y座標
+	 * @param radius 半径
+	 */
+	private updateMask(x: number, y: number, radius: number): void {
+		// 位置や半径が変わっていない場合は更新しない
+		if (
+			this.lastMaskX === x &&
+			this.lastMaskY === y &&
+			this.lastMaskRadius === radius
+		) {
+			return;
+		}
+
+		// マスクを更新
+		if (this.iconMaskGraphics && this.iconMask) {
+			this.iconMaskGraphics.clear();
+			this.iconMaskGraphics.fillStyle(0xffffff);
+			this.iconMaskGraphics.fillCircle(x, y, radius);
+			
+			// 新しい位置と半径を記録
+			this.lastMaskX = x;
+			this.lastMaskY = y;
+			this.lastMaskRadius = radius;
+		}
+	}
+
+	/**
+	 * ハイライトグラフィックを更新する（位置または半径が変わった場合のみ実行）
+	 * @param x X座標
+	 * @param y Y座標
+	 * @param radius 半径
+	 */
+	private updateHighlight(x: number, y: number, radius: number): void {
+		// 位置や半径が変わっていない場合は更新しない
+		if (
+			this.lastHighlightX === x &&
+			this.lastHighlightY === y &&
+			this.lastHighlightRadius === radius
+		) {
+			return;
+		}
+
+		// ハイライトを更新
+		if (this.highlightGraphics) {
+			this.highlightGraphics.clear();
+			this.highlightGraphics.lineStyle(3, 0xFFD700);
+			this.highlightGraphics.strokeCircle(x, y, radius + 5);
+			
+			// 新しい位置と半径を記録
+			this.lastHighlightX = x;
+			this.lastHighlightY = y;
+			this.lastHighlightRadius = radius;
+		}
 	}
 }

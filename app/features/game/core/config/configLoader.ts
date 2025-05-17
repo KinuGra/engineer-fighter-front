@@ -17,6 +17,8 @@ export const createGameConfig = async (
 	gameSettings: GameSettings,
 	parent: HTMLElement | undefined,
 ): Promise<Phaser.Types.Core.GameConfig> => {
+	const players = gameSettings.players;
+
 	// Phaserはクライアント側でのみインポート
 	// @ts-expect-error 動的インポート(tsconfig.jsonでのmodules設定に依存)
 	const Phaser = (await import("phaser")).default;
@@ -39,9 +41,9 @@ export const createGameConfig = async (
 		},
 		scene: {
 			preload: function (this: Phaser.Scene) {
-				this.load.setBaseURL(gameSettings.assets.baseUrl);
-				for (const img of gameSettings.assets.images) {
-					this.load.image(img.key, img.path);
+				for (const player of players) {
+					// プレイヤーのアイコンをプリロード
+					this.load.image(player.id, player.icon);
 				}
 			},
 			create: async function (this: Phaser.Scene) {
@@ -118,11 +120,16 @@ export const createGameConfig = async (
 							);
 						}
 
+						// volume に基づいて半径を計算（最小10、最大40）
+						const baseRadius = 10;
+						const volumeEffect = playerData.volume / 100 * 30; // volume最大(100)で+30
+						const radius = Math.floor(baseRadius + volumeEffect);
+						
 						const player = new Player(
 							this,
 							x,
 							y,
-							20, // 半径
+							radius, // volumeに基づいた半径
 							playerData.id,
 							playerData.icon,
 							playerData.power,
@@ -130,15 +137,15 @@ export const createGameConfig = async (
 							playerData.volume,
 							playerData.cd,
 						);
-
-						// メインプレイヤーは赤色、その他は白色
-						if (playerData.isMainPlayer) {
-							player.setFillStyle(COLORS.PLAYER, 1);
+						
+						if(playerData.isMainPlayer) {
 							mainPlayer = player;
+							// メインプレイヤーの視覚強調を設定
+							player.setAsMainPlayer();
 						} else {
 							player.setFillStyle(COLORS.ENEMY, 1);
 						}
-
+						
 						playerObjects.push(player);
 					}
 

@@ -5,32 +5,32 @@ import { getGameSettings } from "~/features/game/loader";
 
 const samplePlayers = [
 	{
-		id: "player1",
-		icon: "",
+		id: "ulxsth",
+		icon: "https://avatars.githubusercontent.com/u/114195789?v=4",
 		power: 70,
 		weight: 50,
-		volume: 60,
+		volume: 100,
 		cd: 500,
 	},
 	{
-		id: "enemy1",
-		icon: "",
+		id: "ogatakatsuya",
+		icon: "https://avatars.githubusercontent.com/u/130939004?v=4",
 		power: 50,
 		weight: 60,
 		volume: 40,
 		cd: 400,
 	},
 	{
-		id: "enemy2",
-		icon: "",
+		id: "zatunohito",
+		icon: "https://avatars.githubusercontent.com/u/166904542?v=4",
 		power: 40,
 		weight: 30,
 		volume: 80,
 		cd: 300,
 	},
 	{
-		id: "enemy3",
-		icon: "",
+		id: "KinuGra",
+		icon: "https://avatars.githubusercontent.com/u/197525874?v=4",
 		power: 80,
 		weight: 80,
 		volume: 30,
@@ -56,7 +56,7 @@ export default function Debug() {
 	gameSettingsCopy.physics.debug = true;
 
 	// メインプレイヤーのIDを設定
-	const mainPlayerId = "player1";
+	const mainPlayerId = "ulxsth";
 
 	return (
 		<div className="flex flex-col items-center p-4">
