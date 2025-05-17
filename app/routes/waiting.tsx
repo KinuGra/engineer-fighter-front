@@ -12,7 +12,6 @@ import { githubUserAtom } from "~/atoms/githubUser";
 type Player = {
 	id: string;
 	iconUrl: string;
-	name?: string;
 };
 
 interface PlayerCardProps {
