@@ -9,6 +9,7 @@ import genPoint from "~/utils/genPoint.client";
 import { useAtomValue } from "jotai";
 import { githubUserAtom } from "~/atoms/githubUser";
 import { getUsers, type User } from "~/api/getUsers.server";
+import { useNavigate } from "@remix-run/react";
 
 type Player = {
 	id: string;
@@ -102,6 +103,7 @@ const WaitingRoom = () => {
 		}))
 	);
 	const githubUser = useAtomValue(githubUserAtom);
+	const router = useNavigate();
 
 	useEffect(() => {
 		const { x, y } = genPoint();
@@ -154,7 +156,7 @@ const WaitingRoom = () => {
 					prevPlayers.filter((player) => player.id !== data.message.id),
 				);
 			} else if (data.type === "start") {
-				console.log("Game started");
+				router(`/game?roomId=${roomID}`);
 			}
 		};
 
