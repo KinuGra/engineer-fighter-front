@@ -4,6 +4,7 @@ import { useState } from "react";
 interface JoinRoomModalProps {
 	open: boolean;
 	onClose: () => void;
+	apiUrl: string;
 }
 
 const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ open, onClose }) => {

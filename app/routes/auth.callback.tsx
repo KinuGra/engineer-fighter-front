@@ -33,7 +33,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 				headers.append(
 					"Set-Cookie",
 					serializeCookieHeader("58hack-user-id", data.session.user.id, {
-						httpOnly: true,
+						httpOnly: false,
 						secure: true,
 						path: "/",
 						sameSite: "lax",
