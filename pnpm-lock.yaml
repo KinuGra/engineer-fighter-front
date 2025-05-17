@@ -11,6 +11,9 @@ importers:
       '@remix-run/cloudflare':
         specifier: ^2.16.5
         version: 2.16.6(@cloudflare/workers-types@4.20250510.0)(typescript@5.8.3)
+      '@remix-run/node':
+        specifier: ^2.16.6
+        version: 2.16.6(typescript@5.8.3)
       '@remix-run/react':
         specifier: ^2.16.5
         version: 2.16.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
@@ -38,15 +41,15 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
-      remix-utils:
-        specifier: ^8.7.0
-        version: 8.7.0(react@18.3.1)
       react-loader-spinner:
         specifier: ^6.1.6
         version: 6.1.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-spinners:
         specifier: ^0.17.0
         version: 0.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      remix-utils:
+        specifier: ^8.7.0
+        version: 8.7.0(react@18.3.1)
     devDependencies:
       '@biomejs/biome':
         specifier: 1.9.4
