@@ -105,14 +105,12 @@ const WaitingRoom = () => {
 		// GitHubユーザー情報を使用する
 		const userID = githubUser?.login || "guest";
 		const iconUrl = githubUser?.avatar_url || "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png";
-		const name = githubUser?.name || "";
 		const roomID = "821047cb-f394-41d3-a928-71ea2567c960";
 
 		const params = new URLSearchParams({
 			roomID,
 			userID,
 			iconUrl,
-			name,
 			power: power.toString(),
 			weight: weight.toString(),
 			volume: volume.toString(),
@@ -126,7 +124,7 @@ const WaitingRoom = () => {
 
 		ws.onopen = () => {
 			console.log("WebSocket connected");
-			setPlayers((prevPlayers) => [...prevPlayers, { id: userID, iconUrl, name }]);
+			setPlayers((prevPlayers) => [...prevPlayers, { id: userID, iconUrl }]);
 		};
 
 		ws.onmessage = (event) => {
@@ -137,7 +135,6 @@ const WaitingRoom = () => {
 					{ 
 						id: data.message.id, 
 						iconUrl: data.message.icon_url, 
-						name: data.message.name 
 					},
 				]);
 			} else if (data.type === "leave") {
