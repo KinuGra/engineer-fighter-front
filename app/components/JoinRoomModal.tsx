@@ -62,6 +62,7 @@ const JoinRoomModal: React.FC<JoinRoomModalProps> = ({
 							cursor: "pointer",
 						}}
 						aria-label="閉じる"
+						onClick={onClose}
 					>
 						×
 					</button>
