@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { useLoaderData, useNavigate } from "@remix-run/react";
+import { redirect, useLoaderData, useNavigate } from "@remix-run/react";
 import { useAtom, useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
 import { FaRegCopy } from "react-icons/fa";
@@ -111,6 +111,7 @@ const WaitingRoom = () => {
 	const [, setWebsocket] = useAtom(websocketAtom);
 	const router = useNavigate();
 	const [isCopied, setIsCopied] = useState(false);
+	const redirectRef = useRef(false);
 
 	useEffect(() => {
 		const { x, y } = genPoint();
@@ -163,6 +164,7 @@ const WaitingRoom = () => {
 					prevPlayers.filter((player) => player.id !== data.message.id),
 				);
 			} else if (data.type === "start") {
+				redirectRef.current = true;
 				router(`/game?roomId=${roomID}`);
 			}
 		};
@@ -180,7 +182,9 @@ const WaitingRoom = () => {
 		};
 
 		return () => {
-			ws.close();
+			if(!redirectRef.current) {
+				ws.close();
+			}
 		};
 	}, [websocketUrl, githubUser]);
 
