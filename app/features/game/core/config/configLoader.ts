@@ -132,15 +132,9 @@ export const createGameConfig = async (
 							playerData.volume,
 							playerData.cd,
 						);
-
-						// メインプレイヤーは赤色、その他は白色
-						if (playerData.isMainPlayer) {
-							player.setFillStyle(COLORS.PLAYER, 1);
-							mainPlayer = player;
-						} else {
-							player.setFillStyle(COLORS.ENEMY, 1);
-						}
-
+						player.setFillStyle(COLORS.ENEMY, 1);
+						
+						if(playerData.isMainPlayer) mainPlayer = player;
 						playerObjects.push(player);
 					}
 

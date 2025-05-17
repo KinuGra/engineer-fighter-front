@@ -70,7 +70,7 @@ export class Player extends GameObjects.Arc {
 				this.iconSprite = scene.add.sprite(x, y, this.id);
 				// アイコンのサイズを設定（プレイヤーの円と同じサイズに）
 				this.iconSprite.setDisplaySize(radius * 2, radius * 2);
-				this.iconSprite.setDepth(5); // プレイヤー円よりも上、テキストよりも下に表示
+				this.iconSprite.setDepth(5);
 				
 				// 円形マスクを作成してアイコンに適用（円形に切り抜く）
 				this.iconMaskGraphics = scene.make.graphics({});
@@ -78,9 +78,6 @@ export class Player extends GameObjects.Arc {
 				this.iconMaskGraphics.fillCircle(x, y, radius);
 				this.iconMask = this.iconMaskGraphics.createGeometryMask();
 				this.iconSprite.setMask(this.iconMask);
-				
-				// アイコンが表示される場合は、背景の円を半透明にする
-				this.setAlpha(0.7);
 			} catch (error) {
 				console.error(`Failed to load icon for player ${id}:`, error);
 				this.iconSprite = null;
