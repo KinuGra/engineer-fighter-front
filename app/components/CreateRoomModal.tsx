@@ -1,9 +1,11 @@
 import type React from "react";
 import { useState } from "react";
+import { type CreateRoomRequest, createRoom } from "~/api/createRoom.client";
 
 interface CreateRoomModalProps {
 	open: boolean;
 	onClose: () => void;
+	apiUrl: string;
 }
 
 const maxPlayersOptions = [2, 3, 4, 5, 6, 7, 8];
@@ -63,7 +65,11 @@ const styles = {
 	},
 };
 
-const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ open, onClose }) => {
+const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
+	open,
+	onClose,
+	apiUrl,
+}) => {
 	const [roomName, setRoomName] = useState("");
 	const [maxPlayers, setMaxPlayers] = useState(4);
 
@@ -71,7 +77,24 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ open, onClose }) => {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		// 部屋作成処理をここに実装
+		const cookie = document.cookie
+			.split("; ")
+			.find((row) => row.startsWith("58hack-user-id="));
+		const userId = cookie?.split("=")[1];
+
+		if (!userId) {
+			alert("ユーザーIDが見つかりません。");
+			return;
+		}
+
+		const request: CreateRoomRequest = {
+			host_id: userId,
+			name: roomName,
+			capacity: maxPlayers,
+		};
+
+		createRoom(request, apiUrl);
+
 		onClose();
 	};
 
