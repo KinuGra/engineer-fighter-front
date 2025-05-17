@@ -231,6 +231,59 @@ export const createGameConfig = async (
 							);
 						}
 					}
+					
+					// ゲームが進行中の場合のみ終了判定を行う
+					if (status === "playing") {
+						// 生存プレイヤー数をカウント
+						const alivePlayers = players.filter((player) => player.isAlive);
+						
+						// 生存プレイヤーが1名のみになった場合、ゲーム終了
+						if (alivePlayers.length === 1) {
+							// 既にゲーム終了イベントが発生していないことを確認
+							if (!this.data.get("gameFinished")) {
+								console.log("Game finished! Winner:", alivePlayers[0].id);
+								
+								// ゲーム終了フラグを立てる
+								this.data.set("gameFinished", true);
+								
+								// ゲーム状態を終了に設定
+								stateManager.setGameStatus("finished");
+								
+								// 勝者情報を記録
+								stateManager.setWinner(alivePlayers[0].id);
+								
+								// GAME SETの表示
+								const gameSetText = this.add
+									.text(this.cameras.main.centerX, this.cameras.main.centerY, "GAME SET", {
+										font: "bold 64px Arial",
+										color: "#FF0000",
+										stroke: "#FFFFFF",
+										strokeThickness: 6,
+										padding: { left: 16, right: 16, top: 8, bottom: 8 },
+									})
+									.setOrigin(0.5, 0.5)
+									.setDepth(2000);
+								
+								// テキストアニメーション
+								this.tweens.add({
+									targets: gameSetText,
+									scaleX: 1.2,
+									scaleY: 1.2,
+									duration: 500,
+									yoyo: true,
+									repeat: 1,
+									ease: "Sine.easeInOut",
+								});
+								
+								// 3秒後に結果画面へリダイレクト
+								this.time.delayedCall(3000, () => {
+									// リダイレクトイベントを発火
+									const event = new CustomEvent("gameRedirectToResult");
+									window.dispatchEvent(event);
+								});
+							}
+						}
+					}
 				}
 			},
 		},

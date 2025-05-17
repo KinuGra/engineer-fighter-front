@@ -7,6 +7,7 @@
 export interface GameState {
 	players: Record<string, PlayerState>;
 	gameStatus: "waiting" | "playing" | "finished";
+	winner?: string; // 勝者のID
 }
 
 // プレイヤー状態を定義
@@ -29,6 +30,7 @@ type GameEvent =
 	| { type: "playerUpdated"; player: PlayerState }
 	| { type: "playerRemoved"; playerId: string }
 	| { type: "gameStatusChanged"; status: "waiting" | "playing" | "finished" }
+	| { type: "winnerSet"; winnerId: string }
 	| { type: "stateReset" };
 
 // イベントリスナーの型
@@ -129,6 +131,17 @@ class ClientGameStateManager {
 		this.notifyListeners({
 			type: "gameStatusChanged",
 			status,
+		});
+	}
+
+	/**
+	 * 勝者IDを設定
+	 */
+	public setWinner(winnerId: string): void {
+		this._state.winner = winnerId;
+		this.notifyListeners({
+			type: "winnerSet",
+			winnerId,
 		});
 	}
 

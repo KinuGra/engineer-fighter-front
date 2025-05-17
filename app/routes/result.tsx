@@ -1,5 +1,6 @@
 import { useNavigate } from "@remix-run/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useClientGameState } from "~/features/game/hooks/useClientGameState";
 
 // 型定義
 interface Results {
@@ -17,6 +18,22 @@ const mockResults: Results[] = [
 
 export default function Result() {
 	const navigate = useNavigate();
+	const { gameState } = useClientGameState();
+	const [winnerName, setWinnerName] = useState("勝者");
+
+	// 勝者情報を取得
+	useEffect(() => {
+		if (gameState.winner) {
+			// ゲーム状態から勝者のIDを取得
+			const winnerId = gameState.winner;
+			
+			// プレイヤー情報から勝者の名前を取得（もしあれば）
+			const winner = gameState.players[winnerId];
+			if (winner) {
+				setWinnerName(winner.id);
+			}
+		}
+	}, [gameState]);
 
 	return (
 		<div className="w-full min-h-screen flex flex-col items-center justify-center bg-white px-4 py-8">
@@ -37,7 +54,7 @@ export default function Result() {
 						d="M12 2a1 1 0 0 1 1 1v2.09A7.001 7.001 0 0 1 19 12a7 7 0 0 1-6 6.93V21h3a1 1 0 1 1 0 2H8a1 1 0 1 1 0-2h3v-2.07A7.001 7.001 0 0 1 5 12a7 7 0 0 1 6-6.91V3a1 1 0 0 1 1-1z"
 					/>
 				</svg>
-				<h2 className="text-xl font-bold mb-1">ホストユーザーの勝利！</h2>
+				<h2 className="text-xl font-bold mb-1">{winnerName}の勝利！</h2>
 				<p className="text-gray-500">おめでとうございます！</p>
 			</div>
 			<div className="w-full max-w-md bg-gray-50 rounded-lg shadow p-4 mb-8">

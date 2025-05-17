@@ -11,11 +11,12 @@ export function useClientGameState() {
 	// サーバーサイドレンダリング時は空のオブジェクトを返す
 	if (typeof window === "undefined") {
 		return {
-			gameState: { players: {}, gameStatus: "waiting" },
+			gameState: { players: {}, gameStatus: "waiting", winner: undefined } as GameState,
 			addPlayer: () => {},
 			updatePlayer: () => {},
 			removePlayer: () => {},
 			setGameStatus: () => {},
+			setWinner: () => {},
 			resetState: () => {},
 		};
 	}
@@ -48,6 +49,8 @@ export function useClientGameState() {
 			ClientGameStateManager.getInstance().removePlayer(playerId),
 		setGameStatus: (status: "waiting" | "playing" | "finished") =>
 			ClientGameStateManager.getInstance().setGameStatus(status),
+		setWinner: (winnerId: string) =>
+			ClientGameStateManager.getInstance().setWinner(winnerId),
 		resetState: () => ClientGameStateManager.getInstance().resetState(),
 	};
 }
