@@ -89,7 +89,7 @@ export function CreateRoomPage() {
 
 const cardStyles: { [key: string]: React.CSSProperties } = {
 	card: {
-		background: "#fff",
+		backgroundColor: "0 2px 8px rgba(0,0,0,0.08)",
 		borderRadius: 12,
 		padding: 32,
 		width: 400,
@@ -130,7 +130,7 @@ const cardStyles: { [key: string]: React.CSSProperties } = {
 	button: {
 		width: "100%",
 		padding: "14px 0",
-		background: "#111",
+		background: "#444", // gray
 		color: "#fff",
 		border: "none",
 		borderRadius: 8,

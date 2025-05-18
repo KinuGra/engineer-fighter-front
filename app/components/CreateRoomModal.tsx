@@ -1,8 +1,8 @@
 import { useNavigate } from "@remix-run/react";
 import type React from "react";
 import { useState } from "react";
-import * as pkg from "react-loader-spinner";
 import { type CreateRoomRequest, createRoom } from "~/api/createRoom.client";
+import * as pkg from "react-loader-spinner";
 const { InfinitySpin } = pkg;
 import { ClientOnly } from "remix-utils/client-only";
 
@@ -26,6 +26,7 @@ const styles = {
 		alignItems: "center",
 		justifyContent: "center",
 		zIndex: 1000,
+		color:"black",
 
 	},
 	modal: {
@@ -46,8 +47,8 @@ const styles = {
 		cursor: "pointer",
 		color: "#333",
 	},
-	title: { margin: 0, fontSize: "1.7rem", fontWeight: 700, color: "black"},
-	subtitle: { color: "#666", marginBottom: 24 },
+	title: { margin: 0, fontSize: "1.7rem", fontWeight: 700, color: "gray"},
+	subtitle: { colinor: "#666", marginBottom: 24 },
 	formGroup: { marginBottom: 24 },
 	input: {
 		width: "100%",
@@ -56,8 +57,8 @@ const styles = {
 		borderRadius: "6px",
 		fontSize: "16px",
 		marginTop: 6,
-		color: "black",
 		background: "#fff",
+		color: "black",
 	},
 	submitButton: {
 		width: "100%",
@@ -89,7 +90,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 		if (roomName.length > 0) {
 			setSubmitting(true);
 		}
-	};
+	}
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -112,7 +113,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 		const data = await createRoom(request, apiUrl);
 		if (data !== undefined || null) {
 			router(`/waiting?roomId=${data.room_id}`);
-		} else {
+		} else{
 			window.alert("部屋の作成に失敗しました");
 			setSubmitting(false);
 		}
@@ -135,7 +136,6 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 								border: "none",
 								fontSize: "20px",
 								cursor: "pointer",
-								color: "black",
 							}}
 							aria-label="閉じる"
 							onClick={onClose}
@@ -143,12 +143,10 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 							×
 						</button>
 						<h2 style={styles.title}>部屋を作成</h2>
-						<p style={styles.subtitle}>
-							あいことばを設定して部屋を作成しましょう
-						</p>
+						<p style={styles.subtitle}>あいことばを設定して部屋を作成しましょう</p>
 						<form onSubmit={handleSubmit}>
 							<div style={styles.formGroup}>
-								<label htmlFor="roomName" style={{color:"black"}}>部屋の名前</label>
+								<label htmlFor="roomName">部屋の名前</label>
 								<input
 									type="text"
 									id="roomName"
@@ -160,7 +158,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 								/>
 							</div>
 							<div style={styles.formGroup}>
-								<label htmlFor="maxPlayers" style={{color:"black"}}>最大プレイヤー数</label>
+								<label htmlFor="maxPlayers">最大プレイヤー数</label>
 								<select
 									value={maxPlayers}
 									id="maxPlayers"
@@ -174,17 +172,9 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 									))}
 								</select>
 							</div>
-							<button
-								type="submit"
-								style={styles.submitButton}
-								onClick={() => handleSubmitting()}
-							>
+							<button type="submit" style={styles.submitButton} onClick={() => handleSubmitting()}>
 								<div className="flex items-center justify-center h-10">
-									{submitting && roomName.length > 0 ? (
-										<InfinitySpin width="200" />
-									) : (
-										"部屋を作成"
-									)}
+									{submitting && roomName.length > 0 ? <InfinitySpin width="200"/> : "部屋を作成"}
 								</div>
 							</button>
 						</form>
