@@ -41,57 +41,42 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 
 const PlayerCard = (props: PlayerCardProps) => {
 	return (
-		<div style={styles.card}>
-			<div style={styles.iconContainer}>
+		<div className="flex items-center bg-slate-800/80 border border-slate-600/20 rounded-xl p-4 backdrop-blur-md shadow-md transition-transform hover:translate-y-[-2px] cursor-pointer w-full max-w-md mx-auto">
+			{/* アイコン（スマホでは非表示） */}
+			<div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-slate-600/20">
 				<img
 					src={props.player.icon}
 					alt={`Icon for player ${props.player.id}`}
-					style={styles.icon}
+					className="w-full h-full object-cover"
 				/>
 			</div>
-			<div style={styles.idContainer}>
+
+			{/* プレイヤー名 */}
+			<div className="flex-1 flex items-center justify-center ml-4">
 				<div>
-					<span style={styles.id}>@{props.player.id}</span>
+					<span className="text-lg text-slate-200 font-semibold font-mono">@{props.player.id}</span>
+				</div>
+			</div>
+
+			{/* ステータス（スマホでは非表示） */}
+			<div className="hidden sm:flex gap-3">
+				<div className="flex flex-col items-center gap-1">
+					<span className="text-xs text-slate-400 font-mono">POW</span>
+					<span className="text-sm text-slate-200 font-semibold font-mono">{props.player.power}</span>
+				</div>
+				<div className="flex flex-col items-center gap-1">
+					<span className="text-xs text-slate-400 font-mono">WGT</span>
+					<span className="text-sm text-slate-200 font-semibold font-mono">{props.player.weight}</span>
+				</div>
+				<div className="flex flex-col items-center gap-1">
+					<span className="text-xs text-slate-400 font-mono">VOL</span>
+					<span className="text-sm text-slate-200 font-semibold font-mono">{props.player.volume}</span>
 				</div>
 			</div>
 		</div>
 	);
 };
 
-const styles = {
-	card: {
-		display: "flex",
-		flexDirection: "row" as const,
-		alignItems: "center" as const,
-		border: "1px solid #ccc",
-		borderRadius: "5px",
-		padding: "10px",
-		margin: "5px",
-		width: "300px",
-	},
-	idContainer: {
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-		width: "80%",
-		height: "100%",
-	},
-	id: {
-		fontSize: "0.9em",
-		color: "#666",
-	},
-	iconContainer: {
-		width: "50px",
-		height: "50px",
-		borderRadius: "50%",
-		overflow: "hidden" as const,
-	},
-	icon: {
-		width: "100%",
-		height: "100%",
-		objectFit: "cover" as const,
-	},
-};
 
 const WaitingRoom = () => {
 	const { websocketUrl, apiUrl, roomID, users } =
@@ -222,63 +207,126 @@ const WaitingRoom = () => {
 						display: "flex",
 						flexDirection: "column",
 						alignItems: "center",
-						justifyContent: "center",
-						marginTop: "80px",
+						minHeight: "100vh",
+						background: "linear-gradient(135deg, #1E293B 0%, #0F172A 100%)",
+						color: "#E2E8F0",
+						padding: "40px 20px",
 					}}
 				>
-					<div style={{ marginBottom: "20px", fontSize: "20px" }}>
-						合言葉をコピーして、友達と共有してください
-					</div>
-					{/* 部屋ID */}
-					<div className="container">
-						<div className="flex items-center justify-center gap-2">
-							{roomID}
-							<button
-								onClick={() => copyToClipboard(roomID)}
-								className="relative"
-								type="button"
-							>
-								<FaRegCopy className={isCopied ? "text-green-500" : ""} />
-								{isCopied && (
-									<span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-600 text-white text-xs py-1 px-4 rounded whitespace-nowrap min-w-90px] text-center">
-										Copied!
-									</span>
-								)}
-							</button>
-						</div>
-					</div>
-
-					<div className="mt-3">
-						<Grid
-							height="50"
-							width="50"
-							color="#4fa94d"
-							ariaLabel="audio-loading"
-							wrapperStyle={{}}
-							wrapperClass="wrapper-class"
-							visible={true}
-						/>
-					</div>
 					<div
 						style={{
-							marginTop: "24px",
-							marginBottom: "24px",
-							color: "#666",
-							fontSize: "18px",
+							background: "rgba(30, 41, 59, 0.6)",
+							backdropFilter: "blur(12px)",
+							padding: "32px",
+							borderRadius: "16px",
+							border: "1px solid rgba(148, 163, 184, 0.2)",
+							maxWidth: "800px",
+							width: "100%",
+							boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
 						}}
 					>
-						しばらくお待ちください...
-					</div>
-					<div>
-						<div>
-							{players.map((player: PlayerData) => (
-								<PlayerCard key={player.id} player={player} />
-							))}
+						<h1
+							style={{
+								fontSize: "24px",
+								fontWeight: "600",
+								textAlign: "center",
+								marginBottom: "24px",
+								color: "#F8FAFC",
+							}}
+						>
+							Battle Room
+						</h1>
+						<div
+							style={{
+								marginBottom: "24px",
+								fontSize: "16px",
+								textAlign: "center",
+								color: "#94A3B8",
+							}}
+						>
+							合言葉を共有して、他のエンジニアと戦ってみよう！
 						</div>
-					</div>
-					{/* ゲーム開始ボタン */}
-					<div style={{ margin: "20px" }}>
-						<StartButton apiUrl={apiUrl} roomId={roomID} />
+						<div className="container">
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+									gap: "12px",
+									background: "rgba(15, 23, 42, 0.6)",
+									padding: "12px 24px",
+									borderRadius: "8px",
+									marginBottom: "32px",
+								}}
+							>
+								<span
+									style={{
+										fontFamily: "monospace",
+										fontSize: "20px",
+										color: "#F8FAFC",
+									}}
+								>
+									{roomID}
+								</span>
+								<button
+									onClick={() => copyToClipboard(roomID)}
+									className="relative hover:text-emerald-400 transition-colors"
+									type="button"
+									style={{ color: isCopied ? "#10B981" : "#94A3B8" }}
+								>
+									<FaRegCopy size={20} />
+									{isCopied && (
+										<span
+											style={{
+												position: "absolute",
+												top: "-32px",
+												left: "50%",
+												transform: "translateX(-50%)",
+												background: "#059669",
+												color: "white",
+												padding: "4px 12px",
+												borderRadius: "4px",
+												fontSize: "12px",
+												whiteSpace: "nowrap",
+											}}
+										>
+											Copied!
+										</span>
+									)}
+								</button>
+							</div>
+
+							<div className="flex flex-col items-center justify-center gap-2 mb-8 w-full max-w-4xl mx-auto px-4">
+								{players.map((player: PlayerData) => (
+									<PlayerCard key={player.id} player={player} />
+								))}
+							</div>
+
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									alignItems: "center",
+									gap: "16px",
+								}}
+							>
+								<Grid
+									height="40"
+									width="40"
+									color="#10B981"
+									ariaLabel="loading"
+									wrapperStyle={{}}
+									wrapperClass="wrapper-class"
+									visible={true}
+								/>
+								<div style={{ color: "#94A3B8", fontSize: "16px" }}>
+									他のエンジニアを待っています...
+								</div>
+								<div style={{ marginTop: "16px" }}>
+									<StartButton apiUrl={apiUrl} roomId={roomID} />
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			)}
