@@ -73,7 +73,7 @@ export default function StatusChart({ status }: StatusChartProps) {
 		const normalizedWeight = status.weight / 100;
 		const normalizedVolume = status.volume / 100;
 		// CDは逆数で評価（値が小さいほど良い）
-		const normalizedCD = 1 - (status.cd - 1) / 999;
+		const normalizedCD = 1 - (status.cd - 1) / 4999;
 
 		// ステータスポイントの座標を計算
 		const points = [
