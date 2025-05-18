@@ -103,24 +103,10 @@ export const createGameConfig = async (
 
 					for (const playerData of playerDataArray) {
 						// プレイヤー位置の決定
-						let x: number;
-						if (playerData.x !== undefined) {
-							x = playerData.x;
-						} else {
-							x = Phaser.Math.Between(
-								this.cameras.main.centerX - FIELD_WIDTH / 2 + 40,
-								this.cameras.main.centerX + FIELD_WIDTH / 2 - 40,
-							);
-						}
-
-						let y: number;
-						if (playerData.y !== undefined) {
-							y = playerData.y;
-						} else {
-							y = Phaser.Math.Between(
-								this.cameras.main.centerY - FIELD_HEIGHT / 2 + 40,
-								this.cameras.main.centerY + FIELD_HEIGHT / 2 - 40,
-							);
+						const { x, y } = playerData;
+						if(!x || !y) {
+							// ありえない
+							throw new Error("Player position (x, y) is required.");
 						}
 
 						// volume に基づいて半径を計算（最小10、最大40）
