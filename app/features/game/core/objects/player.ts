@@ -343,7 +343,7 @@ export class Player extends GameObjects.Arc {
 		// 相手に転移する力の計算
 		// 質量比を考慮（相手の重さの影響を反映）
 		const impactForce =
-			kineticEnergy * massEffect * (1 - target.weight / 100) * 0.9;
+			kineticEnergy * massEffect * (1 - target.weight / 100);
 
 		// 力を適用して、相手プレイヤーを押し出す
 		targetBody.velocity.x += collisionVector.x * impactForce;

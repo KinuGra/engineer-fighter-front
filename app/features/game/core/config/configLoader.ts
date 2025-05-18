@@ -172,7 +172,7 @@ export const createGameConfig = async (
 
 							if (p1.id && p2.id) {
 								// プレイヤー同士の衝突をコンソールに出力（デバッグ用）
-								console.log(`${p1.id} collided with ${p2.id}`);
+								// console.log(`${p1.id} collided with ${p2.id}`);
 
 								// 衝突時のエネルギー転移処理
 								const impact1to2 = p1.applyCollisionImpactTo(p2);
