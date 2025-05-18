@@ -481,8 +481,11 @@ export class Player extends GameObjects.Arc {
 			body.setDrag(dragCoefficient);
 
 			// バウンス（跳ね返り）を小さめに設定（重い方が跳ね返りが小さい）
+			
+			// 速度の適用
+			body.setVelocity(velocityX, velocityY);
 			body.setBounce(0.3 - weightFactor * 0.2); // 0.1～0.3の間
-
+	
 			// イベントの送信
 			// TODO: apiUrl
 			sendAction(
@@ -497,9 +500,8 @@ export class Player extends GameObjects.Arc {
 				apiUrl,
 				roomId,
 			);
-
-			// 速度の適用
-			body.setVelocity(velocityX, velocityY);
+			console.log(angle, finalStrength);
+	
 		}
 
 		// クールダウンを開始
