@@ -87,7 +87,7 @@ export const createGameConfig = async (
 					// Playerクラスを動的にインポート
 					// @ts-expect-error 動的インポート(tsconfig.jsonでのmodules設定に依存)
 					const { Player } = await import("../objects/player");
-					const playerObjects = [];
+					const playerObjects: Player[] = [];
 
 					// 設定からプレイヤーデータを取得
 					const playerDataArray = gameSettings.players;
@@ -154,6 +154,16 @@ export const createGameConfig = async (
 
 					// プレイヤー配列をシーンのデータとして保存（update内で使用するため）
 					this.data.set("playerObjects", playerObjects);
+
+					ws.onmessage = (event) => {
+						const data = JSON.parse(event.data);
+						if (data.type !== "action") return;
+						const target = playerObjects.find((player) => player.id === data.message.id);
+						if (target) {
+							// 受信したデータを元にプレイヤーの状態を更新
+							target.setVelocityWithAngle(data.message.angle[0], data.message.pull_power);
+						}
+					}
 
 					// プレイヤー同士の衝突を設定
 					this.physics.add.collider(
@@ -234,17 +244,6 @@ export const createGameConfig = async (
 
 				// プレイヤーごとの更新処理
 				if (players && Array.isArray(players)) {
-					ws.onmessage = (event) => {
-						const data = JSON.parse(event.data);
-						if(data.type !== "action") return;
-						const target = players.find((player) => player.id === data.message.id);
-						if (target) {
-							// 受信したデータを元にプレイヤーの状態を更新
-							target.setAngle(data.message.angle[0]);
-							target.setPullPower(data.message.pull_power);
-						}
-					}
-
 					for (const player of players) {
 						if (player && typeof player.update === "function") {
 							// プレイヤーのアップデート関数を呼び出し

@@ -379,6 +379,22 @@ export class Player extends GameObjects.Arc {
 			},
 		});
 	}
+	
+	/**
+	 * 外部から移動状態を変更するための関数（WebSocket用）
+	 * @param angle 移動角度
+	 * @param pullPower 引っ張りの強さ
+	 */
+	public setVelocityWithAngle(angle: number, pullPower: number): void {
+		// 物理ボディがあれば角度を設定
+		const body = this.body as Phaser.Physics.Arcade.Body;
+		if (body) {
+			body.setVelocity(
+				Math.cos(angle) * pullPower,
+				Math.sin(angle) * pullPower,
+			);
+		}
+	}
 
 	/**
 	 * クールダウン中かどうかを確認する
