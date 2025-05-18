@@ -6,7 +6,7 @@
 // ゲーム状態を定義
 export interface GameState {
 	players: Record<string, PlayerState>;
-	gameStatus: "waiting" | "playing" | "finished";
+	gameStatus: "countdown" | "waiting" | "playing" | "finished";
 	winner?: string;
 	// 脱落順序（最後に残ったプレイヤーが先頭）
 	eliminationOrder: string[];
@@ -31,7 +31,7 @@ type GameEvent =
 	| { type: "playerAdded"; player: PlayerState }
 	| { type: "playerUpdated"; player: PlayerState }
 	| { type: "playerRemoved"; playerId: string }
-	| { type: "gameStatusChanged"; status: "waiting" | "playing" | "finished" }
+	| { type: "gameStatusChanged"; status: "countdown" | "waiting" | "playing" | "finished" }
 	| { type: "winnerSet"; winnerId: string }
 	| { type: "stateReset" };
 
@@ -69,7 +69,7 @@ class ClientGameStateManager {
 		return {
 			getState: () => ({
 				players: {},
-				gameStatus: "waiting",
+				gameStatus: "countdown",
 				eliminationOrder: [],
 			}),
 			addPlayer: () => {},
@@ -135,7 +135,7 @@ class ClientGameStateManager {
 	/**
 	 * ゲームステータスを設定
 	 */
-	public setGameStatus(status: "waiting" | "playing" | "finished"): void {
+	public setGameStatus(status: "countdown" | "waiting" | "playing" | "finished"): void {
 		this._state.gameStatus = status;
 		this.notifyListeners({
 			type: "gameStatusChanged",
@@ -177,7 +177,7 @@ class ClientGameStateManager {
 	public resetState(): void {
 		this._state = {
 			players: {},
-			gameStatus: "waiting",
+			gameStatus: "countdown", // "waiting" から "countdown" に変更
 			eliminationOrder: [],
 		};
 		this.notifyListeners({ type: "stateReset" });

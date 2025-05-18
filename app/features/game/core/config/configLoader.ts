@@ -28,7 +28,6 @@ export const createGameConfig = async (
 
 	// ゲーム開始時に状態を初期化
 	stateManager.resetState();
-	stateManager.setGameStatus("waiting");
 
 	return {
 		type: Phaser.AUTO,
@@ -51,6 +50,117 @@ export const createGameConfig = async (
 			},
 			create: async function (this: Phaser.Scene) {
 				this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
+
+				// カウントダウン機能の実装
+				let countdownValue = 3;
+				const countdownText = this.add
+					.text(
+						this.cameras.main.centerX,
+						this.cameras.main.centerY - 50,
+						`${countdownValue}`,
+						{
+							font: "bold 96px Arial",
+							color: "#FF0000",
+							stroke: "#FFFFFF",
+							strokeThickness: 8,
+							padding: { left: 16, right: 16, top: 8, bottom: 8 },
+						}
+					)
+					.setOrigin(0.5, 0.5)
+					.setDepth(2000)
+					.setAlpha(0);
+
+				// 準備テキストの追加
+				const readyText = this.add
+					.text(
+						this.cameras.main.centerX,
+						this.cameras.main.centerY - 150,
+						"READY?",
+						{
+							font: "bold 64px Arial",
+							color: "#FF0000",
+							stroke: "#FFFFFF",
+							strokeThickness: 6,
+							padding: { left: 16, right: 16, top: 8, bottom: 8 },
+						}
+					)
+					.setOrigin(0.5, 0.5)
+					.setDepth(2000)
+					.setAlpha(0);
+
+				// アニメーションでReadyテキストをフェードイン
+				this.tweens.add({
+					targets: readyText,
+					alpha: 1,
+					duration: 500,
+					ease: "Power2",
+					onComplete: () => {
+						// Readyテキストが表示された後、カウントダウンを開始
+						this.tweens.add({
+							targets: countdownText,
+							alpha: 1,
+							duration: 500,
+							ease: "Power2",
+							onComplete: () => {
+								// カウントダウンのインターバルを設定
+								const countdownInterval = this.time.addEvent({
+									delay: 1000,
+									callback: () => {
+										countdownValue--;
+										if (countdownValue > 0) {
+											// カウントダウンの数字を更新
+											countdownText.setText(`${countdownValue}`);
+											
+											// 数字変更時のアニメーション効果
+											this.tweens.add({
+												targets: countdownText,
+												scaleX: 1.2,
+												scaleY: 1.2,
+												duration: 200,
+												yoyo: true,
+												ease: "Power2",
+											});
+										} else {
+											// カウントダウン終了時の処理
+											countdownText.setText("GO!");
+											
+											// GOのアニメーション
+											this.tweens.add({
+												targets: countdownText,
+												scaleX: 1.5,
+												scaleY: 1.5,
+												duration: 300,
+												yoyo: true,
+												ease: "Power2",
+												onComplete: () => {
+													// カウントダウン表示を消す
+													this.tweens.add({
+														targets: [countdownText, readyText],
+														alpha: 0,
+														duration: 500,
+														ease: "Power2",
+														onComplete: () => {
+															// テキストを破棄
+															countdownText.destroy();
+															readyText.destroy();
+															
+															// ゲーム状態を「プレイ中」に変更
+															stateManager.setGameStatus("playing");
+														}
+													});
+												}
+											});
+											
+											// インターバルを停止
+											countdownInterval.remove();
+										}
+									},
+									loop: true
+								});
+							}
+						});
+					}
+				});
 
 				// 物理世界の境界をフィールドサイズに一致させる（重要）
 				this.physics.world.setBounds(
@@ -190,6 +300,11 @@ export const createGameConfig = async (
 					// 画面クリック時の処理を設定
 					let isFirstClick = true;
 					this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+						// カウントダウン中やゲーム終了時は操作を無効化
+						if (stateManager.getState().gameStatus !== "playing") {
+							return;
+						}
+						
 						// メインプレイヤーが存在する場合のみ処理を実行
 						if (mainPlayer) {
 							if (isFirstClick) {
@@ -217,14 +332,10 @@ export const createGameConfig = async (
 				} catch (error) {
 					console.error("Failed to load Player:", error);
 				}
-
-				stateManager.setGameStatus("playing");
 			},
 			update: function (this: Phaser.Scene) {
 				const statusTextKey = "gameStatusText";
-				const status = stateManager.getState().gameStatus;
-
-				let statusText = this.children.getByName(
+				const status = stateManager.getState().gameStatus;					let statusText = this.children.getByName(
 					statusTextKey,
 				) as Phaser.GameObjects.Text | null;
 				if (!statusText) {
@@ -239,6 +350,11 @@ export const createGameConfig = async (
 						.setDepth(1000);
 				} else {
 					statusText.setText(`status: ${status}`);
+				}
+
+				// カウントダウン中はプレイヤーの操作や状態の更新をスキップ
+				if (status === "countdown") {
+					return;
 				}
 
 				// 保存されたプレイヤーオブジェクトを取得
