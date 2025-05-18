@@ -116,9 +116,8 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 		} else{
 			window.alert("部屋の作成に失敗しました");
 			setSubmitting(false);
+			onClose();
 		}
-
-		onClose();
 	};
 
 	return (
