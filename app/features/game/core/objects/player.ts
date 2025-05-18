@@ -379,6 +379,22 @@ export class Player extends GameObjects.Arc {
 			},
 		});
 	}
+	
+	/**
+	 * 移動状態を変更するための関数
+	 * @param angle 移動角度
+	 * @param pullPower 引っ張りの強さ
+	 */
+	public setVelocityWithAngle(angle: number, pullPower: number): void {
+		// 物理ボディがあれば角度を設定
+		const body = this.body as Phaser.Physics.Arcade.Body;
+		if (body) {
+			const velocityX = Math.cos(angle) * pullPower;
+			const velocityY = Math.sin(angle) * pullPower;
+			body.setVelocity(velocityX, velocityY);
+			console.log(`setVelocityWithAngle: angle=${angle.toFixed(2)}, power=${pullPower}, velocity=(${velocityX.toFixed(2)}, ${velocityY.toFixed(2)})`);
+		}
+	}
 
 	/**
 	 * クールダウン中かどうかを確認する
@@ -440,10 +456,6 @@ export class Player extends GameObjects.Arc {
 		// 移動方向の角度を計算
 		const angle = dragVector.angle();
 
-		// ベクトルを正規化して強さを適用
-		const velocityX = Math.cos(angle) * finalStrength;
-		const velocityY = Math.sin(angle) * finalStrength;
-
 		// 物理ボディがあれば速度を設定
 		const body = this.body as Phaser.Physics.Arcade.Body;
 		if (body) {
@@ -465,8 +477,10 @@ export class Player extends GameObjects.Arc {
 			body.setDrag(dragCoefficient);
 
 			// バウンス（跳ね返り）を小さめに設定（重い方が跳ね返りが小さい）
+			
+			// 速度の適用
 			body.setBounce(0.3 - weightFactor * 0.2); // 0.1～0.3の間
-
+	
 			// イベントの送信
 			// TODO: apiUrl
 			sendAction(
@@ -481,9 +495,11 @@ export class Player extends GameObjects.Arc {
 				apiUrl,
 				roomId,
 			);
-
-			// 速度の適用
-			body.setVelocity(velocityX, velocityY);
+			
+			// 実際に適用された速度をログ出力
+			console.log("Applied velocity:", body.velocity.x, body.velocity.y);
+			console.log("Angle:", angle, "Strength:", finalStrength);
+	
 		}
 
 		// クールダウンを開始
@@ -492,7 +508,7 @@ export class Player extends GameObjects.Arc {
 		// ドラッグ情報をリセット
 		this.dragStartPoint = null;
 
-		console.log("Drag completed. New velocity:", velocityX, velocityY);
+		console.log("Drag completed with angle:", angle, "and strength:", finalStrength);
 		return true;
 	}
 
