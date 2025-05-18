@@ -18,6 +18,7 @@ export const createGameConfig = async (
 	parent: HTMLElement | undefined,
 	apiUrl: string,
 	roomId: string,
+	ws: WebSocket,
 ): Promise<Phaser.Types.Core.GameConfig> => {
 	const players = gameSettings.players;
 
@@ -86,7 +87,7 @@ export const createGameConfig = async (
 					// Playerクラスを動的にインポート
 					// @ts-expect-error 動的インポート(tsconfig.jsonでのmodules設定に依存)
 					const { Player } = await import("../objects/player");
-					const playerObjects = [];
+					const playerObjects: Player[] = [];
 
 					// 設定からプレイヤーデータを取得
 					const playerDataArray = gameSettings.players;
@@ -102,24 +103,10 @@ export const createGameConfig = async (
 
 					for (const playerData of playerDataArray) {
 						// プレイヤー位置の決定
-						let x: number;
-						if (playerData.x !== undefined) {
-							x = playerData.x;
-						} else {
-							x = Phaser.Math.Between(
-								this.cameras.main.centerX - FIELD_WIDTH / 2 + 40,
-								this.cameras.main.centerX + FIELD_WIDTH / 2 - 40,
-							);
-						}
-
-						let y: number;
-						if (playerData.y !== undefined) {
-							y = playerData.y;
-						} else {
-							y = Phaser.Math.Between(
-								this.cameras.main.centerY - FIELD_HEIGHT / 2 + 40,
-								this.cameras.main.centerY + FIELD_HEIGHT / 2 - 40,
-							);
+						const { x, y } = playerData;
+						if(!x || !y) {
+							// ありえない
+							throw new Error("Player position (x, y) is required.");
 						}
 
 						// volume に基づいて半径を計算（最小10、最大40）
@@ -129,8 +116,8 @@ export const createGameConfig = async (
 
 						const player = new Player(
 							this,
-							x,
-							y,
+							this.cameras.main.centerX - FIELD_WIDTH/2 + x,
+							this.cameras.main.centerY - FIELD_HEIGHT/2 + y,
 							radius, // volumeに基づいた半径
 							playerData.id,
 							playerData.icon,
@@ -153,6 +140,16 @@ export const createGameConfig = async (
 
 					// プレイヤー配列をシーンのデータとして保存（update内で使用するため）
 					this.data.set("playerObjects", playerObjects);
+
+					ws.onmessage = (event) => {
+						const data = JSON.parse(event.data);
+						if (data.type !== "action") return;
+						const target = playerObjects.find((player) => player.id === data.message.id);
+						if (target) {
+							// 受信したデータを元にプレイヤーの状態を更新
+							target.setVelocityWithAngle(data.message.angle[0], data.message.pull_power);
+						}
+					}
 
 					// プレイヤー同士の衝突を設定
 					this.physics.add.collider(
