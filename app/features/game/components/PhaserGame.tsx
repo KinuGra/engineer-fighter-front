@@ -51,7 +51,7 @@ export default function PhaserGame({
 		};
 
 		ws.onmessage = (event) => {
-			console.log("message", event)
+			console.log("message", event);
 		};
 
 		ws.onerror = (error) => {
