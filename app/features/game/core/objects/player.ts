@@ -27,9 +27,9 @@ export class Player extends GameObjects.Arc {
 	private youIndicator: Phaser.GameObjects.Text | null = null;
 
 	// マスク更新最適化用の変数
-	private lastMaskX: number = 0;
-	private lastMaskY: number = 0;
-	private lastMaskRadius: number = 0;
+	private lastMaskX = 0;
+	private lastMaskY = 0;
+	private lastMaskRadius = 0;
 
 	// ハイライト更新最適化用の変数
 	private lastHighlightX = 0;
@@ -407,7 +407,12 @@ export class Player extends GameObjects.Arc {
 	 * @param y ひっぱり終了地点のY座標
 	 * @returns 移動が実行されたかどうか
 	 */
-	public completeDrag(x: number, y: number, apiUrl: string, roomId: string): boolean {
+	public completeDrag(
+		x: number,
+		y: number,
+		apiUrl: string,
+		roomId: string,
+	): boolean {
 		// クールダウン中、ドラッグ中でない、または死亡している場合は操作を受け付けない
 		if (this.isInCooldown() || !this.dragStartPoint || !this.isAlive)
 			return false;
@@ -464,14 +469,18 @@ export class Player extends GameObjects.Arc {
 
 			// イベントの送信
 			// TODO: apiUrl
-			sendAction({
-				type: "action",
-				message: {
-					id: this.id,
-					angle: [angle, 0],
-					pull_power: finalStrength,
-				}
-			}, apiUrl, roomId)
+			sendAction(
+				{
+					type: "action",
+					message: {
+						id: this.id,
+						angle: [angle, 0],
+						pull_power: finalStrength,
+					},
+				},
+				apiUrl,
+				roomId,
+			);
 
 			// 速度の適用
 			body.setVelocity(velocityX, velocityY);

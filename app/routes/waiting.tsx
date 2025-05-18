@@ -12,8 +12,8 @@ import StartButton from "~/components/StartButton";
 import calcStatus from "~/utils/calcStatus";
 import genPoint from "~/utils/genPoint.client";
 const { Grid } = pkg;
-import type { PlayerData } from "~/features/game/core/config/gameSettings";
 import { playersAtom } from "~/atoms/players";
+import type { PlayerData } from "~/features/game/core/config/gameSettings";
 
 interface PlayerCardProps {
 	player: PlayerData;
@@ -106,16 +106,18 @@ const WaitingRoom = () => {
 	const redirectRef = useRef(false);
 
 	useEffect(() => {
-		setPlayers(users.map((user: User) => ({
-			id: user.userId,
-			icon: user.iconUrl,
-			power: user.power,
-			weight: user.weight,
-			volume: user.volume,
-			cd: user.cd,
-			x: user.point[0],
-			y: user.point[1],
-		})));
+		setPlayers(
+			users.map((user: User) => ({
+				id: user.userId,
+				icon: user.iconUrl,
+				power: user.power,
+				weight: user.weight,
+				volume: user.volume,
+				cd: user.cd,
+				x: user.point[0],
+				y: user.point[1],
+			})),
+		);
 	}, [users, setPlayers]);
 
 	useEffect(() => {
@@ -196,7 +198,7 @@ const WaitingRoom = () => {
 		};
 
 		return () => {
-			if(!redirectRef.current) {
+			if (!redirectRef.current) {
 				// ws.close();
 			}
 		};

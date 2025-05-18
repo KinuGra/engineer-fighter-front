@@ -51,7 +51,7 @@ export default function PhaserGame({
 		};
 
 		ws.onmessage = (event) => {
-			console.log("message", event)
+			console.log("message", event);
 		};
 
 		ws.onerror = (error) => {
@@ -112,7 +112,7 @@ export default function PhaserGame({
 				gameSettingsWithPlayers,
 				containerRef.current,
 				apiUrl,
-				roomId
+				roomId,
 			);
 
 			const game = new Phaser.Game(config);

@@ -20,7 +20,7 @@ export const meta: MetaFunction = () => {
 export default function GameScreen() {
 	const { apiUrl, gameSettings } = useLoaderData<typeof loader>();
 	const roomId = new URLSearchParams(window.location.search).get("roomId");
-	if(!roomId) {
+	if (!roomId) {
 		throw new Error("Room ID is required");
 	}
 

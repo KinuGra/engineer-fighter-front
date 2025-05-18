@@ -190,7 +190,12 @@ export const createGameConfig = async (
 								isFirstClick = false;
 							} else {
 								// 2回目のクリック：ひっぱりを完了して移動
-								const didMove = mainPlayer.completeDrag(pointer.x, pointer.y, apiUrl, roomId);
+								const didMove = mainPlayer.completeDrag(
+									pointer.x,
+									pointer.y,
+									apiUrl,
+									roomId,
+								);
 								isFirstClick = true;
 
 								if (!didMove) {
