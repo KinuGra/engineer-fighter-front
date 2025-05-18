@@ -389,13 +389,11 @@ export class Player extends GameObjects.Arc {
 		// 物理ボディがあれば角度を設定
 		const body = this.body as Phaser.Physics.Arcade.Body;
 		if (body) {
-			body.setVelocity(
-				Math.cos(angle) * pullPower,
-				Math.sin(angle) * pullPower,
-			);
+			const velocityX = Math.cos(angle) * pullPower;
+			const velocityY = Math.sin(angle) * pullPower;
+			body.setVelocity(velocityX, velocityY);
+			console.log(`setVelocityWithAngle: angle=${angle.toFixed(2)}, power=${pullPower}, velocity=(${velocityX.toFixed(2)}, ${velocityY.toFixed(2)})`);
 		}
-		console.log(Math.cos(angle) * pullPower, Math.sin(angle) * pullPower);
-		
 	}
 
 	/**
@@ -500,7 +498,10 @@ export class Player extends GameObjects.Arc {
 				apiUrl,
 				roomId,
 			);
-			console.log(velocityX, velocityY);
+			
+			// 実際に適用された速度をログ出力
+			console.log("Applied velocity:", body.velocity.x, body.velocity.y);
+			console.log("Angle:", angle, "Strength:", finalStrength);
 	
 		}
 
@@ -510,7 +511,7 @@ export class Player extends GameObjects.Arc {
 		// ドラッグ情報をリセット
 		this.dragStartPoint = null;
 
-		console.log("Drag completed. New velocity:", velocityX, velocityY);
+		console.log("Drag completed with angle:", angle, "and strength:", finalStrength);
 		return true;
 	}
 
