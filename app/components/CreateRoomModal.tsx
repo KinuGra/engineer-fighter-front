@@ -30,7 +30,7 @@ const styles = {
 
 	},
 	modal: {
-		background: "#fff",
+		background: "#f3f4f6", // gray-100
 		borderRadius: "12px",
 		padding: "32px",
 		minWidth: "340px",
@@ -47,8 +47,8 @@ const styles = {
 		cursor: "pointer",
 		color: "#333",
 	},
-	title: { margin: 0, fontSize: "1.7rem", fontWeight: 700, color: "gray"},
-	subtitle: { colinor: "#666", marginBottom: 24 },
+	title: { margin: 0, fontSize: "1.7rem", fontWeight: 700, color: "#374151" }, // text-gray-700
+	subtitle: { color: "#6b7280", marginBottom: 24 }, // text-gray-500
 	formGroup: { marginBottom: 24 },
 	input: {
 		width: "100%",
@@ -124,8 +124,8 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 	return (
 		<ClientOnly>
 			{() => (
-				<div style={styles.overlay}>
-					<div style={styles.modal}>
+				<div style={{...styles.overlay}}>
+					<div style={{ ...styles.modal, background: "white" }}>
 						<button
 							type="button"
 							style={{

@@ -7,7 +7,7 @@ function CreateRoomCard({ onOpen }: { onOpen: () => void }) {
 		<div style={cardStyles.card}>
 			<h2 style={cardStyles.title}>部屋を作成する</h2>
 			<p style={cardStyles.subtitle}>
-				新しいゲーム部屋を作成して友達を招待しましょう
+			新しいゲーム部屋を作成して友達を招待しましょう
 			</p>
 			<div style={cardStyles.iconCircle}>
 				<span style={cardStyles.plus}>＋</span>
@@ -89,7 +89,7 @@ export function CreateRoomPage() {
 
 const cardStyles: { [key: string]: React.CSSProperties } = {
 	card: {
-		backgroundColor: "0 2px 8px rgba(0,0,0,0.08)",
+		background: "#f3f4f6", // gray-100
 		borderRadius: 12,
 		padding: 32,
 		width: 400,
