@@ -394,6 +394,8 @@ export class Player extends GameObjects.Arc {
 				Math.sin(angle) * pullPower,
 			);
 		}
+		console.log(Math.cos(angle) * pullPower, Math.sin(angle) * pullPower);
+		
 	}
 
 	/**
@@ -500,7 +502,7 @@ export class Player extends GameObjects.Arc {
 				apiUrl,
 				roomId,
 			);
-			console.log(angle, finalStrength);
+			console.log(velocityX, velocityY);
 	
 		}
 
