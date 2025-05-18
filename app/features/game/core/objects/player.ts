@@ -25,6 +25,10 @@ export class Player extends GameObjects.Arc {
 	private iconMaskGraphics: Phaser.GameObjects.Graphics | null = null;
 	private highlightGraphics: Phaser.GameObjects.Graphics | null = null;
 	private youIndicator: Phaser.GameObjects.Text | null = null;
+	
+	// クールダウン表示用の変数
+	private cooldownGraphics: Phaser.GameObjects.Graphics | null = null;
+	private cooldownStartTime: number = 0;
 
 	// マスク更新最適化用の変数
 	private lastMaskX = 0;
@@ -160,6 +164,9 @@ export class Player extends GameObjects.Arc {
 			if (this.youIndicator) {
 				this.youIndicator.destroy();
 			}
+			if (this.cooldownGraphics) {
+				this.cooldownGraphics.destroy();
+			}
 			ClientGameStateManager.getInstance().removePlayer(this.id);
 		});
 	}
@@ -215,6 +222,11 @@ export class Player extends GameObjects.Arc {
 			this.youIndicator.setVisible(this.visible);
 			this.youIndicator.setAlpha(this.alpha);
 		}
+		
+		// クールダウン表示を更新
+		if (this.isCooldown) {
+			this.updateCooldownVisual();
+		}
 	}
 
 	/**
@@ -250,6 +262,11 @@ export class Player extends GameObjects.Arc {
 		if (this.youIndicator) {
 			const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
 			this.youIndicator.setPosition(x, y + radius + 15);
+		}
+		
+		// クールダウン表示も位置を更新
+		if (this.cooldownGraphics && this.isCooldown) {
+			this.updateCooldownVisual();
 		}
 
 		// グローバル状態を更新
@@ -527,11 +544,35 @@ export class Player extends GameObjects.Arc {
 		if (this.cooldownTimer) {
 			this.cooldownTimer.remove();
 		}
+		
+		// クールダウンの開始時間を記録
+		this.cooldownStartTime = this.scene.time.now;
+		
+		// クールダウン表示用のグラフィックスを作成または更新
+		if (!this.cooldownGraphics) {
+			this.cooldownGraphics = this.scene.add.graphics();
+			this.cooldownGraphics.setDepth(6); // プレイヤーの上に表示
+		} else {
+			this.cooldownGraphics.clear();
+		}
+		
+		// クールダウンの可視化を更新（初期状態を描画）
+		this.updateCooldownVisual();
 
 		// 新しいクールダウンタイマーを設定
 		this.cooldownTimer = this.scene.time.delayedCall(this.cd, () => {
 			this.isCooldown = false;
 			this.cooldownTimer = null;
+			
+			// クールダウン表示をクリア
+			if (this.cooldownGraphics) {
+				this.cooldownGraphics.clear();
+			}
+			
+			// 名前表示を元に戻す
+			if (this.nameText) {
+				this.nameText.setText(`@${this.id}`);
+			}
 
 			// グローバル状態を更新
 			ClientGameStateManager.getInstance().updatePlayer(this.id, {
@@ -565,6 +606,9 @@ export class Player extends GameObjects.Arc {
 		}
 		if (this.youIndicator) {
 			this.youIndicator.setAlpha(0.5);
+		}
+		if (this.cooldownGraphics) {
+			this.cooldownGraphics.clear();
 		}
 		this.cancelDrag();
 		this.isCooldown = false;
@@ -754,6 +798,65 @@ export class Player extends GameObjects.Arc {
 			this.lastHighlightX = x;
 			this.lastHighlightY = y;
 			this.lastHighlightRadius = radius;
+		}
+	}
+
+	/**
+	 * クールダウンの可視化表示を更新する
+	 * 残り時間に応じてプログレスサークルを描画
+	 */
+	private updateCooldownVisual(): void {
+		if (!this.cooldownGraphics || !this.isCooldown) return;
+		
+		// クールダウンの経過時間と残り時間の割合を計算
+		const elapsedTime = this.scene.time.now - this.cooldownStartTime;
+		const remainingTimeRatio = Math.max(0, 1 - (elapsedTime / this.cd));
+		
+		// プレイヤーの半径を取得
+		const radius = (this.body as Phaser.Physics.Arcade.Body)?.width / 2 || 20;
+		
+		// グラフィックスをクリアして新しく描画
+		this.cooldownGraphics.clear();
+		
+		// 残り時間に応じた色を設定（青→水色→白）
+		// 残り時間に応じて色を変化させる（青→緑→黄→赤）
+		let color: number;
+		if (remainingTimeRatio > 0.66) {
+			color = 0x3498db; // 青色
+		} else if (remainingTimeRatio > 0.33) {
+			color = 0x2ecc71; // 緑色
+		} else {
+			color = 0xe74c3c; // 赤色
+		}
+		
+		// クールダウンの円弧を描画
+		this.cooldownGraphics.lineStyle(4, color, 0.8);
+		
+		// 開始角度は-90度（上方向）から
+		const startAngle = -Math.PI / 2;
+		// 終了角度は残り時間に応じて計算（2πラジアン = 360度）
+		const endAngle = startAngle + (Math.PI * 2 * remainingTimeRatio);
+		
+		// 円弧を描画（時計回り）
+		this.cooldownGraphics.beginPath();
+		this.cooldownGraphics.arc(
+			this.x, 
+			this.y, 
+			radius + 8, // プレイヤーの円より少し大きめに
+			startAngle, 
+			endAngle, 
+			false
+		);
+		this.cooldownGraphics.strokePath();
+		
+		// 残り時間の数値表示（オプション）
+		// ミリ秒からセカンドに変換して小数点以下1桁で表示
+		const remainingTime = Math.max(0, this.cd - elapsedTime);
+		const remainingSeconds = (remainingTime / 1000).toFixed(1);
+		
+		// クールダウン中であることを示すインジケーターをプレイヤーの下に表示
+		if (this.nameText) {
+			this.nameText.setText(`@${this.id}\n⌛ ${remainingSeconds}s`);
 		}
 	}
 }
