@@ -60,7 +60,7 @@ export default function Result() {
 					/>
 				</svg>
 				<h2 className="text-xl font-bold mb-1">{winnerName}の勝利！</h2>
-				<p className="text-neutral-500">おめでとうございます！</p>
+				<p className="text-neutral-500">LGTM!!!</p>
 			</div>
 			<div className="w-full max-w-md rounded-lg border border-neutral-200 p-4 mb-8">
 				<h3 className="text-lg font-semibold mb-4">最終スコア</h3>
