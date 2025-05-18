@@ -9,14 +9,14 @@ const Status = () => {
 	const status = calcStatus(userStatus);
 
 	return (
-		<div className="container">
+		<>
+			<div className="mt-5 ml-5">
+				<ToHomeButton />
+			</div>
 			<div className="m-10 items">
 				<StatusCard status={status} />
 			</div>
-			<div className="item flex justify-center">
-				<ToHomeButton />
-			</div>
-		</div>
+		</>
 	);
 };
 
