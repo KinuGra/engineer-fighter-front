@@ -42,6 +42,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 const PlayerCard = (props: PlayerCardProps) => {
 	return (
 		<div className="flex items-center bg-slate-800/80 border border-slate-600/20 rounded-xl p-4 backdrop-blur-md shadow-md transition-transform hover:translate-y-[-2px] cursor-pointer w-full max-w-md mx-auto">
+			{/* アイコン（スマホでは非表示） */}
 			<div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-slate-600/20">
 				<img
 					src={props.player.icon}
@@ -49,12 +50,16 @@ const PlayerCard = (props: PlayerCardProps) => {
 					className="w-full h-full object-cover"
 				/>
 			</div>
+
+			{/* プレイヤー名 */}
 			<div className="flex-1 flex items-center justify-center ml-4">
 				<div>
 					<span className="text-lg text-slate-200 font-semibold font-mono">@{props.player.id}</span>
 				</div>
 			</div>
-			<div className="flex gap-3">
+
+			{/* ステータス（スマホでは非表示） */}
+			<div className="hidden sm:flex gap-3">
 				<div className="flex flex-col items-center gap-1">
 					<span className="text-xs text-slate-400 font-mono">POW</span>
 					<span className="text-sm text-slate-200 font-semibold font-mono">{props.player.power}</span>
@@ -71,6 +76,7 @@ const PlayerCard = (props: PlayerCardProps) => {
 		</div>
 	);
 };
+
 
 const WaitingRoom = () => {
 	const { websocketUrl, apiUrl, roomID, users } =
@@ -201,7 +207,6 @@ const WaitingRoom = () => {
 						display: "flex",
 						flexDirection: "column",
 						alignItems: "center",
-						justifyContent: "center",
 						minHeight: "100vh",
 						background: "linear-gradient(135deg, #1E293B 0%, #0F172A 100%)",
 						color: "#E2E8F0",
@@ -315,7 +320,7 @@ const WaitingRoom = () => {
 									visible={true}
 								/>
 								<div style={{ color: "#94A3B8", fontSize: "16px" }}>
-									Waiting for other engineers to join...
+									他のエンジニアを待っています...
 								</div>
 								<div style={{ marginTop: "16px" }}>
 									<StartButton apiUrl={apiUrl} roomId={roomID} />
