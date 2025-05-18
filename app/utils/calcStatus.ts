@@ -4,7 +4,7 @@ export type UserStatus = {
 	power: number; // 1~100
 	weight: number; // 1~100
 	volume: number; // 1~100
-	cd: number; // 1~1000 (ms)
+	cd: number; // 1000~5000 (ms)
 };
 
 const normalize = (
@@ -43,8 +43,10 @@ const calcStatus = (info: GitHubGraphQL | null): UserStatus => {
 	const volume = normalize(commitDays, 365);
 
 	const prAndIssue = totalPullRequestContributions + totalIssueContributions;
-	const cdRaw = 1000 - normalize(prAndIssue, 500, 0, 900);
-	const cd = Math.min(Math.max(Math.round(cdRaw), 100), 1000);
+
+	// Normalize to 0~100 (higher = better), then invert to 5000~1000ms
+	const cdNormalized = normalize(prAndIssue, 500); // → 1〜100
+	const cd = Math.round(5000 - ((cdNormalized - 1) / 99) * 4000); // → 5000〜1000
 
 	return {
 		power,
