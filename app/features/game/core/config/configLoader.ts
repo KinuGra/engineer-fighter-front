@@ -116,8 +116,8 @@ export const createGameConfig = async (
 
 						const player = new Player(
 							this,
-							x,
-							y,
+							this.cameras.main.centerX - FIELD_WIDTH/2 + x,
+							this.cameras.main.centerY - FIELD_HEIGHT/2 + y,
 							radius, // volumeに基づいた半径
 							playerData.id,
 							playerData.icon,
