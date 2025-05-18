@@ -144,7 +144,6 @@ export const createGameConfig = async (
 					ws.onmessage = (event) => {
 						const data = JSON.parse(event.data);
 						if (data.type !== "action") return;
-						if (data.message.id === mainPlayer?.id) return;
 						const target = playerObjects.find((player) => player.id === data.message.id);
 						if (target) {
 							// 受信したデータを元にプレイヤーの状態を更新

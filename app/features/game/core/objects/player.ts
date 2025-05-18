@@ -456,9 +456,6 @@ export class Player extends GameObjects.Arc {
 		// 移動方向の角度を計算
 		const angle = dragVector.angle();
 
-		// ベクトルを正規化して強さを適用
-		this.setVelocityWithAngle(angle, finalStrength);
-
 		// 物理ボディがあれば速度を設定
 		const body = this.body as Phaser.Physics.Arcade.Body;
 		if (body) {
