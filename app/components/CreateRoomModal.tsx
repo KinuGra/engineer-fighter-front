@@ -30,7 +30,7 @@ const styles = {
 
 	},
 	modal: {
-		background: "#f3f4f6", // gray-100
+		background: "#f3f4f6",
 		borderRadius: "12px",
 		padding: "32px",
 		minWidth: "340px",
@@ -47,7 +47,7 @@ const styles = {
 		cursor: "pointer",
 		color: "#333",
 	},
-	title: { margin: 0, fontSize: "1.7rem", fontWeight: 700, color: "#374151" }, // text-gray-700
+	title: { margin: 0, fontSize: "1.7rem", fontWeight: 700, color: "black" }, // text-gray-700
 	subtitle: { color: "#6b7280", marginBottom: 24 }, // text-gray-500
 	formGroup: { marginBottom: 24 },
 	input: {
@@ -146,7 +146,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 						<p style={styles.subtitle}>あいことばを設定して部屋を作成しましょう</p>
 						<form onSubmit={handleSubmit}>
 							<div style={styles.formGroup}>
-								<label htmlFor="roomName">部屋の名前</label>
+								<label htmlFor="roomName" style={{ fontWeight: 600, display: "block", marginBottom: 6 }}>部屋の名前</label>
 								<input
 									type="text"
 									id="roomName"
@@ -158,7 +158,7 @@ const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
 								/>
 							</div>
 							<div style={styles.formGroup}>
-								<label htmlFor="maxPlayers">最大プレイヤー数</label>
+								<label htmlFor="maxPlayers" style={{ fontWeight: 600, display: "block", marginBottom: 6 }}>最大プレイヤー数</label>
 								<select
 									value={maxPlayers}
 									id="maxPlayers"
