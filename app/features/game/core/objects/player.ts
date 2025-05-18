@@ -334,7 +334,7 @@ export class Player extends GameObjects.Arc {
 		const powerFactor = this.power / 100;
 
 		// 運動エネルギー計算（速度の二乗に比例）
-		const kineticEnergy = mySpeed * mySpeed * powerFactor;
+		const kineticEnergy = mySpeed * mySpeed * powerFactor * 0.9;
 
 		// 質量効果の計算（自分と相手の重さの比率を考慮）
 		// 自分が重く相手が軽いほど、効果が大きい
@@ -342,8 +342,11 @@ export class Player extends GameObjects.Arc {
 
 		// 相手に転移する力の計算
 		// 質量比を考慮（相手の重さの影響を反映）
+		// 小さすぎると衝突が連続して起こるので、最小値を設定
+		const minInpactForce = 10;
 		const impactForce =
-			kineticEnergy * massEffect * (1 - target.weight / 100);
+			Math.max(kineticEnergy * massEffect * (1 - target.weight / 100), minInpactForce)
+		
 
 		// 力を適用して、相手プレイヤーを押し出す
 		targetBody.velocity.x += collisionVector.x * impactForce;
