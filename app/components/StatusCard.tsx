@@ -35,7 +35,7 @@ export default function StatusCard({ status }: StatusCardProps) {
 				<div className="flex justify-between items-center">
 					<h3 className="text-xl font-bold">エンジニア戦闘力</h3>
 					<span
-						className={`${rank.color} text-white text-lg px-3 py-1 rounded-full font-bold`}
+						className={`${rank.color} text-white text-lg px-4 py-2 rounded-full font-bold`}
 					>
 						ランク {rank.label}
 					</span>
@@ -135,10 +135,10 @@ export default function StatusCard({ status }: StatusCardProps) {
 						},
 						{
 							title: "クールダウン",
-							value: `${status.cd}/1000`,
+							value: `${status.cd}/5000`,
 							description:
 								"直近1年のPR・レビュー数をもとに調整。アウトプットが多い人ほど「動き出しが早く」なります。",
-							percent: (status.cd / 1000) * 100,
+							percent: (status.cd / 5000) * 100,
 							icon: (
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
