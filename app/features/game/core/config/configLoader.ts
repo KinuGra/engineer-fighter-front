@@ -43,13 +43,30 @@ export const createGameConfig = async (
 		},
 		scene: {
 			preload: function (this: Phaser.Scene) {
+				// フィールド用とフィールド外用のテクスチャをプリロード
+				this.load.image('floor', '/floor.png');
+				this.load.image('ocean', '/ocean.png');
+				
 				for (const player of players) {
 					// プレイヤーのアイコンをプリロード
 					this.load.image(player.id, player.icon);
 				}
 			},
 			create: async function (this: Phaser.Scene) {
+				// 背景色を設定（オーシャンテクスチャが表示されない場合のフォールバック）
 				this.cameras.main.setBackgroundColor(COLORS.BACKGROUND);
+				
+				// オーシャンテクスチャを背景に設定
+				const ocean = this.add.image(
+					this.cameras.main.centerX,
+					this.cameras.main.centerY,
+					'ocean'
+				);
+				
+				// 画面全体にオーシャンテクスチャを表示
+				ocean.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
+				ocean.setOrigin(0.5, 0.5);
+				ocean.setDepth(-1); // 最背面に配置
 
 				// カウントダウン機能の実装
 				let countdownValue = 3;
@@ -173,17 +190,19 @@ export const createGameConfig = async (
 				// 物理境界のデバッグ出力
 				console.log("Physics World Bounds:", this.physics.world.bounds);
 
-				// 緑のフィールドを作成
-				const field = this.add.rectangle(
+				// フィールドにテクスチャを設定
+				const field = this.add.image(
 					this.cameras.main.centerX,
 					this.cameras.main.centerY,
-					FIELD_WIDTH,
-					FIELD_HEIGHT,
-					COLORS.FIELD,
+					'floor'
 				);
+				
+				// フィールドのサイズをFIELD_WIDTHとFIELD_HEIGHTに合わせる
+				field.setDisplaySize(FIELD_WIDTH, FIELD_HEIGHT);
 				field.setOrigin(0.5, 0.5);
+				field.setDepth(0); // オーシャンよりも前に表示
 
-				// フィールドの境界線を作成
+				// フィールドの境界線を作成 - より目立つように
 				const fieldBorder = this.add.graphics();
 				fieldBorder.lineStyle(5, COLORS.FIELD_BORDER, 1);
 				fieldBorder.strokeRect(
@@ -192,6 +211,7 @@ export const createGameConfig = async (
 					FIELD_WIDTH,
 					FIELD_HEIGHT,
 				);
+				fieldBorder.setDepth(1); // フィールドの上に表示
 
 				try {
 					// Playerクラスを動的にインポート
