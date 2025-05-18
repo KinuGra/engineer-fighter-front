@@ -112,7 +112,8 @@ export default function PhaserGame({
 				gameSettingsWithPlayers,
 				containerRef.current,
 				apiUrl,
-				roomId
+				roomId,
+				ws
 			);
 
 			const game = new Phaser.Game(config);

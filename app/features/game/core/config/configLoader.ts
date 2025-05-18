@@ -18,6 +18,7 @@ export const createGameConfig = async (
 	parent: HTMLElement | undefined,
 	apiUrl: string,
 	roomId: string,
+	ws: WebSocket,
 ): Promise<Phaser.Types.Core.GameConfig> => {
 	const players = gameSettings.players;
 
@@ -233,6 +234,17 @@ export const createGameConfig = async (
 
 				// プレイヤーごとの更新処理
 				if (players && Array.isArray(players)) {
+					ws.onmessage = (event) => {
+						const data = JSON.parse(event.data);
+						if(data.type !== "action") return;
+						const target = players.find((player) => player.id === data.message.id);
+						if (target) {
+							// 受信したデータを元にプレイヤーの状態を更新
+							target.setAngle(data.message.angle[0]);
+							target.setPullPower(data.message.pull_power);
+						}
+					}
+
 					for (const player of players) {
 						if (player && typeof player.update === "function") {
 							// プレイヤーのアップデート関数を呼び出し
