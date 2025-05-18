@@ -141,14 +141,25 @@ export const createGameConfig = async (
 					// プレイヤー配列をシーンのデータとして保存（update内で使用するため）
 					this.data.set("playerObjects", playerObjects);
 
+					// アクションキューを保存するための配列を初期化
+					const actionQueue: Array<{id: string, angle: number, pull_power: number}> = [];
+					this.data.set("actionQueue", actionQueue);
+					
+					// 最後の更新時刻を記録
+					const lastUpdateTime = 0;
+					this.data.set("lastUpdateTime", lastUpdateTime);
+
 					ws.onmessage = (event) => {
 						const data = JSON.parse(event.data);
 						if (data.type !== "action") return;
-						const target = playerObjects.find((player) => player.id === data.message.id);
-						if (target) {
-							// 受信したデータを元にプレイヤーの状態を更新
-							target.setVelocityWithAngle(data.message.angle[0], data.message.pull_power);
-						}
+						
+						// アクションをキューに追加するだけで、即座には適用しない
+						const actionQueue = this.data.get("actionQueue") as Array<{id: string, angle: number, pull_power: number}>;
+						actionQueue.push({
+							id: data.message.id,
+							angle: data.message.angle[0],
+							pull_power: data.message.pull_power
+						});
 					}
 
 					// プレイヤー同士の衝突を設定
@@ -232,6 +243,33 @@ export const createGameConfig = async (
 
 				// 保存されたプレイヤーオブジェクトを取得
 				const players = this.data.get("playerObjects");
+				
+				// アクションキューと最後の更新時刻を取得
+				const actionQueue = this.data.get("actionQueue") as Array<{id: string, angle: number, pull_power: number}> || [];
+				const lastUpdateTime = this.data.get("lastUpdateTime") as number || 0;
+				
+				// 現在の時刻
+				const currentTime = this.time.now;
+				
+				// 100ms(0.1秒)ごとに更新
+				if (currentTime - lastUpdateTime >= 100) {
+					// キューに溜まったアクションを処理
+					if (actionQueue.length > 0 && players && Array.isArray(players)) {
+						for (const action of actionQueue) {
+							const target = players.find((player) => player.id === action.id);
+							if (target) {
+								// 受信したデータを元にプレイヤーの状態を更新
+								target.setVelocityWithAngle(action.angle, action.pull_power);
+							}
+						}
+						
+						// キューをクリア
+						actionQueue.length = 0;
+					}
+					
+					// 最後の更新時刻を更新
+					this.data.set("lastUpdateTime", currentTime);
+				}
 
 				// プレイヤーごとの更新処理
 				if (players && Array.isArray(players)) {
