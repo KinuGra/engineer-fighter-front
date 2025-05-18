@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { useAtomValue } from "jotai";
+import { githubUserAtom } from "~/atoms/githubUser";
 import { playersAtom } from "~/atoms/players";
 import PhaserGame from "~/features/game/components/PhaserGame";
 import { getGameSettings } from "~/features/game/loader";
@@ -20,14 +21,13 @@ export const meta: MetaFunction = () => {
 export default function GameScreen() {
 	const { apiUrl, gameSettings } = useLoaderData<typeof loader>();
 	const roomId = new URLSearchParams(window.location.search).get("roomId");
+	const mainPlayerId = useAtomValue(githubUserAtom)?.login;
+
 	if(!roomId) {
 		throw new Error("Room ID is required");
 	}
 
 	const players = useAtomValue(playersAtom);
-
-	// メインプレイヤーのIDを設定
-	const mainPlayerId = "ulxsth";
 
 	return (
 		<div className="flex flex-col items-center p-4">
