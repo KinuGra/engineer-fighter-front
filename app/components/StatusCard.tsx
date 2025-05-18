@@ -6,16 +6,28 @@ interface StatusCardProps {
 }
 
 export default function StatusCard({ status }: StatusCardProps) {
-	// 総合評価を計算（単純な平均）
+	// 総合評価を計算（加重平均）
 	const calculateOverallRating = () => {
 		// CDは逆数で評価（値が小さいほど良い）
-		const normalizedCD = 100 - ((status.cd - 1) / 999) * 100;
-		return Math.round(
-			(status.power + status.weight + status.volume + normalizedCD) / 4,
-		);
+		const normalizedCD = 100 - ((status.cd - 1) / 4999) * 100;
+
+		// 各項目に重みをつけて加重平均（CDの影響は小さく）
+		const powerWeight = 0.3;
+		const weightWeight = 0.3;
+		const volumeWeight = 0.3;
+		const cdWeight = 0.1;
+
+		const score =
+			status.power * powerWeight +
+			status.weight * weightWeight +
+			status.volume * volumeWeight +
+			normalizedCD * cdWeight;
+
+		return Math.round(score);
 	};
 
 	const overallRating = calculateOverallRating();
+	console.log("総合評価:", overallRating);
 
 	// 評価に基づくランク
 	const getRank = (rating: number) => {
@@ -109,7 +121,7 @@ export default function StatusCard({ status }: StatusCardProps) {
 							title: "ボリューム",
 							value: `${status.volume}/100`,
 							description:
-								"こちらもコミット日数から計算。毎日積み重ねていると「体が大きく」なり、存在感が増します。",
+								"コミット日数から計算。毎日積み重ねていると「体が大きく」なり、存在感が増します。",
 							percent: status.volume,
 							icon: (
 								<svg
