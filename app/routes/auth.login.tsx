@@ -24,12 +24,19 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
 export default function SignIn() {
 	return (
-		<div className="flex min-h-screen items-start justify-center mt-20">
-			<div className="w-[90vw] max-w-md sm:w-full rounded-xl bg-white p-4 mt-20px sm:p-8 md:p-16 shadow-lg">
-				<h2 className="mb-2 text-center text-3xl font-bold text-gray-900">
-					Engineer Fighters
-				</h2>
-				<p className="mb-6 text-center text-gray-600 text-base break-all">
+		<div className="flex mt-32 items-center justify-center">
+			<div className="w-[90vw] max-w-md sm:w-full rounded-xl bg-white px-6 py-10 sm:px-10 shadow-lg text-center">
+				<div className="flex flex-col items-center space-y-4 mb-6">
+					<img
+						src="/icon.png"
+						alt="Engineer Fighter ロゴ"
+						className="w-24 h-24"
+					/>
+					<h1 className="text-3xl font-extrabold text-gray-900">
+						Engineer Fighters
+					</h1>
+				</div>
+				<p className="mb-6 text-gray-600 text-base">
 					GitHubアカウントでログインして始めましょう
 				</p>
 				<Form method="post">
@@ -48,3 +55,4 @@ export default function SignIn() {
 		</div>
 	);
 }
+
