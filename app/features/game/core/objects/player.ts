@@ -381,7 +381,7 @@ export class Player extends GameObjects.Arc {
 	}
 	
 	/**
-	 * 外部から移動状態を変更するための関数（WebSocket用）
+	 * 移動状態を変更するための関数
 	 * @param angle 移動角度
 	 * @param pullPower 引っ張りの強さ
 	 */
@@ -459,8 +459,7 @@ export class Player extends GameObjects.Arc {
 		const angle = dragVector.angle();
 
 		// ベクトルを正規化して強さを適用
-		const velocityX = Math.cos(angle) * finalStrength;
-		const velocityY = Math.sin(angle) * finalStrength;
+		this.setVelocityWithAngle(angle, finalStrength);
 
 		// 物理ボディがあれば速度を設定
 		const body = this.body as Phaser.Physics.Arcade.Body;
@@ -485,7 +484,6 @@ export class Player extends GameObjects.Arc {
 			// バウンス（跳ね返り）を小さめに設定（重い方が跳ね返りが小さい）
 			
 			// 速度の適用
-			body.setVelocity(velocityX, velocityY);
 			body.setBounce(0.3 - weightFactor * 0.2); // 0.1～0.3の間
 	
 			// イベントの送信
