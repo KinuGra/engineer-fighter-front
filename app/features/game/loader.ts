@@ -1,4 +1,4 @@
-import { data, LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { type LoaderFunctionArgs, data } from "@remix-run/cloudflare";
 import { defaultGameSettings } from "./core/config/gameSettings";
 
 /**
