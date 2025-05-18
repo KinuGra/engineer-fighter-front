@@ -10,7 +10,7 @@ const Status = () => {
 
 	return (
 		<>
-			<div className="mt-5 ml-5">
+			<div className="mt-10 ml-10">
 				<ToHomeButton />
 			</div>
 			<div className="m-10 items">

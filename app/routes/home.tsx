@@ -19,8 +19,9 @@ export default function Home() {
 
 	return (
 		<div className="w-full flex flex-col items-center px-4 md:px-5">
-			<ToCombatPower />
-
+			<div className="mt-8">
+				<ToCombatPower />
+			</div>
 			{/* メインカード部分 */}
 			<div className="flex flex-col md:flex-row gap-8 w-full max-w-5xl justify-center mt-8">
 				<RoomCard
