@@ -1,43 +1,76 @@
-# Welcome to Remix + Cloudflare Workers!
+# 「エンジニア戦闘力バトル」フロントエンド
 
-- 📖 [Remix docs](https://remix.run/docs)
-- 📖 [Remix Cloudflare docs](https://remix.run/guides/vite#cloudflare)
+## 概要
 
-## Development
+このプロジェクトは、GitHub活動データをもとに「エンジニア戦闘力」を可視化し、複数人で対戦できるWebゲームです。Remix + Cloudflare Workers + Phaserを用いて構築されており、ユーザーは自身のGitHubアカウントでログインし、戦闘力をもとにしたキャラクターでバトルを行います。
 
-Run the dev server:
+## 主な機能
+
+- GitHubアカウント連携によるユーザー認証
+- GitHub活動量から「パワー」「体重」「大きさ」「クールダウン」を算出
+- リアルタイムWebSocket通信によるマルチプレイヤーバトル
+- ひっぱりアクションでキャラクターを操作し、他プレイヤーを場外に弾き飛ばす
+- ゲーム終了後にランキング・勝者表示
+- レスポンシブなUIとエンジニアのステータスチャート表示
+
+## 技術スタック
+
+- **フロントエンド**: React (Remix), TypeScript, Tailwind CSS
+- **ゲームエンジン**: Phaser 3
+- **状態管理**: jotai
+- **通信**: WebSocket (Cloudflare Workers)
+- **デプロイ**: Cloudflare Workers
+- **その他**: Supabase, dayjs, ESLint, Vite
+
+## 仕様
+
+### ゲーム仕様
+
+- 各プレイヤーはGitHub活動量から算出された4つのパラメータ（パワー・体重・ボリューム・クールダウン）を持つ
+  - **パワー**: 直近1年の総コミット数×ストリーク日数（ふきとばしやすさ）
+  - **体重**: 直近1年のコミット日数（ふきとばされにくさ）
+  - **ボリューム**: コミット日数（体の大きさ）
+  - **クールダウン**: PR・レビュー数（動き出しの速さ、値が小さいほど良い）
+- ひっぱり操作でキャラクターを弾き、他プレイヤーを場外に出すと勝利
+- 衝突時はパワー・体重・速度などに応じて物理演算で力が伝達される
+- クールダウン中は再操作不可
+- 最後まで場内に残ったプレイヤーが勝者
+
+### UI/UX
+
+- ステータスはチャート・カードで可視化
+- ゲーム画面はPhaserで描画
+- ゲーム終了後はランキング・勝者表示、ホームへの遷移ボタンあり
+
+### 開発・ビルド
 
 ```sh
-npm run dev
+pnpm install
+pnpm run dev         # 開発サーバー起動
 ```
 
-To run Wrangler:
+### ディレクトリ構成
 
-```sh
-npm run build
-npm start
-```
+- `app/` ... Remixアプリ本体
+  - `api/` ... サーバー・クライアント間のAPI通信ロジック
+  - `atoms/` ... jotaiによる状態管理
+  - `components/` ... UIコンポーネント群
+  - `features/game/` ... ゲームロジック・Phaser連携
+    - `core/` ... ゲームの設定・物理演算・オブジェクト定義
+    - `components/` ... ゲーム画面用Reactコンポーネント
+    - `state/` ... クライアント側ゲーム状態管理
+    - `hooks/` ... ゲーム用カスタムフック
+  - `routes/` ... Remixのルーティング（各ページ）
+  - `styles/` ... CSSやTailwindの設定
+  - `types/` ... 型定義
+  - `utils/` ... 各種ユーティリティ関数
+- `public/` ... 画像・アイコン等の静的ファイル
+- `build/` ... ビルド成果物（デプロイ用）
+- `server.ts` ... サーバーエントリポイント
+- `package.json` ... 依存パッケージ・スクリプト
+- `vite.config.ts` ... Vite設定
+- `tailwind.config.ts` ... Tailwind CSS設定
+- `tsconfig.json` ... TypeScript設定
+- `wrangler.toml` ... Cloudflare Workers設定
 
-## Typegen
-
-Generate types for your Cloudflare bindings in `wrangler.toml`:
-
-```sh
-npm run typegen
-```
-
-You will need to rerun typegen whenever you make changes to `wrangler.toml`.
-
-## Deployment
-
-If you don't already have an account, then [create a cloudflare account here](https://dash.cloudflare.com/sign-up) and after verifying your email address with Cloudflare, go to your dashboard and set up your free custom Cloudflare Workers subdomain.
-
-Once that's done, you should be able to deploy your app:
-
-```sh
-npm run deploy
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+---
